@@ -1,3 +1,4 @@
+// -*- js-indent-level: 2 -*-
 Components.utils.import("resource:///modules/gloda/log4moz.js");
 
 // Rules:
@@ -23,12 +24,12 @@ var FolderPaneSwitcher = {
   showHideArrowsObserver: {
     observe: function() {
       var prefBranch = Components.classes["@mozilla.org/preferences-service;1"]
-          .getService(Components.interfaces.nsIPrefBranch);
+        .getService(Components.interfaces.nsIPrefBranch);
       var show = prefBranch.getBoolPref("extensions.FolderPaneSwitcher.arrows");
       document.getElementById("folderPaneHeader").hidden = !show;
     }
   },
-      
+
   onLoad: function() {
     if (! this.logger) {
       this.logger = Log4Moz.getConfiguredLogger("extensions.FolderPaneSwitcher",
@@ -49,13 +50,13 @@ var FolderPaneSwitcher = {
     treechildren.addEventListener("dragexit", me.onDragExit, false);
     treechildren.addEventListener("dragdrop", me.onDragExit, false);
     var ns =
-	Components.classes["@mozilla.org/messenger/msgnotificationservice;1"]
-	.getService(Components.interfaces.nsIMsgFolderNotificationService);
+      Components.classes["@mozilla.org/messenger/msgnotificationservice;1"]
+      .getService(Components.interfaces.nsIMsgFolderNotificationService);
     ns.addListener(me.folderListener, ns.msgsMoveCopyCompleted|
 		   ns.folderMoveCopyCompleted);
     FolderPaneSwitcher.showHideArrowsObserver.observe();
     var prefBranch = Components.classes["@mozilla.org/preferences-service;1"]
-        .getService(Components.interfaces.nsIPrefBranch);
+      .getService(Components.interfaces.nsIPrefBranch);
     prefBranch.addObserver("extensions.FolderPaneSwitcher.arrows",
 			   FolderPaneSwitcher.showHideArrowsObserver, false);
   },
@@ -103,13 +104,39 @@ var FolderPaneSwitcher = {
     FolderPaneSwitcher.logger.trace("onDragOver"); // too verbose for debug
     var old = FolderPaneSwitcher.currentFolder;
     FolderPaneSwitcher.currentFolder = 
-	gFolderTreeView.getFolderAtCoords(aEvent.clientX, aEvent.clientY);
+      gFolderTreeView.getFolderAtCoords(aEvent.clientX, aEvent.clientY);
+    if (FolderPaneSwitcher.disabledCanDrop &&
+	old != FolderPaneSwitcher.currentFolder) {
+      if (FolderPaneSwitcher.disabledNeedMove) {
+	FolderPaneSwitcher.disabledNeedMove = null;
+	FolderPaneSwitcher.logger.debug("Setting disabledNeedMove to null");
+      }
+      else {
+	FolderPaneSwitcher.logger.debug("canceling disable");
+	gFolderTreeView.canDrop = FolderPaneSwitcher.disabledCanDrop;
+	FolderPaneSwitcher.disabledCanDrop = null;
+	FolderPaneSwitcher.disabledTimer.cancel();
+	FolderPaneSwitcher.disabledTimer = null;
+      }
+    }
     if (gFolderTreeView.mode == "all") {
       return;
     }
     if (old != FolderPaneSwitcher.currentFolder) {
       FolderPaneSwitcher.resetTimer();
-      FolderPaneSwitcher.currentFolder = folder;
+    }
+  },
+
+  disabledNeedMove: null,
+  disabledCanDrop: null,
+  disabledTimer: null,
+  disabledCallback: {
+    notify: function() {
+      var folderTree = document.getElementById("folderTree");
+      var treechildren = folderTree.getElementsByTagName("treechildren")[0];
+      gFolderTreeView.canDrop = FolderPaneSwitcher.disabledCanDrop;
+      FolderPaneSwitcher.disabledCanDrop = null;
+      FolderPaneSwitcher.disabledTimer = null;
     }
   },
 
@@ -120,6 +147,28 @@ var FolderPaneSwitcher = {
       FolderPaneSwitcher.cachedView = gFolderTreeView.mode;
       gFolderTreeView.mode = "all";
       FolderPaneSwitcher.timer = null;
+      // This is, unfortunately, really gross. We want to prevent
+      // drops from being allowed for a short period of time after the
+      // view switch, to prevent accidental drops into the wrong
+      // folder. Unfortunately, I can't find any way to catch and trap
+      // the dragdrop event to prevent the drop from being
+      // processed. The only way I can find to prevent dropping is to
+      // temporarly modify the canDrop function in gFolderTreeView to
+      // always return false. Ugh.
+      var folderTree = document.getElementById("folderTree");
+      var treechildren = folderTree.getElementsByTagName("treechildren")[0];
+      FolderPaneSwitcher.disabledCanDrop = gFolderTreeView.canDrop;
+      FolderPaneSwitcher.disabledNeedMove = true;
+      gFolderTreeView.canDrop = function() { return false; };
+      var prefBranch = Components.classes["@mozilla.org/preferences-service;1"]
+	.getService(Components.interfaces.nsIPrefBranch);
+      var delay = prefBranch
+	.getIntPref("extensions.FolderPaneSwitcher.dropDelay");
+      var t = Components.classes["@mozilla.org/timer;1"]
+	.createInstance(Components.interfaces.nsITimer);
+      t.initWithCallback(FolderPaneSwitcher.disabledCallback, delay,
+			 Components.interfaces.nsITimer.TYPE_ONE_SHOT);
+      FolderPaneSwitcher.disabledTimer = t;
     },
   },
 
@@ -128,10 +177,10 @@ var FolderPaneSwitcher = {
       FolderPaneSwitcher.timer.cancel();
     }
     var prefBranch = Components.classes["@mozilla.org/preferences-service;1"]
-        .getService(Components.interfaces.nsIPrefBranch);
+      .getService(Components.interfaces.nsIPrefBranch);
     var delay = prefBranch.getIntPref("extensions.FolderPaneSwitcher.delay");
     var t = Components.classes["@mozilla.org/timer;1"]
-	.createInstance(Components.interfaces.nsITimer);
+      .createInstance(Components.interfaces.nsITimer);
     t.initWithCallback(FolderPaneSwitcher.timerCallback, delay,
 		       Components.interfaces.nsITimer.TYPE_ONE_SHOT);
     FolderPaneSwitcher.timer = t;

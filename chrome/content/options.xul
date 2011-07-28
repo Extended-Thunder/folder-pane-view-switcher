@@ -9,6 +9,8 @@
 		  name="extensions.FolderPaneSwitcher.arrows" type="bool"/>
       <preference id="FolderPaneSwitcher-delay-preference"
 		  name="extensions.FolderPaneSwitcher.delay" type="int"/>
+      <preference id="FolderPaneSwitcher-drop-delay-preference"
+		  name="extensions.FolderPaneSwitcher.dropDelay" type="int"/>
     </preferences>
     <vbox>
       <hbox>
@@ -20,6 +22,11 @@
 	<label>Delay (milliseconds) before folder view switch:</label>
 	<textbox id="FolderPaneSwitcher-delay-textbox"
 		 preference="FolderPaneSwitcher-delay-preference"/>
+      </hbox>
+      <hbox tooltiptext="Time after the view switch during which you can't drop into a folder. Prevents accidental dropping into the wrong folder immediately after the view switch.">
+	<label>Drop prevention delay (milliseconds) after view switch:</label>
+	<textbox id="FolderPaneSwitcher-drop-delay-textbox"
+		 preference="FolderPaneSwitcher-drop-delay-preference"/>
       </hbox>
     </vbox>
   </prefpane>
