@@ -1,0 +1,4 @@
+content   FolderPaneSwitcher                 chrome/content/
+skin      FolderPaneSwitcher   classic/1.0   chrome/skin/
+locale    FolderPaneSwitcher   en-US         chrome/locale/en-US/
+overlay   chrome://messenger/content/messenger.xul chrome://FolderPaneSwitcher/content/FolderPaneSwitcher.xul

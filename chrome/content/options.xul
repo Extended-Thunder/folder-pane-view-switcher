@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<prefwindow id="FolderPaneSwitcher-preferences"
+	    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+	    title="FolderPaneSwitcher Preferences">
+  <prefpane id="pane1" label="FolderPaneSwitcher Preferences">
+    <preferences>
+      <preference id="FolderPaneSwitcher-arrows-preference"
+		  name="extensions.FolderPaneSwitcher.arrows" type="bool"/>
+      <preference id="FolderPaneSwitcher-delay-preference"
+		  name="extensions.FolderPaneSwitcher.delay" type="int"/>
+    </preferences>
+    <vbox>
+      <hbox>
+	<checkbox id="FolderPaneSwitcher-arrows-checkbox"
+		  preference="FolderPaneSwitcher-arrows-preference"
+		  label="Show folder pane arrows"/>
+      </hbox>
+      <hbox>
+	<label>Delay (milliseconds) before folder view switch:</label>
+	<textbox id="FolderPaneSwitcher-delay-textbox"
+		 preference="FolderPaneSwitcher-delay-preference"/>
+      </hbox>
+    </vbox>
+  </prefpane>
+</prefwindow>
