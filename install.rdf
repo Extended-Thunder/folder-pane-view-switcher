@@ -4,7 +4,7 @@
     <em:id>FolderPaneSwitcher@kamens.us</em:id>
     <em:type>2</em:type>
     <em:name>Folder Pane View Switcher</em:name>
-    <em:version>1.2</em:version>
+    <em:version>1.3</em:version>
     <em:creator>Jonathan Kamens</em:creator>
     <em:description>Add arrow buttons at the top of the folder pane which rotate back and forth through the various available folder views. These buttons are hidden starting with Thunderbird 8, and this add-on brings them back. Alternatively, pre-Thunderbird 8, you can use this add-on to remove them if you don't want them.
 Also, switch temporarily to the "All Folders" view when you hover over the folder pane showing some other view for several seconds during a message drag &amp; drop operation, and switch back automatically after the drop.
