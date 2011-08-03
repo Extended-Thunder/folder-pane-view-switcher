@@ -100,23 +100,43 @@ var FolderPaneSwitcher = {
     FolderPaneSwitcher.currentFolder = null;
   },
 
+  
+  dataTransfer: null,
+  setDataTransfer: function(real) {
+    var dragService = Components
+      .classes["@mozilla.org/widget/dragservice;1"]
+      .getService(Components.interfaces.nsIDragService);
+    var dragSession = dragService.getCurrentSession();
+    if (real) {
+      if (FolderPaneSwitcher.dataTransfer) {
+	dragSession.dataTransfer = FolderPaneSwitcher.dataTransfer;
+	FolderPaneSwitcher.dataTransfer = null;
+      }
+    }
+    else {
+      FolderPaneSwitcher.dataTransfer = dragSession.dataTransfer;
+      dragSession.dataTransfer = null;
+    }
+  },
+
   onDragOver: function(aEvent) {
     FolderPaneSwitcher.logger.trace("onDragOver"); // too verbose for debug
     var old = FolderPaneSwitcher.currentFolder;
     FolderPaneSwitcher.currentFolder = 
       gFolderTreeView.getFolderAtCoords(aEvent.clientX, aEvent.clientY);
-    if (FolderPaneSwitcher.disabledCanDrop &&
+    if (FolderPaneSwitcher.dataTransfer &&
 	old != FolderPaneSwitcher.currentFolder) {
       if (FolderPaneSwitcher.disabledNeedMove) {
 	FolderPaneSwitcher.disabledNeedMove = null;
 	FolderPaneSwitcher.logger.debug("Setting disabledNeedMove to null");
       }
-      else {
+      else if (FolderPaneSwitcher.dataTransfer) {
 	FolderPaneSwitcher.logger.debug("canceling disable");
-	gFolderTreeView.canDrop = FolderPaneSwitcher.disabledCanDrop;
-	FolderPaneSwitcher.disabledCanDrop = null;
-	FolderPaneSwitcher.disabledTimer.cancel();
-	FolderPaneSwitcher.disabledTimer = null;
+	FolderPaneSwitcher.setDataTransfer(true);
+	if (FolderPaneSwitcher.disabledTimer) {
+	  FolderPaneSwitcher.disabledTimer.cancel();
+	  FolderPaneSwitcher.disabledTimer = null;
+	}
       }
     }
     if (gFolderTreeView.mode == "all") {
@@ -128,14 +148,12 @@ var FolderPaneSwitcher = {
   },
 
   disabledNeedMove: null,
-  disabledCanDrop: null,
   disabledTimer: null,
   disabledCallback: {
     notify: function() {
       var folderTree = document.getElementById("folderTree");
       var treechildren = folderTree.getElementsByTagName("treechildren")[0];
-      gFolderTreeView.canDrop = FolderPaneSwitcher.disabledCanDrop;
-      FolderPaneSwitcher.disabledCanDrop = null;
+      FolderPaneSwitcher.setDataTransfer(true);
       FolderPaneSwitcher.disabledTimer = null;
     }
   },
@@ -145,21 +163,19 @@ var FolderPaneSwitcher = {
     notify: function() {
       FolderPaneSwitcher.logger.debug("timerCallback.notify");
       FolderPaneSwitcher.cachedView = gFolderTreeView.mode;
-      gFolderTreeView.mode = "all";
-      FolderPaneSwitcher.timer = null;
       // This is, unfortunately, really gross. We want to prevent
       // drops from being allowed for a short period of time after the
       // view switch, to prevent accidental drops into the wrong
       // folder. Unfortunately, I can't find any way to catch and trap
       // the dragdrop event to prevent the drop from being
       // processed. The only way I can find to prevent dropping is to
-      // temporarly modify the canDrop function in gFolderTreeView to
-      // always return false. Ugh.
-      var folderTree = document.getElementById("folderTree");
-      var treechildren = folderTree.getElementsByTagName("treechildren")[0];
-      FolderPaneSwitcher.disabledCanDrop = gFolderTreeView.canDrop;
+      // temporarly modify the drag session to null out what's being
+      // transferred.
+      FolderPaneSwitcher.setDataTransfer(false);
       FolderPaneSwitcher.disabledNeedMove = true;
-      gFolderTreeView.canDrop = function() { return false; };
+      gFolderTreeView.mode = "all";
+
+      FolderPaneSwitcher.timer = null;
       var prefBranch = Components.classes["@mozilla.org/preferences-service;1"]
 	.getService(Components.interfaces.nsIPrefBranch);
       var delay = prefBranch
