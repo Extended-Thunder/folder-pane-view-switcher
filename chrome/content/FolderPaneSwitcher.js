@@ -109,11 +109,12 @@ var FolderPaneSwitcher = {
     var dragSession = dragService.getCurrentSession();
     if (real) {
       if (FolderPaneSwitcher.dataTransfer) {
-	dragSession.dataTransfer = FolderPaneSwitcher.dataTransfer;
+	if (dragSession)
+	  dragSession.dataTransfer = FolderPaneSwitcher.dataTransfer;
 	FolderPaneSwitcher.dataTransfer = null;
       }
     }
-    else {
+    else if (dragSession) {
       FolderPaneSwitcher.dataTransfer = dragSession.dataTransfer;
       dragSession.dataTransfer = null;
     }
