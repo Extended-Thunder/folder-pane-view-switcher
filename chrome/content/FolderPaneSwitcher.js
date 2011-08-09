@@ -3,22 +3,25 @@ Components.utils.import("resource:///modules/gloda/log4moz.js");
 
 // Rules:
 // 
-// onDragEnter: Reset timer
-//              Set current row to null
-//              Set cached view to null
-// onDragExit:  Cancel timer
-//              Switch to cached folder view, if any
-// onDragDrop:  Same as onDragExit
-// onDragOver:  In all folders view?
-//              Yes: Do nothing
-//              No: Has current row changed?
-//                  Yes: Reset timer
-//                  No: Do nothing         
-// notify:      Cache old folder view
-//              Switch to all folders view
-// resetTimer:  In all folders view?
-//              Yes: Do nothing
-//              No: Start timer
+// Enter title bar:
+//   Restart timer
+// Exit title bar:
+//   Cancel timer
+// Drag over:
+//   Record current folder for movecopycompleted listener.
+// Timer expires:
+//   Cache old folder view
+//   Switch to all folders view
+//   Initiate the recurring watch timer
+// Drag finished:
+//   Cancel timer
+//   Switch to cached folder view, if any
+// Watch timer:
+//   Is there a cached view? Yes:
+//     Is there no current drag session? Yes:
+//       Pretend drag finished
+//   Is there a cached view? No:
+//     Cancel watch timer
 
 var FolderPaneSwitcher = {
   showHideArrowsObserver: {
@@ -38,17 +41,17 @@ var FolderPaneSwitcher = {
 						Log4Moz.Level.Debug);
     }
     var me = FolderPaneSwitcher;
+    var title = document.getElementById("folderpane-title");
+    title.addEventListener("dragenter", me.onDragEnter, false);
     var folderTree = document.getElementById("folderTree");
-    var treechildren = folderTree.getElementsByTagName("treechildren")[0];
-    treechildren.addEventListener("dragenter", me.onDragEnter, false);
-    treechildren.addEventListener("dragover", me.onDragOver, false);
+    folderTree.addEventListener("dragover", me.onDragOver, false);
+    title.addEventListener("dragexit", me.onDragExit, false);
+    title.addEventListener("dragdrop", me.onDragDrop, false);
     // Dragexit and dragdrop don't actually get sent when the user
     // drops a message into a folder. This is arguably a bug in
     // Thunderbird (see bz#674807). To work around it, I register a
     // folder listener to detect when a move or copy is
     // completed. This is gross, but appears to work well enough.
-    treechildren.addEventListener("dragexit", me.onDragExit, false);
-    treechildren.addEventListener("dragdrop", me.onDragExit, false);
     var ns =
       Components.classes["@mozilla.org/messenger/msgnotificationservice;1"]
       .getService(Components.interfaces.nsIMsgFolderNotificationService);
@@ -63,19 +66,27 @@ var FolderPaneSwitcher = {
 
   folderListener: {
     msgsMoveCopyCompleted: function(aMove, aSrcMsgs, aDestFolder, aDestMsgs) {
+      FolderPaneSwitcher.logger.debug("msgsMoveCopyCompleted");
       if (aDestFolder == FolderPaneSwitcher.currentFolder) {
 	// Still remotely possible that someone else could be copying
 	// into the same folder at the same time as us, but this is
 	// the best we can do until they fix the event bug.
-	FolderPaneSwitcher.onDragExit({type:"msgsMoveCopyCompleted"});
+	FolderPaneSwitcher.onDragDrop({type:"msgsMoveCopyCompleted"});
+      }
+      else {
+	FolderPaneSwitcher.logger.debug("msgsMoveCopyCompleted: non-matching folder");
       }
     },
     folderMoveCopyCompleted: function(aMove, aSrcFolder, aDestFolder) {
+      FolderPaneSwitcher.logger.debug("folderMoveCopyCompleted");
       if (aDestFolder == FolderPaneSwitcher.currentFolder) {
 	// Still remotely possible that someone else could be copying
 	// into the same folder at the same time as us, but this is
 	// the best we can do until they fix the event bug.
-	FolderPaneSwitcher.onDragExit({type:"folderMoveCopyCompleted"});
+	FolderPaneSwitcher.onDragDrop({type:"folderMoveCopyCompleted"});
+      }
+      else {
+	FolderPaneSwitcher.logger.debug("folderMoveCopyCompleted: non-matching folder");
       }
     }
   },
@@ -84,7 +95,6 @@ var FolderPaneSwitcher = {
     FolderPaneSwitcher.logger.debug("onDragEnter");
     FolderPaneSwitcher.resetTimer();
     FolderPaneSwitcher.cachedView = null;
-    FolderPaneSwitcher.currentFolder = null;
   },
 
   onDragExit: function(aEvent) {
@@ -93,99 +103,37 @@ var FolderPaneSwitcher = {
       FolderPaneSwitcher.timer.cancel();
       FolderPaneSwitcher.timer = null;
     }
-    if (FolderPaneSwitcher.cachedView) {
-      gFolderTreeView.mode = FolderPaneSwitcher.cachedView;
-      FolderPaneSwitcher.cachedView = null;
-    }
-    FolderPaneSwitcher.currentFolder = null;
-  },
-
-  
-  dataTransfer: null,
-  setDataTransfer: function(real) {
-    var dragService = Components
-      .classes["@mozilla.org/widget/dragservice;1"]
-      .getService(Components.interfaces.nsIDragService);
-    var dragSession = dragService.getCurrentSession();
-    if (real) {
-      if (FolderPaneSwitcher.dataTransfer) {
-	if (dragSession)
-	  dragSession.dataTransfer = FolderPaneSwitcher.dataTransfer;
-	FolderPaneSwitcher.dataTransfer = null;
-      }
-    }
-    else if (dragSession) {
-      FolderPaneSwitcher.dataTransfer = dragSession.dataTransfer;
-      dragSession.dataTransfer = null;
-    }
   },
 
   onDragOver: function(aEvent) {
     FolderPaneSwitcher.logger.trace("onDragOver"); // too verbose for debug
-    var old = FolderPaneSwitcher.currentFolder;
     FolderPaneSwitcher.currentFolder = 
       gFolderTreeView.getFolderAtCoords(aEvent.clientX, aEvent.clientY);
-    if (FolderPaneSwitcher.dataTransfer &&
-	old != FolderPaneSwitcher.currentFolder) {
-      if (FolderPaneSwitcher.disabledNeedMove) {
-	FolderPaneSwitcher.disabledNeedMove = null;
-	FolderPaneSwitcher.logger.debug("Setting disabledNeedMove to null");
-      }
-      else if (FolderPaneSwitcher.dataTransfer) {
-	FolderPaneSwitcher.logger.debug("canceling disable");
-	FolderPaneSwitcher.setDataTransfer(true);
-	if (FolderPaneSwitcher.disabledTimer) {
-	  FolderPaneSwitcher.disabledTimer.cancel();
-	  FolderPaneSwitcher.disabledTimer = null;
-	}
-      }
-    }
-    if (gFolderTreeView.mode == "all") {
-      return;
-    }
-    if (old != FolderPaneSwitcher.currentFolder) {
-      FolderPaneSwitcher.resetTimer();
-    }
   },
 
-  disabledNeedMove: null,
-  disabledTimer: null,
-  disabledCallback: {
-    notify: function() {
-      var folderTree = document.getElementById("folderTree");
-      var treechildren = folderTree.getElementsByTagName("treechildren")[0];
-      FolderPaneSwitcher.setDataTransfer(true);
-      FolderPaneSwitcher.disabledTimer = null;
+  onDragDrop: function(aEvent) {
+    FolderPaneSwitcher.logger.debug("onDragDrop("+aEvent.type+")");
+    if (FolderPaneSwitcher.cachedView) {
+      gFolderTreeView.mode = FolderPaneSwitcher.cachedView;
+      FolderPaneSwitcher.cachedView = null;
+      FolderPaneSwitcher.currentFolder = null;
     }
   },
-
+  
   timer: null,
   timerCallback: {
     notify: function() {
       FolderPaneSwitcher.logger.debug("timerCallback.notify");
       FolderPaneSwitcher.cachedView = gFolderTreeView.mode;
-      // This is, unfortunately, really gross. We want to prevent
-      // drops from being allowed for a short period of time after the
-      // view switch, to prevent accidental drops into the wrong
-      // folder. Unfortunately, I can't find any way to catch and trap
-      // the dragdrop event to prevent the drop from being
-      // processed. The only way I can find to prevent dropping is to
-      // temporarly modify the drag session to null out what's being
-      // transferred.
-      FolderPaneSwitcher.setDataTransfer(false);
-      FolderPaneSwitcher.disabledNeedMove = true;
       gFolderTreeView.mode = "all";
 
       FolderPaneSwitcher.timer = null;
-      var prefBranch = Components.classes["@mozilla.org/preferences-service;1"]
-	.getService(Components.interfaces.nsIPrefBranch);
-      var delay = prefBranch
-	.getIntPref("extensions.FolderPaneSwitcher.dropDelay");
+
       var t = Components.classes["@mozilla.org/timer;1"]
 	.createInstance(Components.interfaces.nsITimer);
-      t.initWithCallback(FolderPaneSwitcher.disabledCallback, delay,
-			 Components.interfaces.nsITimer.TYPE_ONE_SHOT);
-      FolderPaneSwitcher.disabledTimer = t;
+      t.initWithCallback(FolderPaneSwitcher.watchTimerCallback, 250,
+			 Components.interfaces.nsITimer.TYPE_REPEATING_SLACK);
+      FolderPaneSwitcher.watchTimer = t;
     },
   },
 
@@ -202,6 +150,27 @@ var FolderPaneSwitcher = {
 		       Components.interfaces.nsITimer.TYPE_ONE_SHOT);
     FolderPaneSwitcher.timer = t;
   },
+
+  watchTimer: null,
+  watchTimerCallback: {
+    notify: function() {
+      if (FolderPaneSwitcher.cachedView) {
+	var dragService = Components
+	  .classes["@mozilla.org/widget/dragservice;1"]
+	  .getService(Components.interfaces.nsIDragService);
+	var dragSession = dragService.getCurrentSession();
+	if (! dragSession) {
+	  FolderPaneSwitcher.onDragDrop({type:"watchTimer"});
+	}
+      }
+      if (! FolderPaneSwitcher.cachedView) {
+	// It's null either because we just called onDragDrop or
+	// because something else finished the drop.
+	FolderPaneSwitcher.watchTimer.cancel();
+	FolderPaneSwitcher.watchTimer = null;
+      }
+    }
+  }
 };
 
 window.addEventListener("load", function () { FolderPaneSwitcher.onLoad(); }, false);
