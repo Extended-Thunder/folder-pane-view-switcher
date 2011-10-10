@@ -55,8 +55,19 @@ var FolderPaneSwitcher = {
     var ns =
       Components.classes["@mozilla.org/messenger/msgnotificationservice;1"]
       .getService(Components.interfaces.nsIMsgFolderNotificationService);
-    ns.addListener(me.folderListener, ns.msgsMoveCopyCompleted|
-		   ns.folderMoveCopyCompleted);
+
+    // Disable this because the watcher serves the same function now,
+    // by automatically reverting to the cached view within a half
+    // second at most of when the drop finishes, and leaving this
+    // active cdauses the view to revert if some other message happens
+    // to be deposited into a folder while the drag is in progress.
+    // I'm keeping the code, inactive, in case I determine later that
+    // it needs to be reactivated, e.g., if we can get rid of the
+    // watcher because the drag&drop infrastructure has improved to
+    // the point where the watcher is no longer needed.
+
+//    ns.addListener(me.folderListener, ns.msgsMoveCopyCompleted|
+//		   ns.folderMoveCopyCompleted);
     FolderPaneSwitcher.showHideArrowsObserver.observe();
     var prefBranch = Components.classes["@mozilla.org/preferences-service;1"]
       .getService(Components.interfaces.nsIPrefBranch);
@@ -93,8 +104,12 @@ var FolderPaneSwitcher = {
 
   onDragEnter: function() {
     FolderPaneSwitcher.logger.debug("onDragEnter");
-    FolderPaneSwitcher.resetTimer();
-    FolderPaneSwitcher.cachedView = null;
+    if (FolderPaneSwitcher.cachedView) {
+      FolderPaneSwitcher.logger.debug("onDragEnter: switch already in progress");
+    }
+    else {
+      FolderPaneSwitcher.resetTimer();
+    }
   },
 
   onDragExit: function(aEvent) {
