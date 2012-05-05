@@ -1,5 +1,6 @@
 content   FolderPaneSwitcher                 chrome/content/
 locale    FolderPaneSwitcher   en-US         chrome/locale/en-US/
+locale    FolderPaneSwitcher   fr            chrome/locale/fr/
 locale    FolderPaneSwitcher   nl            chrome/locale/nl/
 locale	  FolderPaneSwitcher   zh-CN	     chrome/locale/zh-CN/
 overlay   chrome://messenger/content/messenger.xul chrome://FolderPaneSwitcher/content/FolderPaneSwitcher.xul
