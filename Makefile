@@ -1,6 +1,7 @@
 all: FolderPaneSwitcher.xpi
 
-CMD=find . \( \( -name RCS -o -name .svn \) -prune \) -o \! -name '*~' \
+CMD=find . \( \( -name RCS -o -name .svn -o -name .git \) -prune \) -o \
+    \! -name .gitignore \! -name '*~' \
     \! -name '.\#*' \! -name '*,v' \! -name Makefile \! -name '*.xpi' \
     \! -name '\#*' \! -name '*.pl' -type f -print
 FILES=$(shell $(CMD))
