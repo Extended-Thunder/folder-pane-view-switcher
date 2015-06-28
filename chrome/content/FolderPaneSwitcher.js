@@ -46,7 +46,7 @@ var FolderPaneSwitcher = {
     var folderTree = document.getElementById("folderTree");
     folderTree.addEventListener("dragover", me.onDragOver, false);
     title.addEventListener("dragexit", me.onDragExit, false);
-    title.addEventListener("dragdrop", me.onDragDrop, false);
+    title.addEventListener("drop", me.onDragDrop, false);
     // Dragexit and dragdrop don't actually get sent when the user
     // drops a message into a folder. This is arguably a bug in
     // Thunderbird (see bz#674807). To work around it, I register a
