@@ -42,11 +42,25 @@ var FolderPaneSwitcher = {
     }
     var me = FolderPaneSwitcher;
     var title = document.getElementById("folderpane-title");
-    title.addEventListener("dragenter", me.onDragEnter, false);
+    if (title) {
+      title.addEventListener("dragexit", me.onDragExit, false);
+      title.addEventListener("drop", me.onDragDrop, false);
+      title.addEventListener("dragenter", me.onDragEnter, false);
+      FolderPaneSwitcher.showHideArrowsObserver.observe();
+      var prefBranch = Components.classes["@mozilla.org/preferences-service;1"]
+        .getService(Components.interfaces.nsIPrefBranch);
+      prefBranch.addObserver("extensions.FolderPaneSwitcher.arrows",
+                             FolderPaneSwitcher.showHideArrowsObserver, false);
+    }
+    else {
+      // Thunderbird 49+
+      title = document.getElementById("folderPane-toolbar");
+      title.addEventListener("dragexit", me.onDragExit, false);
+      title.addEventListener("drop", me.onDragDrop, false);
+      title.addEventListener("dragenter", me.onDragEnter, false);
+    }      
     var folderTree = document.getElementById("folderTree");
     folderTree.addEventListener("dragover", me.onDragOver, false);
-    title.addEventListener("dragexit", me.onDragExit, false);
-    title.addEventListener("drop", me.onDragDrop, false);
     // Dragexit and dragdrop don't actually get sent when the user
     // drops a message into a folder. This is arguably a bug in
     // Thunderbird (see bz#674807). To work around it, I register a
@@ -68,11 +82,6 @@ var FolderPaneSwitcher = {
 
 //    ns.addListener(me.folderListener, ns.msgsMoveCopyCompleted|
 //		   ns.folderMoveCopyCompleted);
-    FolderPaneSwitcher.showHideArrowsObserver.observe();
-    var prefBranch = Components.classes["@mozilla.org/preferences-service;1"]
-      .getService(Components.interfaces.nsIPrefBranch);
-    prefBranch.addObserver("extensions.FolderPaneSwitcher.arrows",
-			   FolderPaneSwitcher.showHideArrowsObserver, false);
   },
 
   folderListener: {
