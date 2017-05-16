@@ -24,6 +24,74 @@ Components.utils.import("resource:///modules/gloda/log4moz.js");
 //     Cancel watch timer
 
 var FolderPaneSwitcher = {
+  addRemoveButtonsObserver: {
+    observe: function() {
+      var prefBranch = Components.classes["@mozilla.org/preferences-service;1"]
+        .getService(Components.interfaces.nsIPrefBranch);
+      var show = prefBranch.getBoolPref("extensions.FolderPaneSwitcher.arrows");
+      var toolbar = document.getElementById("folderPane-toolbar")
+      var changed = false;
+      if (show) {
+        if (! document.getElementById("FolderPaneSwitcher-back-arrow-button")) {
+          toolbar.insertItem("FolderPaneSwitcher-back-arrow-button");
+          changed = true;
+        }
+        if (! document.getElementById("FolderPaneSwitcher-forward-arrow-button")) {
+          toolbar.insertItem("FolderPaneSwitcher-forward-arrow-button");
+          changed = true;
+        }
+      }
+      else {
+        var origset = toolbar.currentSet;
+        var newset = origset;
+        newset = newset.replace(/FolderPaneSwitcher-(back|forward)-arrow-button/g, "");
+        newset = newset.replace(/,,+/g, ",");
+        if (origset != newset) {
+          toolbar.currentSet = newset;
+          changed = true;
+        }
+      }
+      if (changed) {
+        toolbar.setAttribute("currentset", toolbar.currentSet)
+        document.persist(toolbar.id, "currentset");
+      }
+    }
+  },
+
+  goBackView: function() {
+    var currentMode = gFolderTreeView.mode;
+    var prevMode = null;
+    var modes = Object.keys(gFolderTreeView._modes)
+    for (var i in modes) {
+      m = modes[i]
+      if (m == currentMode) {
+        if (prevMode) {
+          gFolderTreeView.mode = prevMode;
+          return;
+        }
+      }
+      prevMode = m;
+    }
+    gFolderTreeView.mode = prevMode;
+  },
+    
+  goForwardView: function() {
+    var currentMode = gFolderTreeView.mode;
+    var prevMode = null;
+    var modes = Object.keys(gFolderTreeView._modes).reverse()
+    for (var i in modes) {
+      m = modes[i]
+      if (m == currentMode) {
+        if (prevMode) {
+          gFolderTreeView.mode = prevMode;
+          return;
+        }
+      }
+      prevMode = m;
+    }
+    gFolderTreeView.mode = prevMode;
+  },
+    
   showHideArrowsObserver: {
     observe: function() {
       var prefBranch = Components.classes["@mozilla.org/preferences-service;1"]
@@ -58,6 +126,12 @@ var FolderPaneSwitcher = {
       title.addEventListener("dragexit", me.onDragExit, false);
       title.addEventListener("drop", me.onDragDrop, false);
       title.addEventListener("dragenter", me.onDragEnter, false);
+      title.collapsed = false;
+      FolderPaneSwitcher.addRemoveButtonsObserver.observe();
+      var prefBranch = Components.classes["@mozilla.org/preferences-service;1"]
+        .getService(Components.interfaces.nsIPrefBranch);
+      prefBranch.addObserver("extensions.FolderPaneSwitcher.arrows",
+                             FolderPaneSwitcher.addRemoveButtonsObserver, false);
     }      
     var folderTree = document.getElementById("folderTree");
     folderTree.addEventListener("dragover", me.onDragOver, false);
