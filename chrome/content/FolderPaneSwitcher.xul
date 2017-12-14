@@ -1,15 +1,16 @@
 <?xml version="1.0"?>
+<!DOCTYPE options SYSTEM "chrome://FolderPaneSwitcher/locale/switcher.dtd">
 <overlay id="FolderPaneSwitcher-overlay"
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   <script src="FolderPaneSwitcher.js"/>
   <toolbarpalette id="MailToolbarPalette">
     <toolbarbutton id="FolderPaneSwitcher-back-arrow-button"
                    image="chrome://FolderPaneSwitcher/content/left-arrow.png"
-                   label="Prev view"
+                   label="&switcher.prev.label;"
                    oncommand="FolderPaneSwitcher.goBackView();"/>
     <toolbarbutton id="FolderPaneSwitcher-forward-arrow-button"
                    image="chrome://FolderPaneSwitcher/content/right-arrow.png"
-                   label="Next view"
+                   label="&switcher.next.label;"
                    oncommand="FolderPaneSwitcher.goForwardView();"/>
   </toolbarpalette>
 </overlay>

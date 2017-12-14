@@ -2,3 +2,5 @@
 <!ENTITY options.title "Folder Pane View Switcher Preferences">
 <!ENTITY options.arrows.label "Show folder pane arrows">
 <!ENTITY options.delay.label "Delay (milliseconds) before folder view switch:">
+<!ENTITY switcher.prev.label "Prev view">
+<!ENTITY switcher.next.label "Next view">

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
-<!DOCTYPE options SYSTEM "chrome://FolderPaneSwitcher/locale/options.dtd">
+<!DOCTYPE options SYSTEM "chrome://FolderPaneSwitcher/locale/switcher.dtd">
 <prefwindow id="FolderPaneSwitcher-preferences"
 	    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
 	    title="&options.title;">
