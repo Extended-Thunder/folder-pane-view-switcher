@@ -4,7 +4,7 @@
     <em:id>FolderPaneSwitcher@kamens.us</em:id>
     <em:type>2</em:type>
     <em:name>Folder Pane View Switcher</em:name>
-    <em:version>1.12</em:version>
+    <em:version>1.13beta1</em:version>
     <em:creator>Jonathan Kamens</em:creator>
     <em:translator>yfdyh000 from BabelZilla</em:translator><!-- Simplified Chinese -->
     <em:translator>markh from BabelZilla</em:translator><!-- Dutch -->
@@ -37,7 +37,7 @@
       <Description>
         <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id> <!-- Thunderbird -->
         <em:minVersion>3.0</em:minVersion>
-        <em:maxVersion>56.0</em:maxVersion>
+        <em:maxVersion>60.0</em:maxVersion>
       </Description>
     </em:targetApplication>
   </Description>
