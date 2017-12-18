@@ -1,4 +1,5 @@
 content   FolderPaneSwitcher                 chrome/content/
+content   FolderPaneSwitcher-defaults        defaults/
 locale    FolderPaneSwitcher   en-US         chrome/locale/en-US/
 locale    FolderPaneSwitcher   fr            chrome/locale/fr/
 locale    FolderPaneSwitcher   nl            chrome/locale/nl/

@@ -1,5 +1,7 @@
 // -*- js-indent-level: 2 -*-
 Components.utils.import("resource:///modules/gloda/log4moz.js");
+Components.utils.import(
+  "chrome://FolderPaneSwitcher/content/defaultPreferencesLoader.jsm");
 
 // Rules:
 // 
@@ -102,6 +104,22 @@ var FolderPaneSwitcher = {
   },
 
   onLoad: function() {
+    // Current Thunderbird nightly builds do not load default preferences
+    // from overlay add-ons. They're probably going to fix this, but it may go
+    // away again at some point in the future, and in any case we'll need to do
+    // it ourselves when we convert from overlay to bootstrapped, and there
+    // shouldn't be any harm in setting the default values of preferences twice
+    // (i.e., both Thunderbird and our code doing it).
+    // This is in a try/catch because if it fails it's probably because
+    // setStringPref failed, in which case we're running inside an earlier
+    // application version which has already loaded the default preferences
+    // automatically.
+    try {
+        var loader = new DefaultPreferencesLoader();
+        loader.parseUri("chrome://FolderPaneSwitcher-defaults/content/" +
+                        "preferences/prefs.js");
+    } catch (ex) {}
+
     if (! this.logger) {
       this.logger = Log4Moz.getConfiguredLogger("extensions.FolderPaneSwitcher",
 						Log4Moz.Level.Trace,
