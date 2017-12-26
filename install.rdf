@@ -4,7 +4,7 @@
     <em:id>FolderPaneSwitcher@kamens.us</em:id>
     <em:type>2</em:type>
     <em:name>Folder Pane View Switcher</em:name>
-    <em:version>1.13</em:version>
+    <em:version>1.14</em:version>
     <em:creator>Jonathan Kamens</em:creator>
     <em:translator>yfdyh000 from BabelZilla</em:translator><!-- Simplified Chinese -->
     <em:translator>markh from BabelZilla</em:translator><!-- Dutch -->
@@ -33,6 +33,7 @@
     </em:localized>
     <em:homepageURL>https://addons.mozilla.org/en-US/thunderbird/addon/folder-pane-view-switcher/</em:homepageURL>
     <em:optionsURL>chrome://FolderPaneSwitcher/content/options.xul</em:optionsURL>
+    <em:optionsType>3</em:optionsType>
     <em:targetApplication>
       <Description>
         <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id> <!-- Thunderbird -->
