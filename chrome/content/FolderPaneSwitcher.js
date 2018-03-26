@@ -65,16 +65,21 @@ var FolderPaneSwitcher = {
     var prevMode = null;
     var modes = Object.keys(gFolderTreeView._modes)
     for (var i in modes) {
-      m = modes[i]
+      m = modes[i];
       if (m == currentMode) {
         if (prevMode) {
           gFolderTreeView.mode = prevMode;
           return;
         }
       }
-      prevMode = m;
+      if (!this.views[m] || (this.views[m]['menu_enabled'] &&
+                             this.views[m]['arrows_enabled'])) {
+        prevMode = m;
+      }
     }
-    gFolderTreeView.mode = prevMode;
+    if (prevMode) {
+      gFolderTreeView.mode = prevMode;
+    }
   },
     
   goForwardView: function() {
@@ -82,18 +87,60 @@ var FolderPaneSwitcher = {
     var prevMode = null;
     var modes = Object.keys(gFolderTreeView._modes).reverse()
     for (var i in modes) {
-      m = modes[i]
+      m = modes[i];
       if (m == currentMode) {
         if (prevMode) {
           gFolderTreeView.mode = prevMode;
           return;
         }
       }
-      prevMode = m;
+      if (!this.views[m] || (this.views[m]['menu_enabled'] &&
+                             this.views[m]['arrows_enabled'])) {
+        prevMode = m;
+      }
     }
-    gFolderTreeView.mode = prevMode;
+    if (prevMode) {
+      gFolderTreeView.mode = prevMode;
+    }
   },
-    
+
+  views: null,
+
+  viewsObserver: {
+    register: function(logger, views) {
+      this.logger = logger;
+      this.views = views;
+      fpvsUtils.addObserver(fpvsUtils.viewsBranch, "", this);
+      for (var name in views) {
+        view = views[name];
+        if (! view['menu_enabled']) {
+          this.observe(fpvsUtils.viewsBranch, "",
+                       view['number'] + '.menu_enabled');
+        }
+      }
+    },
+
+    observe: function(aSubject, aTopic, aData) {
+      var match = /^(\d+)\.(.*_enabled)$/.exec(aData);
+      if (! match) return;
+      var viewNum = match[1];
+      var which = match[2];
+      var enabled = aSubject.getBoolPref(aData);
+      var name = fpvsUtils.getStringPref(fpvsUtils.viewsBranch,
+                                         viewNum + ".name");
+      var view = this.views[name];
+      view[which] = enabled;
+      if (which != 'menu_enabled') return;
+      if (enabled) {
+        gFolderTreeView.registerFolderTreeMode(name, view['handler'],
+                                               view['display_name']);
+      } else {
+        view['handler'] = gFolderTreeView._modes[name];
+        gFolderTreeView.unregisterFolderTreeMode(name);
+      }
+    }
+  },
+
   showHideArrowsObserver: {
     observe: function() {
       var prefBranch = Components.classes["@mozilla.org/preferences-service;1"]
@@ -120,6 +167,8 @@ var FolderPaneSwitcher = {
                         "preferences/prefs.js");
     } catch (ex) {}
 
+    fpvsUtils.init();
+
     if (! this.logger) {
       this.logger = Log4Moz.getConfiguredLogger("extensions.FolderPaneSwitcher",
 						Log4Moz.Level.Trace,
@@ -128,15 +177,20 @@ var FolderPaneSwitcher = {
     }
     var me = FolderPaneSwitcher;
     var title = document.getElementById("folderpane-title");
+    fpvsUtils.updateViews(gFolderTreeView);
+    this.views = fpvsUtils.getViews(true);
+    this.viewsObserver.register(this.logger, this.views);
+
+    var prefBranch = Components.classes["@mozilla.org/preferences-service;1"]
+        .getService(Components.interfaces.nsIPrefBranch);
+
     if (title) {
       title.addEventListener("dragexit", me.onDragExit, false);
       title.addEventListener("drop", me.onDragDrop, false);
       title.addEventListener("dragenter", me.onDragEnter, false);
       FolderPaneSwitcher.showHideArrowsObserver.observe();
-      var prefBranch = Components.classes["@mozilla.org/preferences-service;1"]
-        .getService(Components.interfaces.nsIPrefBranch);
-      prefBranch.addObserver("extensions.FolderPaneSwitcher.arrows",
-                             FolderPaneSwitcher.showHideArrowsObserver, false);
+      fpvsUtils.addObserver(prefBranch, "extensions.FolderPaneSwitcher.arrows",
+                            FolderPaneSwitcher.showHideArrowsObserver, false);
     }
     else {
       // Thunderbird 49+
@@ -146,10 +200,8 @@ var FolderPaneSwitcher = {
       title.addEventListener("dragenter", me.onDragEnter, false);
       title.collapsed = false;
       FolderPaneSwitcher.addRemoveButtonsObserver.observe();
-      var prefBranch = Components.classes["@mozilla.org/preferences-service;1"]
-        .getService(Components.interfaces.nsIPrefBranch);
-      prefBranch.addObserver("extensions.FolderPaneSwitcher.arrows",
-                             FolderPaneSwitcher.addRemoveButtonsObserver, false);
+      fpvsUtils.addObserver(prefBranch, "extensions.FolderPaneSwitcher.arrows",
+                            FolderPaneSwitcher.addRemoveButtonsObserver, false);
     }      
     var folderTree = document.getElementById("folderTree");
     folderTree.addEventListener("dragover", me.onDragOver, false);
@@ -174,6 +226,10 @@ var FolderPaneSwitcher = {
 
 //    ns.addListener(me.folderListener, ns.msgsMoveCopyCompleted|
 //		   ns.folderMoveCopyCompleted);
+  },
+
+  onUnload: function() {
+    fpvsUtils.uninit();
   },
 
   folderListener: {
@@ -290,3 +346,4 @@ var FolderPaneSwitcher = {
 };
 
 window.addEventListener("load", function () { FolderPaneSwitcher.onLoad(); }, false);
+window.addEventListener("unload", function () { FolderPaneSwitcher.onUnload(); }, false);

@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://messenger/skin/preferences/preferences.css" type="text/css"?>
 <!DOCTYPE options SYSTEM "chrome://FolderPaneSwitcher/locale/switcher.dtd">
 <prefwindow id="FolderPaneSwitcher-preferences"
 	    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
 	    title="&options.title;">
+  <script src="utils.js"/>
+  <script src="options.js"/>
   <prefpane id="pane1" label="&options.title;">
-    <preferences>
+    <preferences id="fpvs-preferences">
       <preference id="FolderPaneSwitcher-arrows-preference"
 		  name="extensions.FolderPaneSwitcher.arrows" type="bool"/>
       <preference id="FolderPaneSwitcher-delay-preference"
@@ -29,6 +32,16 @@
 	<textbox id="FolderPaneSwitcher-drop-delay-textbox"
 		 preference="FolderPaneSwitcher-drop-delay-preference"/>
       </hbox> -->
+      <label class="header">&options.enable_disable.label;</label>
+      <grid>
+        <rows id="grid-rows">
+          <row>
+            <label class="header">&options.menu.label;</label>
+            <label class="header">&options.view_arrows.label;</label>
+            <label class="header">&options.view.label;</label>
+          </row>
+        </rows>
+      </grid>
     </vbox>
   </prefpane>
 </prefwindow>
