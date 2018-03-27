@@ -23,6 +23,9 @@ function fpvsOptionsOnLoad() {
         var menu_checkbox = document.createElement("checkbox");
         menu_checkbox.setAttribute("id", viewNum + "_menu_checkbox");
         menu_checkbox.setAttribute("preference", prefId);
+        if (views[viewNum]['name'] == "all")
+            // All Folders view can't be completely disabled.
+            menu_checkbox.disabled = true;
         if (fpvsUtils.prefBranch.getBoolPref(prefName))
             menu_checkbox.setAttribute('checked', true);
         else

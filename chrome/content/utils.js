@@ -69,6 +69,10 @@ fpvsUtils = {
                     num + ".arrows_enabled")
             };
             var name = this.getStringPref(this.viewsBranch, num + ".name");
+            // The All Folders view can't be completely disabled.
+            if (name == "all") {
+                view['menu_enabled'] = true;
+            }
             if (byName) {
                 view['number'] = num;
                 views[name] = view;
@@ -92,8 +96,6 @@ fpvsUtils = {
     updateViews: function(treeView) {
         var storedViews = this.getViews();
         for (var commonName of treeView._modeNames) {
-            // No mucking with the "all" view.
-            if (commonName == "all") continue;
             var found = false;
             for (var viewNum in storedViews) {
                 if (storedViews[viewNum]['name'] == commonName) {
