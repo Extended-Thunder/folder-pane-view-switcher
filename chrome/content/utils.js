@@ -36,7 +36,8 @@ fpvsUtils = {
             return branch.getStringPref(prefName);
         }
         catch (ex) {
-            return branch.getCharPref(prefName);
+            return branch.getComplexValue(
+                prefName, Components.interfaces.nsISupportsString).data
         }
     },
 
@@ -45,7 +46,11 @@ fpvsUtils = {
             return branch.setStringPref(prefName, value);
         }
         catch (ex) {
-            return branch.setCharPref(prefName, value);
+            let str = Cc["@mozilla.org/supports-string;1"].createInstance(
+                Components.interfaces.nsISupportsString);
+            str.data = value;
+            return branch.setComplexValue(
+                prefName, Components.interfaces.nsISupportsString, str);
         }
     },
 
@@ -106,7 +111,7 @@ fpvsUtils = {
                                            viewNum + ".display_name")
                         != displayName) {
                         this.setStringPref(
-                            this.viewsBranch, vewNum + ".display_name",
+                            this.viewsBranch, viewNum + ".display_name",
                             displayName);
                     }
                 }
