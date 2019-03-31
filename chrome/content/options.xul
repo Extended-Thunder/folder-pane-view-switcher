@@ -1,31 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 <?xml-stylesheet href="chrome://messenger/skin/preferences/preferences.css" type="text/css"?>
-<!DOCTYPE options SYSTEM "chrome://FolderPaneSwitcher/locale/switcher.dtd">
-<prefwindow id="FolderPaneSwitcher-preferences"
-	    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-	    title="&options.title;">
+<!DOCTYPE dialog [
+<!ENTITY % options SYSTEM "chrome://FolderPaneSwitcher/locale/switcher.dtd">
+%options;
+<!ENTITY % edButtonProperties SYSTEM "chrome://editor/locale/EditorButtonProperties.dtd">
+%edButtonProperties;
+]>
+
+<dialog
+    id="FolderPaneSwitcher-preferences"
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+    title="&options.title;"
+    buttons="accept,cancel,extra1"
+    buttonlabelextra1="&reset.value;"
+    ondialogextra1="FPVSOptions.loadPrefs();"
+    ondialogaccept="return FPVSOptions.validatePrefs();"
+    onbeforeunload="return FPVSOptions.validatePrefs() ? null : 'err';">
   <script src="utils.js"/>
   <script src="options.js"/>
   <prefpane id="pane1" label="&options.title;">
-    <preferences id="fpvs-preferences">
-      <preference id="FolderPaneSwitcher-arrows-preference"
-		  name="extensions.FolderPaneSwitcher.arrows" type="bool"/>
-      <preference id="FolderPaneSwitcher-delay-preference"
-		  name="extensions.FolderPaneSwitcher.delay" type="int"/>
-      <preference id="FolderPaneSwitcher-drop-delay-preference"
-		  name="extensions.FolderPaneSwitcher.dropDelay" type="int"/>
-    </preferences>
     <vbox>
       <hbox>
 	<checkbox id="FolderPaneSwitcher-arrows-checkbox"
-		  preference="FolderPaneSwitcher-arrows-preference"
 		  label="&options.arrows.label;"/>
       </hbox>
       <hbox>
 	<label>&options.delay.label;</label>
-	<textbox id="FolderPaneSwitcher-delay-textbox"
-		 preference="FolderPaneSwitcher-delay-preference"/>
+	<textbox id="FolderPaneSwitcher-delay-textbox"/>
       </hbox>
 <!--      <hbox tooltiptext="Time after the view switch during which you can't drop into a folder. Prevents accidental dropping into the wrong folder immediately after the view switch.">
 	<label>Drop prevention delay (milliseconds) after view switch:</label>
@@ -44,4 +46,4 @@
       </grid>
     </vbox>
   </prefpane>
-</prefwindow>
+</dialog>

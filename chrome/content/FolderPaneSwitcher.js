@@ -1,6 +1,6 @@
 // -*- js-indent-level: 2 -*-
-Components.utils.import("resource:///modules/gloda/log4moz.js");
-Components.utils.import(
+var {Log4Moz} = ChromeUtils.import("resource:///modules/gloda/log4moz.js");
+const {FPVSDefaultPreferencesLoader} = ChromeUtils.import(
   "chrome://FolderPaneSwitcher/content/defaultPreferencesLoader.jsm");
 
 // Rules:
@@ -55,7 +55,6 @@ var FolderPaneSwitcher = {
       }
       if (changed) {
         toolbar.setAttribute("currentset", toolbar.currentSet)
-        document.persist(toolbar.id, "currentset");
       }
     }
   },
@@ -162,7 +161,7 @@ var FolderPaneSwitcher = {
     // application version which has already loaded the default preferences
     // automatically.
     try {
-        var loader = new DefaultPreferencesLoader();
+        var loader = new FPVSDefaultPreferencesLoader();
         loader.parseUri("chrome://FolderPaneSwitcher-defaults/content/" +
                         "preferences/prefs.js");
     } catch (ex) {}
