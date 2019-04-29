@@ -125,15 +125,6 @@ var FolderPaneSwitcher = {
     }
   },
 
-  showHideArrowsObserver: {
-    observe: function() {
-      var prefBranch = Components.classes["@mozilla.org/preferences-service;1"]
-        .getService(Components.interfaces.nsIPrefBranch);
-      var show = prefBranch.getBoolPref("extensions.FolderPaneSwitcher.arrows");
-      document.getElementById("folderPaneHeader").hidden = !show;
-    }
-  },
-
   onLoad: function() {
     // Current Thunderbird nightly builds do not load default preferences
     // from overlay add-ons. They're probably going to fix this, but it may go
@@ -160,7 +151,7 @@ var FolderPaneSwitcher = {
 						Log4Moz.Level.Debug);
     }
     var me = FolderPaneSwitcher;
-    var title = document.getElementById("folderpane-title");
+    var title = document.getElementById("folderPane-toolbar");
     fpvsUtils.updateViews(gFolderTreeView);
     this.views = fpvsUtils.getViews(true);
     this.viewsObserver.register(this.logger, this.views);
@@ -168,25 +159,14 @@ var FolderPaneSwitcher = {
     var prefBranch = Components.classes["@mozilla.org/preferences-service;1"]
         .getService(Components.interfaces.nsIPrefBranch);
 
-    if (title) {
-      title.addEventListener("dragexit", me.onDragExit, false);
-      title.addEventListener("drop", me.onDragDrop, false);
-      title.addEventListener("dragenter", me.onDragEnter, false);
-      FolderPaneSwitcher.showHideArrowsObserver.observe();
-      fpvsUtils.addObserver(prefBranch, "extensions.FolderPaneSwitcher.arrows",
-                            FolderPaneSwitcher.showHideArrowsObserver, false);
-    }
-    else {
-      // Thunderbird 49+
-      title = document.getElementById("folderPane-toolbar");
-      title.addEventListener("dragexit", me.onDragExit, false);
-      title.addEventListener("drop", me.onDragDrop, false);
-      title.addEventListener("dragenter", me.onDragEnter, false);
-      title.collapsed = false;
-      FolderPaneSwitcher.addRemoveButtonsObserver.observe();
-      fpvsUtils.addObserver(prefBranch, "extensions.FolderPaneSwitcher.arrows",
-                            FolderPaneSwitcher.addRemoveButtonsObserver, false);
-    }      
+    title.addEventListener("dragexit", me.onDragExit, false);
+    title.addEventListener("drop", me.onDragDrop, false);
+    title.addEventListener("dragenter", me.onDragEnter, false);
+    title.collapsed = false;
+    FolderPaneSwitcher.addRemoveButtonsObserver.observe();
+    fpvsUtils.addObserver(prefBranch, "extensions.FolderPaneSwitcher.arrows",
+                          FolderPaneSwitcher.addRemoveButtonsObserver, false);
+
     var folderTree = document.getElementById("folderTree");
     folderTree.addEventListener("dragover", me.onDragOver, false);
     // Dragexit and dragdrop don't actually get sent when the user
