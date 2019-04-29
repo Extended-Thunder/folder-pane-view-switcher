@@ -30,31 +30,16 @@ var FolderPaneSwitcher = {
     observe: function() {
       var prefBranch = Components.classes["@mozilla.org/preferences-service;1"]
         .getService(Components.interfaces.nsIPrefBranch);
-      var show = prefBranch.getBoolPref("extensions.FolderPaneSwitcher.arrows");
-      var toolbar = document.getElementById("folderPane-toolbar")
-      var changed = false;
-      if (show) {
-        if (! document.getElementById("FolderPaneSwitcher-back-arrow-button")) {
-          toolbar.insertItem("FolderPaneSwitcher-back-arrow-button");
-          changed = true;
-        }
-        if (! document.getElementById("FolderPaneSwitcher-forward-arrow-button")) {
-          toolbar.insertItem("FolderPaneSwitcher-forward-arrow-button");
-          changed = true;
-        }
-      }
-      else {
-        var origset = toolbar.currentSet;
-        var newset = origset;
-        newset = newset.replace(/FolderPaneSwitcher-(back|forward)-arrow-button/g, "");
-        newset = newset.replace(/,,+/g, ",");
-        if (origset != newset) {
-          toolbar.currentSet = newset;
-          changed = true;
-        }
-      }
-      if (changed) {
-        toolbar.setAttribute("currentset", toolbar.currentSet)
+      var should_be_hidden =
+          !prefBranch.getBoolPref("extensions.FolderPaneSwitcher.arrows");
+      var is_hidden =
+          !!document.getElementById(
+            "FolderPaneSwitcher-back-arrow-button").hidden;
+      if (should_be_hidden != is_hidden) {
+        document.getElementById("FolderPaneSwitcher-back-arrow-button").
+          hidden = should_be_hidden;
+        document.getElementById("FolderPaneSwitcher-forward-arrow-button").
+          hidden = should_be_hidden;
       }
     }
   },

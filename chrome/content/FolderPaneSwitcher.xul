@@ -4,7 +4,7 @@
          xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   <script src="utils.js"/>
   <script src="FolderPaneSwitcher.js"/>
-  <toolbarpalette id="MailToolbarPalette">
+  <hbox id="folderPane-toolbar">
     <toolbarbutton id="FolderPaneSwitcher-back-arrow-button"
                    image="chrome://FolderPaneSwitcher/content/left-arrow.png"
                    label="&switcher.prev.label;"
@@ -13,5 +13,5 @@
                    image="chrome://FolderPaneSwitcher/content/right-arrow.png"
                    label="&switcher.next.label;"
                    oncommand="FolderPaneSwitcher.goForwardView();"/>
-  </toolbarpalette>
+  </hbox>
 </overlay>
