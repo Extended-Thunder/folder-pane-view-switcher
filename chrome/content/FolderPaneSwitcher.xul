@@ -7,11 +7,9 @@
   <hbox id="folderPane-toolbar">
     <toolbarbutton id="FolderPaneSwitcher-back-arrow-button"
                    image="chrome://FolderPaneSwitcher/content/left-arrow.png"
-                   label="&switcher.prev.label;"
                    oncommand="FolderPaneSwitcher.goBackView();"/>
     <toolbarbutton id="FolderPaneSwitcher-forward-arrow-button"
                    image="chrome://FolderPaneSwitcher/content/right-arrow.png"
-                   label="&switcher.next.label;"
                    oncommand="FolderPaneSwitcher.goForwardView();"/>
   </hbox>
 </overlay>
