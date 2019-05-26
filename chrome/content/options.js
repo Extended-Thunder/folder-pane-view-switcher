@@ -21,9 +21,9 @@ var FPVSOptions = {
         var rows = document.getElementById("grid-rows");
         var views = fpvsUtils.getViews();
         for (var viewNum in views) {
-            var row = document.createElement("row");
+            var row = document.createXULElement("row");
             var prefName = "views." + viewNum + ".menu_enabled";
-            var menu_checkbox = document.createElement("checkbox");
+            var menu_checkbox = document.createXULElement("checkbox");
             var box_id = viewNum + "_menu_checkbox";
             menu_checkbox.setAttribute("id", box_id);
             mapping.push([box_id, prefName, "bool"]);
@@ -31,7 +31,7 @@ var FPVSOptions = {
                 // All Folders view can't be completely disabled.
                 menu_checkbox.disabled = true;
             prefName = "views." + viewNum + ".arrows_enabled";
-            var arrows_checkbox = document.createElement("checkbox");
+            var arrows_checkbox = document.createXULElement("checkbox");
             box_id = viewNum + "_arrows_checkbox";
             arrows_checkbox.setAttribute("id", box_id);
             mapping.push([box_id, prefName, "bool"]);
@@ -39,7 +39,7 @@ var FPVSOptions = {
                 menu_checkbox, "command", FPVSOptions.menuChangeHandler, true);
             row.appendChild(menu_checkbox);
             row.appendChild(arrows_checkbox);
-            var label = document.createElement("label");
+            var label = document.createXULElement("label");
             label.appendChild(document.createTextNode(
                 fpvsUtils.getStringPref(
                     fpvsUtils.viewsBranch, viewNum + ".display_name")));
