@@ -32,26 +32,11 @@ fpvsUtils = {
     },
 
     getStringPref: function(branch, prefName) {
-        try {
-            return branch.getStringPref(prefName);
-        }
-        catch (ex) {
-            return branch.getComplexValue(
-                prefName, Components.interfaces.nsISupportsString).data
-        }
+        return branch.getStringPref(prefName);
     },
 
     setStringPref: function(branch, prefName, value) {
-        try {
-            return branch.setStringPref(prefName, value);
-        }
-        catch (ex) {
-            let str = Cc["@mozilla.org/supports-string;1"].createInstance(
-                Components.interfaces.nsISupportsString);
-            str.data = value;
-            return branch.setComplexValue(
-                prefName, Components.interfaces.nsISupportsString, str);
-        }
+        return branch.setStringPref(prefName, value);
     },
 
     getViews: function(byName) {
