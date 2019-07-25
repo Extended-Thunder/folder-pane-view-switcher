@@ -50,9 +50,15 @@ fpvsUtils = {
             if (num in views) {
                 continue;
             }
+            try {
+                var display_name = this.getStringPref(this.viewsBranch,
+                                                      num + ".display_name");
+            }
+            catch (ex) {
+                continue;
+            }
             var view = {
-                display_name: this.getStringPref(this.viewsBranch,
-                                                 num + ".display_name"),
+                display_name: display_name,
                 menu_enabled: this.viewsBranch.getBoolPref(
                     num + ".menu_enabled"),
                 arrows_enabled: this.viewsBranch.getBoolPref(
