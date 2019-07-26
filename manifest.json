@@ -6,6 +6,7 @@
     "default_locale": "en-US",
     "homepage_url": "https://addons.thunderbird.net/thunderbird/addon/folder-pane-view-switcher/",
     "legacy": {
+        "type": "bootstrap",
         "options": {
             "page": "chrome://FolderPaneSwitcher/content/options.xul",
             "open_in_tab": true

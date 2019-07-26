@@ -1,3 +1,5 @@
+const {fpvsUtils} = ChromeUtils.import("chrome://FolderPaneSwitcher/content/utils.jsm");
+
 var FPVSOptions = {
     mapping: [
         ["FolderPaneSwitcher-arrows-checkbox", "arrows", "bool"],
@@ -101,12 +103,7 @@ var FPVSOptions = {
             }
         });
         return true;
-    },
-
-    onUnload: function() {
-        fpvsUtils.uninit();
     }
 };
 
 fpvsUtils.addEventListener(window, "load", FPVSOptions.onLoad, false);
-fpvsUtils.addEventListener(window, "unload", FPVSOptions.onUnload, false);

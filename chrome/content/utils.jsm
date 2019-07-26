@@ -1,10 +1,15 @@
+var EXPORTED_SYMBOLS = ['fpvsUtils'];
+
 var fpvsPrefRoot = "extensions.FolderPaneSwitcher.";
 
-fpvsUtils = {
+var fpvsUtils = {
+    initialized: false,
     event_handlers: [],
     pref_observers: [],
 
     init: function() {
+        if (this.initialized) return;
+        this.initialized = true;
         this.prefService = Components
             .classes["@mozilla.org/preferences-service;1"]
             .getService(Components.interfaces.nsIPrefService);
@@ -97,7 +102,8 @@ fpvsUtils = {
                 if (storedViews[viewNum]['name'] == commonName) {
                     found = true;
                     storedViews[viewNum]['found'] = true;
-                    displayName = this.getViewDisplayName(treeView, commonName);
+                    var displayName = this.getViewDisplayName(
+                        treeView, commonName);
                     if (this.getStringPref(this.viewsBranch,
                                            viewNum + ".display_name")
                         != displayName) {
