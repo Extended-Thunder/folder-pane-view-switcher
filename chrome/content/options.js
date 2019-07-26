@@ -47,9 +47,13 @@ var FPVSOptions = {
                     fpvsUtils.viewsBranch, viewNum + ".display_name")));
             row.appendChild(label);
             rows.appendChild(row);
-            FPVSOptions.menuChangeHandler({'target': menu_checkbox});
         }
         FPVSOptions.loadPrefs();
+        mapping.forEach(function(mapping) {
+            if (! mapping[0].endsWith("_menu_checkbox")) return;
+            FPVSOptions.menuChangeHandler(
+                {'target': document.getElementById(mapping[0])});
+        });
     },
 
     loadPrefs: function() {
