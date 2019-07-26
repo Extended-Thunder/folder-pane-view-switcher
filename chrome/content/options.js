@@ -29,9 +29,11 @@ var FPVSOptions = {
             var box_id = viewNum + "_menu_checkbox";
             menu_checkbox.setAttribute("id", box_id);
             mapping.push([box_id, prefName, "bool"]);
-            if (views[viewNum]['name'] == "all")
+            if (views[viewNum]['name'] == "all") {
                 // All Folders view can't be completely disabled.
+                menu_checkbox.setAttribute("checked", true);
                 menu_checkbox.disabled = true;
+            }
             prefName = "views." + viewNum + ".arrows_enabled";
             var arrows_checkbox = document.createXULElement("checkbox");
             box_id = viewNum + "_arrows_checkbox";
