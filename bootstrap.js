@@ -335,10 +335,8 @@ watchTimerCallback.prototype = {
 };
 
 function forEachOpenWindow(todo) { // Apply a function to all open windows
-  var windows = Services.wm.getEnumerator("mail:3pane");
-  while (windows.hasMoreElements()) {
-    window = windows.getNext().QueryInterface(Ci.nsIDOMWindow);
-    if (window.readyState != "complete") return;
+  for (let window of Services.wm.getEnumerator("mail:3pane")) {
+    if (window.document.readyState != "complete") continue;
     todo(window);
   }
 }
