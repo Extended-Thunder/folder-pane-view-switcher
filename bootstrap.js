@@ -263,7 +263,6 @@ var FolderPaneSwitcher = {
   },
 
   onDragDrop: function(aEvent) {
-    console.log(aEvent);
     FolderPaneSwitcher.logger.debug("onDragDrop("+aEvent.type+")");
     if (FolderPaneSwitcher.cachedView) {
       aEvent.view.gFolderTreeView.mode = FolderPaneSwitcher.cachedView;
