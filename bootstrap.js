@@ -368,6 +368,17 @@ function loadIntoWindow(window) {
     FolderPaneSwitcher.onLoad(window);
 }
 
+function unloadFromWindow(window) {
+  var document = window.document;
+  var toolbar = document.getElementById("folderPane-toolbar");
+  if (! toolbar) return;
+  var button = document.getElementById("FolderPaneSwitcher-back-arrow-button");
+  if (! button) return;
+  toolbar.removeChild(button);
+  button = document.getElementById("FolderPaneSwitcher-forward-arrow-button");
+  toolbar.removeChild(button);
+}
+
 var WindowObserver = {
     observe: function(aSubject, aTopic, aData) {
         var window = aSubject;
