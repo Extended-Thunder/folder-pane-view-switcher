@@ -18,6 +18,13 @@ var FPVSOptions = {
 
     onLoad: function() {
         fpvsUtils.init();
+        document.addEventListener("dialogextra1", function(event) {
+            FPVSOptions.loadPrefs();
+        });
+        document.addEventListener("dialogaccept", function(event) {
+            if (! FPVSOptions.validatePrefs())
+                event.preventDefault();
+        });
         mapping = FPVSOptions.mapping;
         var preferences = document.getElementById("fpvs-preferences");
         var rows = document.getElementById("grid-rows");

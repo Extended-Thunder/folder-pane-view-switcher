@@ -14,10 +14,7 @@
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
     title="&options.title;"
     buttons="accept,cancel,extra1"
-    buttonlabelextra1="&reset.value;"
-    ondialogextra1="FPVSOptions.loadPrefs();"
-    ondialogaccept="return FPVSOptions.validatePrefs();"
-    onbeforeunload="return FPVSOptions.validatePrefs() ? null : 'err';">
+    buttonlabelextra1="&reset.value;">
   <script src="chrome://global/content/globalOverlay.js"/>
   <script src="chrome://global/content/editMenuOverlay.js"/>
   <script src="utils.js"/>
