@@ -4,8 +4,8 @@
 <!DOCTYPE dialog [
 <!ENTITY % options SYSTEM "chrome://FolderPaneSwitcher/locale/switcher.dtd">
 %options;
-<!ENTITY % edButtonProperties SYSTEM "chrome://editor/locale/EditorButtonProperties.dtd">
-%edButtonProperties;
+<!ENTITY % viewZoomOverlayDTD SYSTEM "chrome://messenger/locale/viewZoomOverlay.dtd">
+%viewZoomOverlayDTD;
 ]>
 
 <dialog
@@ -14,7 +14,7 @@
     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
     title="&options.title;"
     buttons="accept,cancel,extra1"
-    buttonlabelextra1="&reset.value;">
+    buttonlabelextra1="&fullZoomResetCmd.label;">
   <script src="chrome://global/content/globalOverlay.js"/>
   <script src="chrome://global/content/editMenuOverlay.js"/>
   <script src="utils.js"/>
