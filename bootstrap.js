@@ -185,6 +185,30 @@ var FolderPaneSwitcher = {
     title.addEventListener("drop", me.onDragDrop, false);
     title.addEventListener("dragenter", me.onDragEnter, false);
     title.collapsed = false;
+    this.logger.debug("title.collapsed=" + title.collapsed);
+    // This is really gross. There appears to be some sort of race condition
+    // in TB68 which causes it occasionally to be not finished initializing the
+    // window when this functiong gets called, such that shortly after this
+    // function sets collapsed to false, TB sets it back to true. Ugh! So we
+    // try to catch that and fix it here.
+    this.raceIntervalsRemaining = 5
+    this.raceInterval = window.setInterval(() => {
+      this.raceIntervalsRemaining--;
+      if (title.collapsed) {
+        this.logger.warn("title.collapsed changed, flipping it back!");
+        title.collapsed = false;
+        this.raceIntervalsRemaining = 0;
+      }
+      else {
+        this.logger.debug("title.collapsed is still false, will keep " +
+                          "checking for " + this.raceIntervalsRemaining +
+                         " more seconds");
+      }
+      if (! this.raceIntervalsRemaining) {
+        this.logger.debug("Clearing this.raceInterval");
+        window.clearInterval(this.raceInterval);
+      }
+    }, 1000);
     FolderPaneSwitcher.addRemoveButtonsObserver.observe(document);
     var observer = {
       observe: function() {
