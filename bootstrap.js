@@ -14,7 +14,7 @@ var {Log4Moz} = ChromeUtils.import("resource:///modules/gloda/log4moz.js");
 var fpvsUtils;
 
 // Rules:
-// 
+//
 // Enter title bar:
 //   Start timer
 // Exit title bar:
@@ -89,7 +89,7 @@ var FolderPaneSwitcher = {
       gFolderTreeView.mode = prevMode;
     }
   },
-    
+
   goForwardView: function(window) {
     var gFolderTreeView = window.gFolderTreeView;
     var currentMode = gFolderTreeView.mode;
@@ -285,7 +285,7 @@ var FolderPaneSwitcher = {
       FolderPaneSwitcher.currentFolder = null;
     }
   },
-  
+
   timer: null,
 
   setTimer: function(window) {
@@ -427,7 +427,7 @@ function startup(data, reason) {
     ///   string version
     ///   nsIFile installPath
     ///   nsIURI resourceURI
-    /// 
+    ///
     /// Reason types:
     ///   APP_STARTUP
     ///   ADDON_ENABLE
@@ -446,7 +446,7 @@ function shutdown(data, reason) {
     ///   string version
     ///   nsIFile installPath
     ///   nsIURI resourceURI
-    /// 
+    ///
     /// Reason types:
     ///   APP_SHUTDOWN
     ///   ADDON_DISABLE
@@ -468,7 +468,7 @@ function install(data, reason) {
     ///   string version
     ///   nsIFile installPath
     ///   nsIURI resourceURI
-    /// 
+    ///
     /// Reason types:
     ///   ADDON_INSTALL
     ///   ADDON_UPGRADE
@@ -482,7 +482,7 @@ function uninstall(data, reason) {
     ///   string version
     ///   nsIFile installPath
     ///   nsIURI resourceURI
-    /// 
+    ///
     /// Reason types:
     ///   ADDON_UNINSTALL
     ///   ADDON_UPGRADE
