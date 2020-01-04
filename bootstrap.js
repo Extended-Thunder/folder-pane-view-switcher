@@ -13,6 +13,8 @@ var {Log4Moz} = ChromeUtils.import("resource:///modules/gloda/log4moz.js");
 // So we declare the global variable here and load it in onLoad.
 var fpvsUtils;
 
+var didKickstarter = false;
+
 // Rules:
 //
 // Enter title bar:
@@ -225,10 +227,6 @@ var FolderPaneSwitcher = {
     // Thunderbird (see bz#674807). To work around it, I register a
     // folder listener to detect when a move or copy is
     // completed. This is gross, but appears to work well enough.
-    var ns =
-      Components.classes["@mozilla.org/messenger/msgnotificationservice;1"]
-      .getService(Components.interfaces.nsIMsgFolderNotificationService);
-
     // Disable this because the watcher serves the same function now,
     // by automatically reverting to the cached view within a half
     // second at most of when the drop finishes, and leaving this
@@ -238,9 +236,26 @@ var FolderPaneSwitcher = {
     // it needs to be reactivated, e.g., if we can get rid of the
     // watcher because the drag&drop infrastructure has improved to
     // the point where the watcher is no longer needed.
-
+//    var ns =
+//      Components.classes["@mozilla.org/messenger/msgnotificationservice;1"]
+//      .getService(Components.interfaces.nsIMsgFolderNotificationService);
+//
 //    ns.addListener(me.folderListener, ns.msgsMoveCopyCompleted|
 //		   ns.folderMoveCopyCompleted);
+
+    if (! didKickstarter) {
+      didKickstarter = true;
+      this.logger.debug("Loading Kickstarter popup");
+      var {KickstarterPopup} = ChromeUtils.import(
+        "chrome://FolderPaneSwitcher/content/kickstarter.jsm");
+      this.logger.debug("Triggering Kickstarter popup");
+      KickstarterPopup(window,
+                       "chrome://FolderPaneSwitcher/content/kickstarter.xul");
+      this.logger.debug("Done triggering Kickstarter popup");
+    }
+    else {
+      this.logger.debug("Skipping Kickstarter popup");
+    }
   },
 
   onUnload: function() {
