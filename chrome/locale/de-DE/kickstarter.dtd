@@ -1,12 +1,9 @@
 <!-- -*- coding: utf-8 -*- -->
+<!ENTITY windowTitle "DRINGEND: Ohne Deine Unterstützung wird es Folder Pane View Switcher bald nicht mehr geben!">
+<!ENTITY pitchMessage "ICH BRAUCHE EURE HILFE!
+Folder Pane View Switcher und meine anderen Add-Ons waren viele Jahre kostenlos verfügbar, aber das kann nicht länger gewährleistet werden. Es benötigte viel Zeit und Aufwand, die Add-Ons für Thunderbird 68 zu aktualisieren, und Thunderbird 78, der im Laufe des Jahres veröffentlicht werden soll, wird noch mehr Arbeit bereiten. Diese kann ich leider nicht leisten, so lange sich nicht genug Anwender finden, die sich vorab zur Zahlung eines geringen Beitrags bereit erklären.
+Bitte klickt auf den nachstehenden Link und unterstützt die Kickstarter-Kampagne. Alle Teilnehmer der Kickstarter-Kampagne erhalten als Bonus einen deutlichen Rabatt.
+Vielen Dank für Eure Unterstützung!">
+<!ENTITY pledgeLabel "Erkläre Deine Unterstützung!">
 <!ENTITY remindLabel "Später erinnern">
-<!ENTITY windowTitle "URGENT: Folder Pane View Switcher is going away soon, unless you support it!">
-<!ENTITY pitchMessage "I NEED YOUR HELP!
-
-Folder Pane View Switcher and my other add-ons have been free for many years, but that's no longer sustainable. It took a great deal of time and effort to update them for Thunderbird 68, and even more work will be needed for Thunderbird 78, which will be released later this year. Unfortunately, I just can't do it unless enough users commit in advance to paying a little bit for it. 
-
-Please click below to learn more and support the Kickstarter campaign. As a bonus, campaign supporters can purchase licenses at a steep discount.
-
-Thank you for your support!">
-<!ENTITY pledgeLabel "Pledge now!">
-<!ENTITY alreadyLabel "I already pledged">
+<!ENTITY alreadyLabel "Ich bin bereits Unterstützer">

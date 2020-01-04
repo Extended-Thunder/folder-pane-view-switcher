@@ -4,6 +4,7 @@ cd send-later
 make &> /dev/null
 cd ..
 ld=chrome/locale
+status=0
 for slocale in $(cd send-later/build/$ld && ls); do
     tlocale=$slocale
     if [ ! -d $ld/$tlocale -a -d $ld/${tlocale%-*} ]; then
@@ -23,16 +24,18 @@ for slocale in $(cd send-later/build/$ld && ls); do
                     send-later/build/$ld/$slocale/prompt.properties)
     if [ ! "$fromname2" ]; then
         echo Could not find Send Later name for $slocale 1>&2
-        exit 1
+        status=1
+        continue
     fi
     toname=$(jq -r .appName.message _locales/$ld2/messages.json)
     sed -e "s/$fromname1/$toname/" -e "s/$fromname2/$toname/" \
         send-later/build/$ld/$slocale/kickstarter.dtd > \
         $ld/$tlocale/kickstarter.dtd
-    if cmp -s {send-later/build/$ld/$slocale,$td/$tlocale}/kickstarter.dtd
-    then
+    if [ $(diff {send-later/build/$ld/$slocale,$ld/$tlocale}/kickstarter.dtd | \
+                grep -c '^>') -lt 2 ]; then
         echo Name substitution in kickstarter.dtd for $slocale failed 1>&2
-        exit 1
+        status=1
+        continue
     fi
     if ! grep -q -s -w $tlocale chrome.manifest; then
         echo locale FolderPaneSwitcher $tlocale chrome/locale/$tlocale/ >> \
@@ -44,4 +47,4 @@ for slocale in $(cd send-later/build/$ld && ls); do
         chrome/content/kickstarter.xul
 done
 
-    
+exit $status

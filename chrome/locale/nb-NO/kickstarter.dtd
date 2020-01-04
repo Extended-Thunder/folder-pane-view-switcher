@@ -1,12 +1,9 @@
 <!-- -*- coding: utf-8 -*- -->
+<!ENTITY windowTitle "KRITISK: Folder Pane View Switcher vil forsvinne snart, med mindre du støtter det!">
+<!ENTITY pitchMessage "JEG BEHØVER DIN HJELP!
+Folder Pane View Switcher og mine andre utvidelser har vært gratis i mange år, men det er ikke lenger en fungerende strategi. Det tok meg en haug med tid og innsats å oppdatere dem for Thunderbird 68, og enda mere arbeid vil bli nødvendig for Thunderbird 78, som vil bli lansert senere i år. Dessverre er jeg rett og slett ikke i stand til å gjøre det, med mindre nok brukere forhåndsforplikter seg til å betale en liten del for det.
+Vennligst klikk nedenfor for å lære mer om og støtte Kickstarter-kampanjen. Som en bonus, kan kampanjestøttere kjøpe lisenser til en betydelig prisreduksjon.
+Tusen takk for støtten din!">
+<!ENTITY pledgeLabel "Bidra nå!">
 <!ENTITY remindLabel "Minn meg på dette senere">
-<!ENTITY windowTitle "URGENT: Folder Pane View Switcher is going away soon, unless you support it!">
-<!ENTITY pitchMessage "I NEED YOUR HELP!
-
-Folder Pane View Switcher and my other add-ons have been free for many years, but that's no longer sustainable. It took a great deal of time and effort to update them for Thunderbird 68, and even more work will be needed for Thunderbird 78, which will be released later this year. Unfortunately, I just can't do it unless enough users commit in advance to paying a little bit for it. 
-
-Please click below to learn more and support the Kickstarter campaign. As a bonus, campaign supporters can purchase licenses at a steep discount.
-
-Thank you for your support!">
-<!ENTITY pledgeLabel "Pledge now!">
-<!ENTITY alreadyLabel "I already pledged">
+<!ENTITY alreadyLabel "Jeg har allerede bidratt">
