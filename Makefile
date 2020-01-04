@@ -5,12 +5,12 @@ CMD=find . \( \( -name RCS -o -name .svn -o -name .git -o -name send-later \) \
     \! -name .gitignore \! -name .gitmodules \! -name '*~' \
     \! -name '.\#*' \! -name '*,v' \! -name Makefile \! -name '*.xpi' \
     \! -name '\#*' \! -name '*.pl' \! -name send-later \
-    \! -name make-kickstarter.sh -type f -print
+    -type f -print
 FILES=$(shell $(CMD))
 
 FolderPaneSwitcher.xpi: $(FILES) # check-locales.pl
 #	./check-locales.pl
-	./make-kickstarter.sh
+	./send-later/utils/make-kickstarter.sh
 	rm -f $@.tmp
 	zip -r $@.tmp $(FILES)
 	mv $@.tmp $@
