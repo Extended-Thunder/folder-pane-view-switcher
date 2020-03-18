@@ -10,11 +10,9 @@ FILES=$(shell $(CMD))
 
 FolderPaneSwitcher.xpi: $(FILES) # check-locales.pl
 #	./check-locales.pl
-	./send-later/utils/make-kickstarter.sh
 	rm -f $@.tmp
 	zip -r $@.tmp $(FILES)
 	mv $@.tmp $@
 
 clean:
-	-cd send-later; make clean
 	-rm -f FolderPaneSwitcher.xpi
