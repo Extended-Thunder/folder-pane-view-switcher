@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link href="chrome://global/skin/" type="text/css">
+    <link href="chrome://messenger/skin/preferences/preferences.css" type="text/css">
+    <link href="options.css" type="text/css">
+    <script src="chrome://global/content/globalOverlay.js"> </script>
+    <script src="chrome://global/content/editMenuOverlay.js"></script>
+    <script src="options.js"></script>
+    <script src="utils.js"></script>
+</head>
+<body>
+<div>
+    <input type="checkbox" id="ckbx_showFPA" >
+    <label for="ckbx_showFPA">Show Folder Pane Arrows</label>
+</div>
+<div>
+    <label for="nmbr_delayBFVS">Delay (Milliseconds) before folder view switch</label>
+    <input type="number" id="nmbr_delayBFVS" min="1000" >
+</div>
+<div>
+    <label style="font-weight: bold;" >Enable / Disable Views</label>
+</div>
+<div>
+    <table id="tbl_enbldsblViews" style="font-family: arial, sans-serif;
+    border-collapse: collapse;">
+        <tr  >
+            <th style=" border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;">
+                Menu
+            </th>
+            <th style=" border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;">
+                Arrows
+            </th>
+            <th style=" border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;">
+                View
+            </th>
+        </tr>
+        <tr >
+            <td style=" border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;"  >
+            <input type="checkbox">
+            </td>
+            <td style=" border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;">
+            <input type="checkbox">
+
+            </td>
+            <td style=" border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;">
+
+
+            </td>
+
+        </tr>
+
+    </table>
+</div>
+
+
+
+</body>
+</html>
