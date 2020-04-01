@@ -27,13 +27,34 @@ var FPVSOptions = {
         });
         mapping = FPVSOptions.mapping;
         var preferences = document.getElementById("fpvs-preferences");
-        var rows = document.getElementById("grid-rows");
-        var views = fpvsUtils.getViews();
-        for (var viewNum in views) {
-            var row = document.createXULElement("row");
+
+         //Migration TB68-TB78
+      //  var rows = document.getElementById("grid-rows");
+          var table = document.getElementById("tbl_enbldsblViews");
+
+          var views = fpvsUtils.getViews();
+          var row_position=0;
+          for (var viewNum in views) {
+
+
+            //Migration TB68-TB78
+            //var row = document.createXULElement("row");
+
+            var row=table.insertRow(row_position);
+            var cell1=row.insertCell(0);
+            var cell2=row.insertCell(1);
+            var cell3=row.insertCell(2);
+
             var prefName = "views." + viewNum + ".menu_enabled";
-            var menu_checkbox = document.createXULElement("checkbox");
+
+            //Migration TB68-TB78
+            //var menu_checkbox = document.createXULElement("checkbox");
+            var menu_checkbox = document.createElement("input");
+            menu_checkbox.setAttribute('type','checkbox');
+
+
             var box_id = viewNum + "_menu_checkbox";
+
             menu_checkbox.setAttribute("id", box_id);
             mapping.push([box_id, prefName, "bool"]);
             if (views[viewNum]['name'] == "all") {
@@ -42,20 +63,37 @@ var FPVSOptions = {
                 menu_checkbox.disabled = true;
             }
             prefName = "views." + viewNum + ".arrows_enabled";
-            var arrows_checkbox = document.createXULElement("checkbox");
+
+            //Migration TB68-TB78
+           // var arrows_checkbox = document.createXULElement("checkbox");
+            var arrows_checkbox = document.createElement("input");
+            arrows_checkbox.setAttribute('type','checkbox');
+
             box_id = viewNum + "_arrows_checkbox";
             arrows_checkbox.setAttribute("id", box_id);
             mapping.push([box_id, prefName, "bool"]);
             fpvsUtils.addEventListener(
                 menu_checkbox, "command", FPVSOptions.menuChangeHandler, true);
-            row.appendChild(menu_checkbox);
-            row.appendChild(arrows_checkbox);
-            var label = document.createXULElement("label");
+
+
+                cell1.appendChild(menu_checkbox);
+                cell2.appendChild(arrows_checkbox);
+            //row.appendChild(menu_checkbox);
+            //row.appendChild(arrows_checkbox);
+
+
+            //Migration TB68-TB78
+           // var label = document.createXULElement("label");
+           var label = document.createElement("label");
+
             label.appendChild(document.createTextNode(
                 fpvsUtils.getStringPref(
                     fpvsUtils.viewsBranch, viewNum + ".display_name")));
-            row.appendChild(label);
-            rows.appendChild(row);
+            //row.appendChild(label);
+            cell3.appendChild(label);
+           // rows.appendChild(row);
+
+            row_position +1;
         }
         FPVSOptions.loadPrefs();
         mapping.forEach(function(mapping) {
