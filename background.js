@@ -161,7 +161,7 @@ var FolderPaneSwitcher = {
             .getService(Components.interfaces.nsIPrefBranch);
 
 
-         // need to check what modification need to be done here ..
+         // need to check what modification have to be done here ..
 
         title.addEventListener("dragexit", me.onDragExit, false);
         title.addEventListener("drop", me.onDragDrop, false);
@@ -394,7 +394,10 @@ function timerCallback(window) {
 
     if (document.getElementById("FolderPaneSwitcher-back-arrow-button")) return;
 
-    var button = document.createXULElement("toolbarbutton");
+    //Migration TB68-TB78
+    //var button = document.createXULElement("toolbarbutton");
+    var button = document.createElement("toolbarbutton");
+
     button.setAttribute("id", "FolderPaneSwitcher-back-arrow-button");
     button.setAttribute(
       "image", "chrome://FolderPaneSwitcher/content/left-arrow.png");
@@ -402,7 +405,9 @@ function timerCallback(window) {
     button.addEventListener("command", listener);
     toolbar.appendChild(button);
 
-    button = document.createXULElement("toolbarbutton");
+    //Migration TB68-TB78
+    //button = document.createXULElement("toolbarbutton");
+    button = document.createElement("toolbarbutton");
     button.setAttribute("id", "FolderPaneSwitcher-forward-arrow-button");
     button.setAttribute(
         "image", "chrome://FolderPaneSwitcher/content/right-arrow.png");
