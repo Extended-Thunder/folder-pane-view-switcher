@@ -1,0 +1,32 @@
+[
+{
+   "namespace":"fpvs_api",
+   "functions":[
+       {
+        "name":"on_start",
+        "type":"function",
+        "desription":"Initiate the background with event listner",
+        "async":true,
+        "parameters":[]
+       }
+   ]
+
+},
+
+
+{
+    "namespace":"fpvs_optionsAPI",
+    "functions":[
+        {
+            "name":"addlst",
+            "type":"function",
+            "desription":"Initiate the background with event listner",
+            "async":true,
+            "parameters":[]
+        }
+    ]
+
+}
+
+
+]

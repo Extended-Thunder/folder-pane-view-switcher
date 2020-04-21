@@ -157,8 +157,7 @@ var FolderPaneSwitcher = {
     this.logger.debug("onLoad, readyState=" + window.document.readyState);
     var gFolderTreeView = window.gFolderTreeView;
     var document = window.document;
-    var {DefaultPreferencesLoader} = ChromeUtils.import(
-      "chrome://FolderPaneSwitcher/content/defaultPreferencesLoader.jsm");
+    var {DefaultPreferencesLoader} = ChromeUtils.import("chrome://FolderPaneSwitcher/content/defaultPreferencesLoader.jsm");
     var loader = new DefaultPreferencesLoader();
     loader.parseUri("chrome://FolderPaneSwitcher/content/prefs.js");
 
