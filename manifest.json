@@ -6,9 +6,6 @@
     "default_locale": "en-US",
     "homepage_url": "https://addons.thunderbird.net/thunderbird/addon/folder-pane-view-switcher/",
 
-
-
-
     "experiment_apis":{
         "fpvs_api":{
             "schema":"schema.json",
@@ -18,7 +15,6 @@
                 "paths":[["fpvs_api"]]
             }
         },
-
         "fpvs_optionsAPI":{
             "schema":"schema.json",
             "parent":{
@@ -28,41 +24,26 @@
             }
         }
     },
-
         "options_ui":{
          "page":"chrome/content/options.html",
           "open_in_tab":true
           },
-
-
           "background":{
             "scripts":[
-                 "background.js","chrome/content/options.js"
+                 "chrome/content/utils.js","background.js"
             ]
-
           },
-
-
     "applications": {
         "gecko": {
-            "id": "FolderPaneSwitcher@kamens1.us",
+            "id": "FolderPaneSwitcher@kamens.us",
             "strict_min_version": "68",
-            "strict_max_version": "71.*"
+            "strict_max_version": "78.*"
         }
     },
     "icons": {
         "48": "icon.png"
     },
-
-
-
-
-
-    "web_accessible_resources":[ "chrome://global/content/globalOverlay.js","chrome://global/content/editMenuOverlay.js","chrome/content/prefs.js","chrome/content/left-arrow.png","chrome/content/right-arrow.png","chrome/content/utils.js"],
-    "permissions": ["webRequest", "webRequestBlocking", "<all_urls>","storage"],
-
-
-
-
+    "web_accessible_resources":[ "chrome://global/content/globalOverlay.js","chrome://global/content/editMenuOverlay.js","chrome/content/prefs.js","left-arrow.png","right-arrow.png","chrome/content/utils.js"],
+    "permissions": ["ActiveTab","storage"],
     "manifest_version": 2
 }

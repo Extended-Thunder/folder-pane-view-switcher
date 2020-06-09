@@ -1,40 +1,106 @@
 //Get various part of the web extensiion framewrork that we need.
 var { ExtensionCommon } = ChromeUtils.import("resource://gre/modules/ExtensionCommon.jsm");
 var { ExtensionParent } = ChromeUtils.import("resource://gre/modules/ExtensionParent.jsm");
+var {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
+//var {Log4Moz} = ChromeUtils.import("resource:///modules/gloda/log4moz.js");
+var extension = ExtensionParent.GlobalManager.getExtension("FolderPaneSwitcher@kamens.us");
 
-const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
-var {Log4Moz} = ChromeUtils.import("resource:///modules/gloda/log4moz.js");
+var { fpvsUtils } = ChromeUtils.import(extension.rootURI.resolve("chrome/content/utils.js"));
+let main_window = Services.wm.getMostRecentWindow("mail:3pane");
+var windowState="";
 
-var extension = ExtensionParent.GlobalManager.getExtension("FolderPaneSwitcher@kamens1.us");
-
-var { fpvsUtils } = ChromeUtils.import(extension.rootURI.resolve("chrome/content/utils.jsm"));
+var btnimg1;
+var btnimg2;
 
 var fpvs_api = class extends ExtensionCommon.ExtensionAPI{
 
   getAPI(context)
         {
-
-
             return{
           fpvs_api: {
-                             on_start: async function() {
-                                           //fpvsUtils = ChromeUtils.import("chrome://FolderPaneSwitcher/content/utils.jsm").fpvsUtils;
-                                           Services.obs.addObserver(WindowObserver, "mail-startup-done", false);
-                                             forEachOpenWindow(loadIntoWindow);
-                                                       }
+            on_start:  async function() {
+            btnimg1=context.extension.rootURI.resolve("left_arrow.png");
+            btnimg2=context.extension.rootURI.resolve("right_arrow.png");
+            for (let window of Services.wm.getEnumerator("mail:3pane")) {
+            if (window.document.readyState != "complete") {
+            FolderPaneSwitcher.logger.debug("forEachOpenWindow skip, readyState=" +
+            window.document.readyState);
+            continue;
+            }
+            return true;
+            }
+},
 
-                    }
+loadIntoWindow: async function(){
+Services.obs.addObserver(WindowObserver, "mail-startup-done", false);
+//await FolderPaneSwitcher.loadWindow();
+/*
+while (windowState!="Complete")
+{
+   for (let window of Services.wm.getEnumerator("mail:3pane"))
+  {
+    //if (window.document.readyState != "complete") {
+     // FolderPaneSwitcher.logger.debug("forEachOpenWindow skip, readyState=" + window.document.readyState);
+     //                                 console.log(window.document.readyState);
 
-        };
+    if (window.document.readyState == "loading")
+      {
+        windowState="loading";
+
+                        console.log(window.document.readyState);
+      }
+     else if(window.document.readyState == "interactive")
+     {
+       windowState="interactive";
+
+                      console.log(window.document.readyState);
+      }
+    else if (window.document.readyState == "complete")
+      {
+        windowState="complete";
+        FolderPaneSwitcher._loadWindow();
+        }
+  }
 
 
-    }
 
-
-
+  if (windowState=="complete") break;
 
 }
 
+*/
+ },
+ onLoad: async function(window) {
+ FolderPaneSwitcher.loadWindow();
+ FolderPaneSwitcher.onLoad();
+},
+
+observe: async function(aSubject, aTopic, aData) {
+  aSubject==""? aSubject=fpvsUtils.viewsBranch:aSubject;
+  var gFolderTreeView = main_window.gFolderTreeView;
+  var match = /^(\d+)\.(.*_enabled)$/.exec(aData);
+  if (! match) return;
+  var viewNum = match[1];
+  var which = match[2];
+  var enabled = aSubject.getBoolPref(aData);
+  var name = await fpvsUtils.getStringPref(fpvsUtils.viewsBranch,
+                                     viewNum + ".name");
+  var view = FolderPaneSwitcher.views[name];
+  view[which] = enabled;
+  if (which != 'menu_enabled') return;
+  if (enabled && !gFolderTreeView._modes[name] ) {
+    gFolderTreeView.registerFolderTreeMode(name, view['handler'],
+                                           view['display_name']);
+  } else if (!enabled && gFolderTreeView._modes[name] ) {
+    view['handler'] = gFolderTreeView._modes[name];
+    gFolderTreeView.unregisterFolderTreeMode(name);
+  }
+}
+          }
+        };
+    }
+
+  }
 
 var FolderPaneSwitcher = {
     // This is replaced with Log4Moz when we're initialized, but we need to be
@@ -48,15 +114,39 @@ var FolderPaneSwitcher = {
         console.log("extensions.FolderPaneSwitcher DEBUG " + msg);
       }
     },
+    loadWindow:async function(){
+      let folder = null;
+      let enumerator = Services.wm.getEnumerator("mail:3pane");
+      while (!folder && enumerator.hasMoreElements()) {
+        let win = enumerator.getNext();
+        var toolbar = win.document.getElementById("folderPane-toolbar");
 
+      }
+      let recentWindow = Services.wm.getMostRecentWindow("mail:3pane");
+      let button = recentWindow.document.createXULElement("button");
+      if(!toolbar) return;
+      if (recentWindow.document.getElementById("FolderPaneSwitcher-back-arrow-button")) return;
+        button.setAttribute("id","FolderPaneSwitcher-back-arrow-button");
+        button.setAttribute("image",btnimg1);
+     button.setAttribute("style", "min-height: 4ex;max-height: 4ex;max-width:7ex;min-width:7px;");
+     var listener = function() { FolderPaneSwitcher.goBackView(recentWindow); }
+     button.addEventListener("command", listener);
+     toolbar.appendChild(button);
+     button = recentWindow.document.createXULElement("button");
+     button.setAttribute("id", "FolderPaneSwitcher-forward-arrow-button");
+     toolbar.setAttribute("align", "center");
+     button.setAttribute("image",btnimg2);
+     button.setAttribute("style", "min-height: 4ex;max-height: 4ex;max-width:7ex;min-width:7px;");
+     var listener = function() { FolderPaneSwitcher.goForwardView(recentWindow); }
+     button.addEventListener("command", listener);
+     toolbar.appendChild(button);
+    },
     addRemoveButtonsObserver: {
         observe: function(document) {
           var prefBranch = Components.classes["@mozilla.org/preferences-service;1"]
             .getService(Components.interfaces.nsIPrefBranch);
           var should_be_hidden =
               !prefBranch.getBoolPref("extensions.FolderPaneSwitcher.arrows");
-
-              // rewrite this area for sending message to contentscript for further task
           var is_hidden =
               !!document.getElementById(
                 "FolderPaneSwitcher-back-arrow-button").hidden;
@@ -68,9 +158,8 @@ var FolderPaneSwitcher = {
           }
         }
       },
+      goBackView: async function(window) {
 
-
-      goBackView: function(window) {
         var gFolderTreeView = window.gFolderTreeView;
         var currentMode = gFolderTreeView.mode;
         var prevMode = null;
@@ -94,13 +183,13 @@ var FolderPaneSwitcher = {
         }
       },
 
-      goForwardView: function(window) {
+      goForwardView:async function(window) {
         var gFolderTreeView = window.gFolderTreeView;
         var currentMode = gFolderTreeView.mode;
         var prevMode = null;
         var modes = Object.keys(gFolderTreeView._modes).reverse()
         for (var i in modes) {
-          m = modes[i];
+         let m = modes[i];
           if (m == currentMode) {
             if (prevMode) {
               gFolderTreeView.mode = prevMode;
@@ -123,33 +212,47 @@ var FolderPaneSwitcher = {
       views: null,
 
       viewsObserver: {
-        register: function(window, logger, views) {
+        register:  function(window, logger, views) {
           this.window = window;
           this.logger = logger;
           this.views = views;
-          fpvsUtils.addObserver(fpvsUtils.viewsBranch, "", this);
+// by passsing this code due to the reason is, not accessible observer from utils, need to check why is that.
+         // fpvsUtils.addObserver(fpvsUtils.viewsBranch, "", this);
+          var fpvsPrefRoot = "extensions.FolderPaneSwitcher.";
+          var prefService = Components
+          .classes["@mozilla.org/preferences-service;1"]
+          .getService(Components.interfaces.nsIPrefService);
+            prefBranch = prefService.getBranch(fpvsPrefRoot);
+            viewsBranch = prefService.getBranch(fpvsPrefRoot + "views.");
+            viewsBranch.addObserver("", this, false);
+
           for (var name in views) {
             view = views[name];
             if (! view['menu_enabled']) {
               this.observe(fpvsUtils.viewsBranch, "",
-                           view['number'] + '.menu_enabled');
+              view['number'] + '.menu_enabled');
             }
           }
         },
 
 
+        add_Observer: function(branch, pref, observer, holdWeak) {
+         // branch.addObserver(pref, observer, holdWeak);
+        // this.pref_observers.push([branch, pref, observer]);
+      },
 
 
 
 
-    observe: function(aSubject, aTopic, aData) {
-        var gFolderTreeView = this.window.gFolderTreeView;
+
+    observe: async function(aSubject, aTopic, aData) {
+        var gFolderTreeView = main_window.gFolderTreeView;
         var match = /^(\d+)\.(.*_enabled)$/.exec(aData);
         if (! match) return;
         var viewNum = match[1];
         var which = match[2];
         var enabled = aSubject.getBoolPref(aData);
-        var name = fpvsUtils.getStringPref(fpvsUtils.viewsBranch,
+        var name = await fpvsUtils.getStringPref(fpvsUtils.viewsBranch,
                                            viewNum + ".name");
         var view = this.views[name];
         view[which] = enabled;
@@ -165,99 +268,101 @@ var FolderPaneSwitcher = {
     },
 
 
-    onLoad: function(window) {
-        this.logger.debug("onLoad, readyState=" + window.document.readyState);
-        var gFolderTreeView = window.gFolderTreeView;
-        var document = window.document;
+    onLoad:async function(window) {
+       //  this.logger.debug("onLoad, readyState=" + main_window.document.readyState);
+       var gFolderTreeView = main_window.gFolderTreeView;
+       var document = main_window.document;
+       var {DefaultPreferencesLoader} = ChromeUtils.import(extension.rootURI.resolve("chrome/content/defaultPreferencesLoader.js"));
+       var loader = new DefaultPreferencesLoader();
+       loader.parseUri(extension.rootURI.resolve("chrome/content/prefs.js"));
+
+       fpvsUtils.init();
+
+         // need to find an alternative for this log4Moz
+
+        //  FolderPaneSwitcher.logger = Log4Moz.getConfiguredLogger(
+        //    "extensions.FolderPaneSwitcher",
+        // Log4Moz.Level.Trace,
+        // Log4Moz.Level.Info,
+        // Log4Moz.Level.Debug);
+
+       var me = FolderPaneSwitcher;
+       var title = main_window.document.getElementById("folderPane-toolbar");
+       FolderPaneSwitcher.logger.debug("title=" + title);
+      fpvsUtils.updateViews(gFolderTreeView);
+       FolderPaneSwitcher.views =fpvsUtils.getViews(true);
+
+      // need to modify this area and bypassing just for now.
+       FolderPaneSwitcher.viewsObserver.register(
+       main_window, FolderPaneSwitcher.logger, FolderPaneSwitcher.views);
+       var prefBranch = Components.classes["@mozilla.org/preferences-service;1"]
+           .getService(Components.interfaces.nsIPrefBranch);
+       // need to check what modification have to be done here ..
 
 
-        var {DefaultPreferencesLoader} = ChromeUtils.import(extension.rootURI.resolve("chrome/content/defaultPreferencesLoader.jsm"));
+       //need to transfer this code at the browseraction
+       title.addEventListener("dragexit", me.onDragExit, false);
+       title.addEventListener("drop", me.onDragDrop, false);
+       title.addEventListener("dragenter", me.onDragEnter, false);
+       title.collapsed = false;
+       FolderPaneSwitcher.logger.debug("title.collapsed=" + title.collapsed);
+       // This is really gross. There appears to be some sort of race condition
+       // in TB68 which causes it occasionally to be not finished initializing the
+       // window when this functiong gets called, such that shortly after this
+       // function sets collapsed to false, TB sets it back to true. Ugh! So we
+       // try to catch that and fix it here.
+       this.raceIntervalsRemaining = 5
+       this.raceInterval = main_window.setInterval(() => {
+         this.raceIntervalsRemaining--;
+         if (title.collapsed) {
+           tFolderPaneSwitcherhis.logger.warn("title.collapsed changed, flipping it back!");
+           title.collapsed = false;
+           this.raceIntervalsRemaining = 0;
+         }
+         else {
+           FolderPaneSwitcher.logger.debug("title.collapsed is still false, will keep " +
+                             "checking for " + this.raceIntervalsRemaining +
+                           " more seconds");
+         }
+         if (! this.raceIntervalsRemaining) {
+           FolderPaneSwitcher.logger.debug("Clearing this.raceInterval");
+           main_window.clearInterval(this.raceInterval);
+         }
+       }, 1000);
+       FolderPaneSwitcher.addRemoveButtonsObserver.observe(main_window.document);
+       var observer = {
+         observe: function() {
+           FolderPaneSwitcher.addRemoveButtonsObserver.observe(main_window.document);
+         }
+       }
+         //  need to check another single menthod to handle this , i wondering why the function is not accessible, so  adding inline observer
 
+   //    FolderPaneSwitcher.add_Observer(prefBranch, "extensions.FolderPaneSwitcher.arrows",
+    //                         observer, false);
+        prefBranch.addObserver('extensions.FolderPaneSwitcher.arrows',observer,false);
 
-        var loader = new DefaultPreferencesLoader();
-        loader.parseUri("chrome/content/prefs.js");
-    
-        fpvsUtils.init();
-    
-        FolderPaneSwitcher.logger = Log4Moz.getConfiguredLogger(
-          "extensions.FolderPaneSwitcher",
-          Log4Moz.Level.Trace,
-          Log4Moz.Level.Info,
-          Log4Moz.Level.Debug);
-    
-        var me = FolderPaneSwitcher;
-        var title = document.getElementById("folderPane-toolbar");
-        this.logger.debug("title=" + title);
-        fpvsUtils.updateViews(gFolderTreeView);
-        FolderPaneSwitcher.views = fpvsUtils.getViews(true);
-        FolderPaneSwitcher.viewsObserver.register(
-          window, FolderPaneSwitcher.logger, FolderPaneSwitcher.views);
-    
-        var prefBranch = Components.classes["@mozilla.org/preferences-service;1"]
-            .getService(Components.interfaces.nsIPrefBranch);
-
-
-         // need to check what modification have to be done here ..
-
-        title.addEventListener("dragexit", me.onDragExit, false);
-        title.addEventListener("drop", me.onDragDrop, false);
-        title.addEventListener("dragenter", me.onDragEnter, false);
-        title.collapsed = false;
-        this.logger.debug("title.collapsed=" + title.collapsed);
-        // This is really gross. There appears to be some sort of race condition
-        // in TB68 which causes it occasionally to be not finished initializing the
-        // window when this functiong gets called, such that shortly after this
-        // function sets collapsed to false, TB sets it back to true. Ugh! So we
-        // try to catch that and fix it here.
-        this.raceIntervalsRemaining = 5
-        this.raceInterval = window.setInterval(() => {
-          this.raceIntervalsRemaining--;
-          if (title.collapsed) {
-            this.logger.warn("title.collapsed changed, flipping it back!");
-            title.collapsed = false;
-            this.raceIntervalsRemaining = 0;
-          }
-          else {
-            this.logger.debug("title.collapsed is still false, will keep " +
-                              "checking for " + this.raceIntervalsRemaining +
-                             " more seconds");
-          }
-          if (! this.raceIntervalsRemaining) {
-            this.logger.debug("Clearing this.raceInterval");
-            window.clearInterval(this.raceInterval);
-          }
-        }, 1000);
-        FolderPaneSwitcher.addRemoveButtonsObserver.observe(document);
-        var observer = {
-          observe: function() {
-            FolderPaneSwitcher.addRemoveButtonsObserver.observe(document);
-          }
-        }
-        fpvsUtils.addObserver(prefBranch, "extensions.FolderPaneSwitcher.arrows",
-                              observer, false);
-    
-        var folderTree = document.getElementById("folderTree");
-        folderTree.addEventListener("dragover", me.onDragOver, false);
-        // Dragexit and dragdrop don't actually get sent when the user
-        // drops a message into a folder. This is arguably a bug in
-        // Thunderbird (see bz#674807). To work around it, I register a
-        // folder listener to detect when a move or copy is
-        // completed. This is gross, but appears to work well enough.
-        // Disable this because the watcher serves the same function now,
-        // by automatically reverting to the cached view within a half
-        // second at most of when the drop finishes, and leaving this
-        // active cdauses the view to revert if some other message happens
-        // to be deposited into a folder while the drag is in progress.
-        // I'm keeping the code, inactive, in case I determine later that
-        // it needs to be reactivated, e.g., if we can get rid of the
-        // watcher because the drag&drop infrastructure has improved to
-        // the point where the watcher is no longer needed.
-    //    var ns =
-    //      Components.classes["@mozilla.org/messenger/msgnotificationservice;1"]
-    //      .getService(Components.interfaces.nsIMsgFolderNotificationService);
-    //
-    //    ns.addListener(me.folderListener, ns.msgsMoveCopyCompleted|
-    //		   ns.folderMoveCopyCompleted);
+       var folderTree = main_window.document.getElementById("folderTree");
+       folderTree.addEventListener("dragover", me.onDragOver, false);
+       // Dragexit and dragdrop don't actually get sent when the user
+       // drops a message into a folder. This is arguably a bug in
+       // Thunderbird (see bz#674807). To work around it, I register a
+       // folder listener to detect when a move or copy is
+       // completed. This is gross, but appears to work well enough.
+       // Disable this because the watcher serves the same function now,
+       // by automatically reverting to the cached view within a half
+       // second at most of when the drop finishes, and leaving this
+       // active cdauses the view to revert if some other message happens
+       // to be deposited into a folder while the drag is in progress.
+       // I'm keeping the code, inactive, in case I determine later that
+       // it needs to be reactivated, e.g., if we can get rid of the
+       // watcher because the drag&drop infrastructure has improved to
+       // the point where the watcher is no longer needed.
+     //    var ns =
+     //      Components.classes["@mozilla.org/messenger/msgnotificationservice;1"]
+     //      .getService(Components.interfaces.nsIMsgFolderNotificationService);
+     //
+     //    ns.addListener(me.folderListener, ns.msgsMoveCopyCompleted|
+     //		   ns.folderMoveCopyCompleted);
       },
 
 
@@ -413,45 +518,6 @@ function timerCallback(window) {
       todo(window);
     }
   }
-
-
-  function loadIntoWindow(window) {
-    FolderPaneSwitcher.logger.trace("loadIntoWindow");
-    var document = window.document;
-
-
-
-    var toolbar = document.getElementById("folderPane-toolbar");
-    if (! toolbar) return;
-
-    if (document.getElementById("FolderPaneSwitcher-back-arrow-button")) return;
-
-    //Migration TB68-TB78
-    //var button = document.createXULElement("toolbarbutton");
-    var button = document.createElement("toolbarbutton");
-
-    button.setAttribute("id", "FolderPaneSwitcher-back-arrow-button");
-    button.setAttribute(
-      "image", "chrome/content/left-arrow.png");
-    listener = function() { FolderPaneSwitcher.goBackView(window); }
-    button.addEventListener("command", listener);
-    toolbar.appendChild(button);
-
-    //Migration TB68-TB78
-    //button = document.createXULElement("toolbarbutton");
-    button = document.createElement("toolbarbutton");
-    button.setAttribute("id", "FolderPaneSwitcher-forward-arrow-button");
-    button.setAttribute(
-        "image", "chrome/content/right-arrow.png");
-    listener = function() { FolderPaneSwitcher.goForwardView(window); }
-    button.addEventListener("command", listener);
-    toolbar.appendChild(button);
-
-    FolderPaneSwitcher.onLoad(window);
-}
-
-
-
 function unloadFromWindow(window) {
     FolderPaneSwitcher.logger.trace("unloadFromWindow");
     var document = window.document;
@@ -464,8 +530,6 @@ function unloadFromWindow(window) {
     toolbar.removeChild(button);
   }
 
-
-
   var WindowObserver = {
     observe: function(aSubject, aTopic, aData) {
         FolderPaneSwitcher.logger.trace("WindowObserver.observe");
@@ -473,7 +537,9 @@ function unloadFromWindow(window) {
         var document = window.document;
         if (document.documentElement.getAttribute("windowtype") ==
             "mail:3pane") {
-            loadIntoWindow(window);
+              console.log("called from the observer");
+              FolderPaneSwitcher.loadWindow();
+               FolderPaneSwitcher.onLoad();
         }
     },
 };

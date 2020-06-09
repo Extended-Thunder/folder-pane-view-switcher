@@ -1,22 +1,31 @@
-var EXPORTED_SYMBOLS = ['fpvsUtils'];
+//export {fpvsUtils};
+
+var EXPORTED_SYMBOLS = ['fpvsUtils','tupdateViews'];
 
 var fpvsPrefRoot = "extensions.FolderPaneSwitcher.";
-
-var fpvsUtils = {
+  var gviews={};
+  var Views=null;
+  var fpvsUtils = {
     initialized: false,
     event_handlers: [],
     pref_observers: [],
+    Views:null,
+    fupdate:false,
 
-    init: function() {
+    init: async function() {
         if (this.initialized) return;
         this.initialized = true;
         this.prefService = Components
-            .classes["@mozilla.org/preferences-service;1"]
-            .getService(Components.interfaces.nsIPrefService);
+           .classes["@mozilla.org/preferences-service;1"]
+           .getService(Components.interfaces.nsIPrefService);
         this.prefBranch = this.prefService.getBranch(fpvsPrefRoot);
         this.viewsBranch = this.prefService.getBranch(fpvsPrefRoot + "views.");
-    },
 
+    },
+    getIntPref:  function(pref)
+    {
+          return this.prefBranch.getIntPref(pref);
+    },
     uninit: function() {
         for (var args of this.event_handlers) {
             args[0].removeEventListener(args[1], args[2], args[3]);
@@ -25,25 +34,28 @@ var fpvsUtils = {
             args[0].removeObserver(args[1], args[2]);
         }
     },
-
     addEventListener: function(target, type, listener, useCapture) {
-        target.addEventListener(type, listener, useCapture);
+        try{
+      //  target.addEventListener(type, listener, useCapture);
         this.event_handlers.push([target, type, listener, useCapture]);
+        }
+        catch(e){
+          alert(e)
+        }
     },
-
-    addObserver: function(branch, pref, observer, holdWeak) {
+   addObserver: function(branch, pref, observer, holdWeak) {
         branch.addObserver(pref, observer, holdWeak);
-        this.pref_observers.push([branch, pref, observer]);
+       this.pref_observers.push([branch, pref, observer]);
     },
-
     getStringPref: function(branch, prefName) {
         return branch.getStringPref(prefName);
     },
-
+    get_IntPref: function(branch, prefName) {
+        return branch.getIntPref(prefName);
+    },
     setStringPref: function(branch, prefName, value) {
         return branch.setStringPref(prefName, value);
     },
-
     getViews: function(byName) {
         var views = {};
         var obj = {};
@@ -83,9 +95,9 @@ var fpvsUtils = {
                 views[num] = view;
             }
         }
+        Views=views;
         return views;
     },
-
     getViewDisplayName: function(treeView, commonName) {
         if (commonName in treeView._modeDisplayNames) {
             return treeView._modeDisplayNames[commonName];
@@ -93,22 +105,27 @@ var fpvsUtils = {
         var key = "folderPaneModeHeader_" + commonName;
         return treeView.messengerBundle.getString(key);
     },
-
-    updateViews: function(treeView) {
-        var storedViews = this.getViews();
+    updateViews: async function(treeView) {
+        tupdateViews(treeView)
+    }
+}
+ function  tupdateViews(treeView)
+{
+    try {
+        var storedViews=  fpvsUtils.getViews();
         for (var commonName of treeView._modeNames) {
             var found = false;
             for (var viewNum in storedViews) {
                 if (storedViews[viewNum]['name'] == commonName) {
                     found = true;
                     storedViews[viewNum]['found'] = true;
-                    var displayName = this.getViewDisplayName(
+                    var displayName = fpvsUtils.getViewDisplayName(
                         treeView, commonName);
-                    if (this.getStringPref(this.viewsBranch,
+                    if (fpvsUtils.getStringPref(fpvsUtils.viewsBranch,
                                            viewNum + ".display_name")
                         != displayName) {
-                        this.setStringPref(
-                            this.viewsBranch, viewNum + ".display_name",
+                            fpvsUtils.setStringPref(
+                                fpvsUtils.viewsBranch, viewNum + ".display_name",
                             displayName);
                     }
                 }
@@ -117,18 +134,20 @@ var fpvsUtils = {
             if (found) continue;
             var i;
             for (i = 0; String(i) in storedViews; i++) ;
-            this.setStringPref(this.viewsBranch, i + ".name", commonName);
-            this.setStringPref(this.viewsBranch, i + ".display_name",
-                               this.getViewDisplayName(treeView, commonName));
-            this.viewsBranch.setBoolPref(i + ".menu_enabled", true);
-            this.viewsBranch.setBoolPref(i + ".arrows_enabled", true);
+            fpvsUtils.setStringPref(fpvsUtils.viewsBranch, i + ".name", commonName);
+            fpvsUtils.setStringPref(fpvsUtils.viewsBranch, i + ".display_name",
+                               fpvsUtils.getViewDisplayName(treeView, commonName));
+            fpvsUtils.viewsBranch.setBoolPref(i + ".menu_enabled", true);
+            fpvsUtils.viewsBranch.setBoolPref(i + ".arrows_enabled", true);
             // So we don't reuse the same number.
             storedViews[i] = {name: 'dontworryaboutit', found: true};
         }
         for (var viewNum in storedViews) {
             if (! storedViews[viewNum]['found']) {
-                this.viewsBranch.deleteBranch(viewNum + ".");
+                fpvsUtils.viewsBranch.deleteBranch(viewNum + ".");
             }
         }
-    }
+        }
+    catch(err){
+    console.error(err)}
 }

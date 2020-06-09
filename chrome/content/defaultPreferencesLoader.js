@@ -85,7 +85,7 @@ DefaultPreferencesLoader.prototype = {
         prefFunc = prefFunc || this.pref.bind(this);
 	Services.scriptloader.loadSubScript(uri, { pref: prefFunc });
     },
-        
+
     /**
      * Emulates firefox pref function to load default preferences
      */

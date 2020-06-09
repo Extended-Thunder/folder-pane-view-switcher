@@ -1,1 +1,1 @@
-browser.fpvs_optionsAPI.addlst();
+browser.fpvs_optionsAPI.onOptionsPageload.addListener(function(window){alert("success");});
