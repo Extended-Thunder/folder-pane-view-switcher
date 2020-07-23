@@ -14,6 +14,19 @@ var btnimg2;
 
 var fpvs_api = class extends ExtensionCommon.ExtensionAPI{
 
+
+
+  onShutdown(isAppShutdown) {
+    if (isAppShutdown) return;
+
+    // invalidate the startup cache, such that after updating the addon the old
+    // version is no longer cached
+    unloadFromWindow(main_window);
+
+    console.log("webextension:shutdown");
+  }
+
+
   getAPI(context)
         {
             return{
@@ -29,6 +42,18 @@ var fpvs_api = class extends ExtensionCommon.ExtensionAPI{
             }
             return true;
             }
+},
+
+
+unLoad:async function(){
+  try
+    {
+      unloadFromWindow(main_window);
+    }
+  catch(err)
+   {
+    console.error(err)
+   }
 },
 
 loadIntoWindow: async function(){
@@ -128,15 +153,15 @@ var FolderPaneSwitcher = {
       if (recentWindow.document.getElementById("FolderPaneSwitcher-back-arrow-button")) return;
         button.setAttribute("id","FolderPaneSwitcher-back-arrow-button");
         button.setAttribute("image",btnimg1);
-     button.setAttribute("style", "min-height: 4ex;max-height: 4ex;max-width:7ex;min-width:7px;");
+     button.setAttribute("style", "min-height: 4ex;max-height: 4ex;max-width:7ex;min-width:7px;margin-inline-end:0;margin-inline:0;margin:0;");
      var listener = function() { FolderPaneSwitcher.goBackView(recentWindow); }
      button.addEventListener("command", listener);
      toolbar.appendChild(button);
      button = recentWindow.document.createXULElement("button");
      button.setAttribute("id", "FolderPaneSwitcher-forward-arrow-button");
-     toolbar.setAttribute("align", "center");
+     toolbar.setAttribute("align", "stretch");
      button.setAttribute("image",btnimg2);
-     button.setAttribute("style", "min-height: 4ex;max-height: 4ex;max-width:7ex;min-width:7px;");
+     button.setAttribute("style", "min-height: 4ex;max-height: 4ex;max-width:7ex;min-width:7px;margin-inline-start:0;margin-inline:0;margin:0;");
      var listener = function() { FolderPaneSwitcher.goForwardView(recentWindow); }
      button.addEventListener("command", listener);
      toolbar.appendChild(button);
@@ -520,7 +545,7 @@ function timerCallback(window) {
   }
 function unloadFromWindow(window) {
     FolderPaneSwitcher.logger.trace("unloadFromWindow");
-    var document = window.document;
+    var document = main_window.document;
     var toolbar = document.getElementById("folderPane-toolbar");
     if (! toolbar) return;
     var button = document.getElementById("FolderPaneSwitcher-back-arrow-button");

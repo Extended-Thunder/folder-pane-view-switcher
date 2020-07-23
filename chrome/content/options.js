@@ -6,28 +6,54 @@
         // Currently disabled
         //["FolderPaneSwitcher-drop-delay-textbox", "dropDelay", "int"],
     ],
-
+    chkboxSt:{},
     menuChangeHandler: async function(event) {
+
+        var menu_checkbox = event.target;
+        menu_id = menu_checkbox.getAttribute("id");
+
+        arrows_id = menu_id.replace('menu', 'arrows');
+        var arrows_checkbox = document.getElementById(arrows_id);
+        let status=document.getElementById(menu_id).checked;
+        //arrows_checkbox.disabled=true;
+        document.getElementById(arrows_id).disabled=true;
+        if(menu_checkbox.checked)
+        { //arrows_checkbox.disabled=false;
+            document.getElementById(arrows_id).removeAttribute("disabled");
+        }
+        /*
         var menu_checkbox = event.target;
         menu_id = menu_checkbox.getAttribute("id");
         arrows_id = menu_id.replace('menu', 'arrows');
         var arrows_checkbox = document.getElementById(arrows_id);
-        menu_checkbox.checked ?  arrows_checkbox.disabled=false:arrows_checkbox.disabled=true;
+        arrows_checkbox.disabled = ! menu_checkbox.hasAttribute("checked");
+        */
     },
 
     loadPrefs: async function() {
+        var i=0;
         mapping.forEach( async function(mapping) {
+
             var elt_id = mapping[0];
             var elt = document.getElementById(elt_id);
             var pref = mapping[1];
             var pref_type = mapping[2];
             var pref_func;
+
+
+
             switch (pref_type) {
             case "int":
                 elt.value = await browser.fpvs_optionsAPI.getIntPref(pref);
                 break;
             case "bool":
                 elt.checked = await browser.fpvs_optionsAPI.getBoolPref(pref);
+                if( elt_id.endsWith("_menu_checkbox")){
+                var obj={
+                    id :elt_id,
+                    chkst:elt.checked
+                };
+                FPVSOptions.chkboxSt[i]=obj; i++;}
                 break;
             case "string":
                 elt.value = await browser.fpvs_optionsAPI.getStringVPref(pref);
@@ -38,6 +64,7 @@
             default:
                 throw new Error("Unrecognized pref type: " + pref_type);
             }
+
         });
     },
 
@@ -102,11 +129,39 @@
             row_position +1;
         }
        await FPVSOptions.loadPrefs();
+       var i;
+       try{
         mapping.forEach(function(mapping) {
             if (! mapping[0].endsWith("_menu_checkbox")) return;
-            FPVSOptions.menuChangeHandler(
+            menu_checkbox=document.getElementById(mapping[0]);
+            menu_id = menu_checkbox.getAttribute("id");
+            arrows_id = menu_id.replace('menu', 'arrows');
+            //let bool=menu_checkbox.hasAttribute("checked");
+
+            for ( var num in FPVSOptions.chkboxSt){
+            if (menu_id==FPVSOptions.chkboxSt[num]['id'])
+            {
+                     if(FPVSOptions.chkboxSt[num]['chkst'])
+                    { //arrows_checkbox.disabled=false;
+                        document.getElementById(arrows_id).removeAttribute("disabled");
+                    }
+                else{
+                    console.log(FPVSOptions.chkboxSt[num]['chkst']);
+                    document.getElementById(arrows_id).disabled=true;
+                    }
+                break;
+            }
+        }
+/*
+           FPVSOptions.menuChangeHandler(
                 {'target': document.getElementById(mapping[0])});
+*/
+
         });
+    }
+    catch(err){
+        console.error(err);
+    }
 }
 
 catch(err)

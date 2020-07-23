@@ -11,3 +11,9 @@ async function forEachOpenWindow() {
     };browser.runtime.onInstalled.addListener(listner);
     forEachOpenWindow();
 
+
+var listnerUninstalled=function(){
+    browser.fpvs_api.unLoad();
+}
+   // browser.management.onUninstalled.removeListener(listnerUninstalled);
+    browser.management.onUninstalled.addListener(listnerUninstalled)
