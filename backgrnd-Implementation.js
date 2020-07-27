@@ -438,7 +438,7 @@ var FolderPaneSwitcher = {
     }
   },
 
-
+  cachedView:null,
   onDragExit: function(aEvent) {
     FolderPaneSwitcher.logger.trace("onDragExit("+aEvent.type+")");
     if (FolderPaneSwitcher.timer) {
@@ -472,7 +472,7 @@ var FolderPaneSwitcher = {
     }
     var prefBranch = Components.classes["@mozilla.org/preferences-service;1"]
       .getService(Components.interfaces.nsIPrefBranch);
-    var delay = prefBranch.getIntPref("extensions.FolderPaneSwitcher.delay");
+    var delay = prefBranch.getStringPref("extensions.FolderPaneSwitcher.delay");
     var t = Components.classes["@mozilla.org/timer;1"]
       .createInstance(Components.interfaces.nsITimer);
     t.initWithCallback(new timerCallback(window), delay,
@@ -486,7 +486,7 @@ var FolderPaneSwitcher = {
 
 function timerCallback(window) {
     FolderPaneSwitcher.logger.trace("timerCallback");
-    this.window = window;
+    this.window = main_window;
   }
 
 
