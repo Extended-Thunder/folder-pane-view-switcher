@@ -16,7 +16,6 @@
         "gecko": {
             "id": "FolderPaneSwitcher@kamens.us",
             "strict_min_version": "68.0a1",
-            "strict_max_version": "71.*"
         }
     },
     "icons": {
