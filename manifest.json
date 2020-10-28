@@ -1,6 +1,6 @@
 {
     "name": "__MSG_appName__",
-    "version": "4.0",
+    "version": "4.0.1",
     "description": "__MSG_appDesc__",
     "author": "Jonathan Kamens",
     "default_locale": "en-US",
@@ -43,6 +43,6 @@
         "48": "icon.png"
     },
     "web_accessible_resources":[ "chrome://global/content/globalOverlay.js","chrome://global/content/editMenuOverlay.js","chrome/content/prefs.js","left-arrow.png","right-arrow.png","chrome/content/utils.js"],
-    "permissions": ["ActiveTab","storage","management"],
+    "permissions": ["management"],
     "manifest_version": 2
 }
