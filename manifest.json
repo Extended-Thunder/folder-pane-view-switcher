@@ -42,7 +42,6 @@
     "icons": {
         "48": "icon.png"
     },
-    "web_accessible_resources":[ "chrome://global/content/globalOverlay.js","chrome://global/content/editMenuOverlay.js","chrome/content/prefs.js","left-arrow.png","right-arrow.png","chrome/content/utils.js"],
     "permissions": ["management"],
     "manifest_version": 2
 }
