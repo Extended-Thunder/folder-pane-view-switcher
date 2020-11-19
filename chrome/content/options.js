@@ -31,6 +31,9 @@
     },
 
     loadPrefs: async function() {
+
+        try{
+
         var i=0;
         mapping.forEach( async function(mapping) {
 
@@ -66,6 +69,10 @@
             }
 
         });
+
+    }
+
+    catch(err){console.error(err);}
     },
 
     gviews:null,
@@ -83,11 +90,29 @@
         var btn_ok =document.getElementById("btn_accept");
 
         var btn_cancel =document.getElementById("btn_extra1");
+
+        var btn_reset =document.getElementById("btn_reset");
+
         btn_cancel.addEventListener("click", function(event) {
+
+            FPVSOptions.loadPrefs();
+
+            chrome.tabs.getCurrent(function(tab) {
+            chrome.tabs.remove(tab.id, function() { });
+                    });
+            });
+
+        btn_reset.addEventListener("click",function(event){
             FPVSOptions.loadPrefs();
         });
+
+
         btn_ok.addEventListener("click", function(event) {
           FPVSOptions.validatePrefs();
+          chrome.tabs.getCurrent(function(tab) {
+            chrome.tabs.remove(tab.id, function() { });
+                    });
+
         });
          mapping = FPVSOptions.mapping;
         var preferences = document.getElementById("fpvs-preferences");
@@ -206,7 +231,7 @@ var observer =  async function (){
     gviews=await browser.fpvs_optionsAPI.getViews();
     for (var name in gviews) {
         view = gviews[name];
-         browser.fpvs_api.observe("", "",
+         browser.fpvs_api.observe_api("", "",
                    name + '.menu_enabled');
       }
 }

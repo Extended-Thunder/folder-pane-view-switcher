@@ -57,7 +57,10 @@ unLoad:async function(){
 },
 
 loadIntoWindow: async function(){
-Services.obs.addObserver(WindowObserver, "mail-startup-done", false);
+
+  FolderPaneSwitcher.loadWindow();
+  FolderPaneSwitcher.onLoad();
+//Services.obs.addObserver(WindowObserver, "mail-startup-done", false);
 //await FolderPaneSwitcher.loadWindow();
 /*
 while (windowState!="Complete")
@@ -100,7 +103,10 @@ while (windowState!="Complete")
  FolderPaneSwitcher.onLoad();
 },
 
-observe: async function(aSubject, aTopic, aData) {
+observe_api: async function(aSubject, aTopic, aData) {
+
+
+ 
   aSubject==""? aSubject=fpvsUtils.viewsBranch:aSubject;
   var gFolderTreeView = main_window.gFolderTreeView;
   var match = /^(\d+)\.(.*_enabled)$/.exec(aData);
@@ -134,7 +140,7 @@ var FolderPaneSwitcher = {
       trace(msg) {
         console.log("extensions.FolderPaneSwitcher TRACE " + msg);
       },
-  
+
       debug(msg) {
         console.log("extensions.FolderPaneSwitcher DEBUG " + msg);
       }
@@ -166,23 +172,72 @@ var FolderPaneSwitcher = {
      button.addEventListener("command", listener);
      toolbar.appendChild(button);
     },
+
+/*
     addRemoveButtonsObserver: {
-        observe: function(document) {
+        observe: function(main_window) {
+          var document=main_window.document;
           var prefBranch = Components.classes["@mozilla.org/preferences-service;1"]
             .getService(Components.interfaces.nsIPrefBranch);
           var should_be_hidden =
               !prefBranch.getBoolPref("extensions.FolderPaneSwitcher.arrows");
           var is_hidden =
-              !!document.getElementById(
+              !document.getElementById(
                 "FolderPaneSwitcher-back-arrow-button").hidden;
           if (should_be_hidden != is_hidden) {
-            document.getElementById("FolderPaneSwitcher-back-arrow-button").
-              hidden = should_be_hidden;
-            document.getElementById("FolderPaneSwitcher-forward-arrow-button").
-              hidden = should_be_hidden;
+            document.getElementById("FolderPaneSwitcher-back-arrow-button").style.display = "none"
+
+           // document.getElementById("FolderPaneSwitcher-back-arrow-button").hidden = should_be_hidden;
+            document.getElementById("FolderPaneSwitcher-forward-arrow-button").hidden = should_be_hidden;
           }
         }
       },
+
+*/
+addRemoveButtonsObserver: {
+  observe: function(document) {
+
+    var prefBranch = Components.classes["@mozilla.org/preferences-service;1"]
+      .getService(Components.interfaces.nsIPrefBranch);
+    var should_be_hidden =
+        !prefBranch.getBoolPref("extensions.FolderPaneSwitcher.arrows");
+    var is_hidden =
+        !!document.getElementById(
+          "FolderPaneSwitcher-back-arrow-button").hidden;
+    if (should_be_hidden != is_hidden) {
+      document.getElementById("FolderPaneSwitcher-back-arrow-button").
+        hidden = should_be_hidden;
+      document.getElementById("FolderPaneSwitcher-forward-arrow-button").
+        hidden = should_be_hidden;
+    }
+
+  }
+},
+      /*
+      addRemoveButtonsObserver: {
+        observe: function(main_window) {
+          var document=main_window.document;
+          var prefBranch = Components.classes["@mozilla.org/preferences-service;1"]
+            .getService(Components.interfaces.nsIPrefBranch);
+          var should_be_hidden =
+              prefBranch.getBoolPref("extensions.FolderPaneSwitcher.arrows");
+        //  var is_hidden =
+          //    !document.getElementById(
+          //      "FolderPaneSwitcher-back-arrow-button").hidden;
+          if (should_be_hidden =true) {
+            document.getElementById("FolderPaneSwitcher-back-arrow-button").style.visibility = "visible";
+            document.getElementById("FolderPaneSwitcher-forward-arrow-button").style.visibility ="visible";
+          // document.getElementById("FolderPaneSwitcher-back-arrow-button").hidden = should_be_hidden;
+            //document.getElementById("FolderPaneSwitcher-forward-arrow-button").hidden = should_be_hidden;
+          }
+          else if (should_be_hidden =false)
+          {
+            document.getElementById("FolderPaneSwitcher-back-arrow-button").style.visibility = "hidden";
+            document.getElementById("FolderPaneSwitcher-forward-arrow-button").style.visibility ="hidden";
+          }
+        }
+      },
+      */
       goBackView: async function(window) {
 
         var gFolderTreeView = window.gFolderTreeView;
@@ -337,6 +392,7 @@ var FolderPaneSwitcher = {
        // function sets collapsed to false, TB sets it back to true. Ugh! So we
        // try to catch that and fix it here.
        this.raceIntervalsRemaining = 5
+
        this.raceInterval = main_window.setInterval(() => {
          this.raceIntervalsRemaining--;
          if (title.collapsed) {
@@ -354,6 +410,8 @@ var FolderPaneSwitcher = {
            main_window.clearInterval(this.raceInterval);
          }
        }, 1000);
+
+
        FolderPaneSwitcher.addRemoveButtonsObserver.observe(main_window.document);
        var observer = {
          observe: function() {
@@ -364,7 +422,8 @@ var FolderPaneSwitcher = {
 
    //    FolderPaneSwitcher.add_Observer(prefBranch, "extensions.FolderPaneSwitcher.arrows",
     //                         observer, false);
-        prefBranch.addObserver('extensions.FolderPaneSwitcher.arrows',observer,false);
+       // prefBranch.addObserver('extensions.FolderPaneSwitcher.arrows',fpvsArrowsObs,false);
+       prefBranch.addObserver('extensions.FolderPaneSwitcher.arrows',observer,false);
 
        var folderTree = main_window.document.getElementById("folderTree");
        folderTree.addEventListener("dragover", me.onDragOver, false);
