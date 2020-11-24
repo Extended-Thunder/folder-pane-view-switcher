@@ -31,6 +31,9 @@
     },
 
     loadPrefs: async function() {
+
+        try{
+
         var i=0;
         mapping.forEach( async function(mapping) {
 
@@ -66,6 +69,10 @@
             }
 
         });
+
+    }
+
+    catch(err){console.error(err);}
     },
 
     gviews:null,
@@ -224,7 +231,7 @@ var observer =  async function (){
     gviews=await browser.fpvs_optionsAPI.getViews();
     for (var name in gviews) {
         view = gviews[name];
-         browser.fpvs_api.observe("", "",
+         browser.fpvs_api.observe_api("", "",
                    name + '.menu_enabled');
       }
 }

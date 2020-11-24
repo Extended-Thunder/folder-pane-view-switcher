@@ -40,7 +40,7 @@
        },
 
        {
-        "name":"observe",
+        "name":"observe_api",
         "type":"function",
         "desription":"Initiate the background with event listner",
         "async":true,

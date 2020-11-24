@@ -26,6 +26,7 @@ getAPI(context)
     return{
         fpvs_optionsAPI:
         {
+
             init  : async function(){
                fpvsUtils.init();
             },
@@ -52,6 +53,11 @@ getAPI(context)
                 return prefBranch.getIntPref(pref);
             },
             getBoolPref:async function(pref){
+
+
+            //    if (pref=="arrows"){
+             //       prefBranch.setBoolPref(pref,true);
+            //    }
                 return prefBranch.getBoolPref(pref);
             },
             getStringVPref:async function(pref){
