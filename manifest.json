@@ -1,24 +1,52 @@
 {
     "name": "__MSG_appName__",
-    "version": "3.0.6",
+    "version": "5.0.0",
     "description": "__MSG_appDesc__",
-    "author": "Jonathan Kamens",
+    "author": "Jonathan Kamens, Klaus Buecher",
     "default_locale": "en-US",
     "homepage_url": "https://addons.thunderbird.net/thunderbird/addon/folder-pane-view-switcher/",
-    "legacy": {
-        "options": {
-            "page": "chrome://FolderPaneSwitcher/content/options.xul",
-            "open_in_tab": true
-        }
-    },
     "applications": {
         "gecko": {
             "id": "FolderPaneSwitcher@kamens.us",
-            "strict_min_version": "68.0a1"
+            "strict_min_version": "78.8"
         }
     },
-    "icons": {
+    "background": {
+		"scripts": ["fp-background.js"]
+	  },
+ "icons": {
         "48": "icon.png"
     },
-    "manifest_version": 2
+    "manifest_version": 2,
+
+
+    "experiment_apis": {
+		"WindowListener": {
+		  "schema": "chrome/content/api/WindowListener/schema.json",
+		  "parent": {
+			"scopes": ["addon_parent"],
+			"paths": [["WindowListener"]],
+			"script": "chrome/content/api/WindowListener/implementation.js"
+		  }
+		},  
+		"LegacyPrefs": {
+		  "schema": "chrome/content/api/LegacyPrefs/schema.json",
+		  "parent": {
+			"scopes": ["addon_parent"],
+			"paths": [["LegacyPrefs"]],
+			"script": "chrome/content/api/LegacyPrefs/implementation.js"
+		  
+		  }
+		},
+		"Utilities": {
+		  "schema": "chrome/content/api/Utilities/schema.json",
+		  "parent": {
+			"scopes": ["addon_parent"],
+			"paths": [["Utilities"]],
+			"script": "chrome/content/api/Utilities/implementation.js"
+		  
+		   }
+		}
+		  }
+    
 }

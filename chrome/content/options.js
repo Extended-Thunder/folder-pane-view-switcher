@@ -6,15 +6,15 @@ var FPVSOptions = {
         //["FolderPaneSwitcher-drop-delay-textbox", "dropDelay", "int"],
     ],
 
-    menuChangeHandler: function(event) {
+    menuChangeHandler: function (event) {
         var menu_checkbox = event.target;
         menu_id = menu_checkbox.getAttribute("id");
         arrows_id = menu_id.replace('menu', 'arrows');
         var arrows_checkbox = document.getElementById(arrows_id);
-        arrows_checkbox.disabled = ! menu_checkbox.hasAttribute("checked");
+        arrows_checkbox.disabled = !menu_checkbox.hasAttribute("checked");
     },
 
-    onLoad: function() {
+    onLoad: function () {
         fpvsUtils.init();
         mapping = FPVSOptions.mapping;
         var preferences = document.getElementById("fpvs-preferences");
@@ -45,65 +45,65 @@ var FPVSOptions = {
                     fpvsUtils.viewsBranch, viewNum + ".display_name")));
             row.appendChild(label);
             rows.appendChild(row);
-            FPVSOptions.menuChangeHandler({'target': menu_checkbox});
+            FPVSOptions.menuChangeHandler({ 'target': menu_checkbox });
         }
         FPVSOptions.loadPrefs();
     },
 
-    loadPrefs: function() {
-        mapping.forEach(function(mapping) {
+    loadPrefs: function () {
+        mapping.forEach(function (mapping) {
             var elt_id = mapping[0];
             var elt = document.getElementById(elt_id);
             var pref = mapping[1];
             var pref_type = mapping[2];
             var pref_func;
             switch (pref_type) {
-            case "int":
-                elt.value = fpvsUtils.prefBranch.getIntPref(pref);
-                break;
-            case "bool":
-                elt.checked = fpvsUtils.prefBranch.getBoolPref(pref);
-                break;
-            case "string":
-                elt.value = fpvsUtils.prefBranch.getStringPref(pref);
-                break;
-            case "char":
-                elt.value = fpvsUtils.prefBranch.getCharPref(pref);
-                break;
-            default:
-                throw new Error("Unrecognized pref type: " + pref_type);
+                case "int":
+                    elt.value = fpvsUtils.prefBranch.getIntPref(pref);
+                    break;
+                case "bool":
+                    elt.checked = fpvsUtils.prefBranch.getBoolPref(pref);
+                    break;
+                case "string":
+                    elt.value = fpvsUtils.prefBranch.getStringPref(pref);
+                    break;
+                case "char":
+                    elt.value = fpvsUtils.prefBranch.getCharPref(pref);
+                    break;
+                default:
+                    throw new Error("Unrecognized pref type: " + pref_type);
             }
         });
     },
 
-    validatePrefs: function(event) {
-        FPVSOptions.mapping.forEach(function(mapping) {
+    validatePrefs: function (event) {
+        FPVSOptions.mapping.forEach(function (mapping) {
             var elt_id = mapping[0];
             var elt = document.getElementById(elt_id);
             var pref = mapping[1];
             var pref_type = mapping[2];
             var pref_func;
             switch (pref_type) {
-            case "int":
-                fpvsUtils.prefBranch.setIntPref(pref, elt.value);
-                break;
-            case "bool":
-                fpvsUtils.prefBranch.setBoolPref(pref, elt.checked);
-                break;
-            case "string":
-                fpvsUtils.prefBranch.setStringPref(pref, elt.value);
-                break;
-            case "char":
-                fpvsUtils.prefBranch.setCharPref(pref, elt.value);
-                break;
-            default:
-                throw new Error("Unrecognized pref type: " + pref_type);
+                case "int":
+                    fpvsUtils.prefBranch.setIntPref(pref, elt.value);
+                    break;
+                case "bool":
+                    fpvsUtils.prefBranch.setBoolPref(pref, elt.checked);
+                    break;
+                case "string":
+                    fpvsUtils.prefBranch.setStringPref(pref, elt.value);
+                    break;
+                case "char":
+                    fpvsUtils.prefBranch.setCharPref(pref, elt.value);
+                    break;
+                default:
+                    throw new Error("Unrecognized pref type: " + pref_type);
             }
         });
         return true;
     },
 
-    onUnload: function() {
+    onUnload: function () {
         fpvsUtils.uninit();
     }
 };
