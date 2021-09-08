@@ -52,6 +52,7 @@ messenger.tabs.onActivated.addListener(async (activeInfo) => {
 */
 
 async function main() {
+  console.log("backgr");
   messenger.WindowListener.registerDefaultPrefs("chrome/content/scripts/fp-prefs.js");
 
 
@@ -84,7 +85,7 @@ async function main() {
 
 
   messenger.WindowListener.registerOptionsPage("chrome://FolderPaneSwitcher/content/options.xhtml");
-  messenger.WindowListener.registerWindow("chrome://messenger/content/messenger.xhtml", "chrome/content/scripts/fp-messenger.js");
+  //messenger.WindowListener.registerWindow("chrome://messenger/content/messenger.xhtml", "chrome/content/scripts/fp-messenger.js");
 
   //attention: each target window (like messenger.xul) can appear only once
   // this is different from chrome.manifest

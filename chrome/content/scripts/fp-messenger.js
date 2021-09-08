@@ -14,8 +14,8 @@ var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 //var { manage_emails } = ChromeUtils.import("chrome://nostalgy/content/manage_emails.jsm");
 
-Services.scriptloader.loadSubScript("chrome://FolderPaneSwitcher/content/utils.js", window, "UTF-8");
-Services.scriptloader.loadSubScript("chrome://FolderPaneSwitcher/content/FolderPaneSwitcher.js", window, "UTF-8");
+//Services.scriptloader.loadSubScript("chrome://FolderPaneSwitcher/content/utils.js", window, "UTF-8");
+//Services.scriptloader.loadSubScript("chrome://FolderPaneSwitcher/content/FolderPaneSwitcher.js", window, "UTF-8");
 /*
 
 
@@ -38,21 +38,25 @@ function onLoad(activatedWhileWindowOpen) {
        layout.setAttribute("title", "QuickFolderStyles");
        
     */
-
+/**/
     WL.injectElements(`
-    <hbox id="folderPane-toolbar">
-    <toolbarbutton id="FolderPaneSwitcher-back-arrow-button"
-                   image="chrome://FolderPaneSwitcher/content/left-arrow.png"
-                   oncommand="FolderPaneSwitcher.goBackView();"/>
+ 
     <toolbarbutton id="FolderPaneSwitcher-forward-arrow-button"
-                   image="chrome://FolderPaneSwitcher/content/right-arrow.png"
-                   oncommand="FolderPaneSwitcher.goForwardView();"/>
-  </hbox>
+    insertbefore = "folderPaneOptionsButton"
+ 
+    image="chrome://FolderPaneSwitcher/content/right-arrow.png"
+
+    />
+    <toolbarbutton id="FolderPaneSwitcher-back-arrow-button"
+    insertbefore= "FolderPaneSwitcher-forward-arrow-button"
+                   image="chrome://FolderPaneSwitcher/content/left-arrow.png"
+    />
+ 
 `, ["chrome://FolderPaneSwitcher/locale/switcher.dtd"]);
 
     console.log("messenger-FPS");
     //window.onNostalgyLoad();
-    window.FolderPaneSwitcher.onLoad();
+ //   window.FolderPaneSwitcher.onLoad();
 
     //manage_emails.WL = WL;
     /*   
