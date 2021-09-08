@@ -23,6 +23,9 @@
 //   Is there a cached view? No:
 //     Cancel watch timer
 
+
+'use strict';
+
 var FolderPaneSwitcher = {
   addRemoveButtonsObserver: {
     observe: function () {
