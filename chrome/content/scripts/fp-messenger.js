@@ -14,8 +14,8 @@ var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 //var { manage_emails } = ChromeUtils.import("chrome://nostalgy/content/manage_emails.jsm");
 
-//Services.scriptloader.loadSubScript("chrome://FolderPaneSwitcher/content/utils.js", window, "UTF-8");
-//Services.scriptloader.loadSubScript("chrome://FolderPaneSwitcher/content/FolderPaneSwitcher.js", window, "UTF-8");
+Services.scriptloader.loadSubScript("chrome://FolderPaneSwitcher/content/utils.js", window, "UTF-8");
+Services.scriptloader.loadSubScript("chrome://FolderPaneSwitcher/content/FolderPaneSwitcher.js", window, "UTF-8");
 /*
 
 
@@ -43,29 +43,25 @@ function onLoad(activatedWhileWindowOpen) {
  
     <toolbarbutton id="FolderPaneSwitcher-forward-arrow-button"
     insertbefore = "folderPaneOptionsButton"
- 
+    oncommand="FolderPaneSwitcher.goForwardView(event);"
+
     image="chrome://FolderPaneSwitcher/content/right-arrow.png"
 
     />
     <toolbarbutton id="FolderPaneSwitcher-back-arrow-button"
     insertbefore= "FolderPaneSwitcher-forward-arrow-button"
-                   image="chrome://FolderPaneSwitcher/content/left-arrow.png"
+    image="chrome://FolderPaneSwitcher/content/left-arrow.png"
     />
  
 `, ["chrome://FolderPaneSwitcher/locale/switcher.dtd"]);
 
     console.log("messenger-FPS");
-    //window.onNostalgyLoad();
- //   window.FolderPaneSwitcher.onLoad();
-
-    //manage_emails.WL = WL;
-    /*   
-    */
+    window.FolderPaneSwitcher.onLoad();
 }
 
 function onUnload(isAddOnShutDown) {
     console.log("FPS unload");
-    //    window.onNostalgyUnload();
+    window.FolderPaneSwitcher.onUnload();  //    window.onNostalgyUnload();
     Components.classes["@mozilla.org/xre/app-info;1"].
         getService(Components.interfaces.nsIXULRuntime).invalidateCachesOnRestart();
 }

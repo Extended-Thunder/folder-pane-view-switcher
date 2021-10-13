@@ -1,9 +1,9 @@
-'use strict';
+//'use strict';
 
 
 var fpvsPrefRoot = "extensions.FolderPaneSwitcher.";
 
-fpvsUtils = {
+var fpvsUtils = {
     event_handlers: [],
     pref_observers: [],
 

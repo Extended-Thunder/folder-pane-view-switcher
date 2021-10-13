@@ -24,7 +24,15 @@
 //     Cancel watch timer
 
 
-'use strict';
+//'use strict';
+
+var test = {
+goForward: function(event) {
+  console.log("test");
+}
+};
+
+
 
 var FolderPaneSwitcher = {
   addRemoveButtonsObserver: {
@@ -67,15 +75,22 @@ var FolderPaneSwitcher = {
     }
   },
 
-  goForwardView: function () {
-    var currentMode = gFolderTreeView.mode;
+  goForwardView: function (event) {
+  
+  console.log("goforw");
+  console.log("actmodes", gFolderTreeView._activeModes, gFolderTreeView._modes);
+  //gFolderTreeView.activeModes = "favorite";//gFolderTreeView._modes["favorite"];
+  console.log("actmodes", gFolderTreeView._activeModes, gFolderTreeView.activeModes[0]);
+      var currentMode = gFolderTreeView.activeModes[gFolderTreeView.activeModes.length-1];
     var prevMode = null;
+    console.log("keys", Object.keys(gFolderTreeView._modes), Object.keys(gFolderTreeView._modes).reverse() );
     var modes = Object.keys(gFolderTreeView._modes).reverse()
     for (var i in modes) {
-      m = modes[i];
+      let m = modes[i];
       if (m == currentMode) {
         if (prevMode) {
-          gFolderTreeView.mode = prevMode;
+       //   gFolderTreeView.mode = prevMode;
+          gFolderTreeView.activeModes = prevMode;
           return;
         }
       }
@@ -85,8 +100,11 @@ var FolderPaneSwitcher = {
       }
     }
     if (prevMode) {
-      gFolderTreeView.mode = prevMode;
+    //  gFolderTreeView.mode = prevMode;
+      gFolderTreeView.activeModes = prevMode;
     }
+  
+  
   },
 
   views: null,
@@ -151,7 +169,7 @@ var FolderPaneSwitcher = {
           */
     }
     var me = FolderPaneSwitcher;
-    var title = document.getElementById("folderPane-toolbar");
+    var title = document.getElementById("folderPaneHeader");
     fpvsUtils.updateViews(gFolderTreeView);
     this.views = fpvsUtils.getViews(true);
     this.viewsObserver.register(this.logger, this.views);
@@ -309,5 +327,7 @@ var FolderPaneSwitcher = {
   }
 };
 
-window.addEventListener("load", function () { FolderPaneSwitcher.onLoad(); }, false);
-window.addEventListener("unload", function () { FolderPaneSwitcher.onUnload(); }, false);
+
+
+//window.addEventListener("load", function () { FolderPaneSwitcher.onLoad(); }, false);
+//window.addEventListener("unload", function () { FolderPaneSwitcher.onUnload(); }, false);
