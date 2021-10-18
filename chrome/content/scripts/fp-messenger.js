@@ -51,6 +51,7 @@ function onLoad(activatedWhileWindowOpen) {
     <toolbarbutton id="FolderPaneSwitcher-back-arrow-button"
     insertbefore= "FolderPaneSwitcher-forward-arrow-button"
     image="chrome://FolderPaneSwitcher/content/left-arrow.png"
+    oncommand="FolderPaneSwitcher.goBackView(event);"
     />
  
 `, ["chrome://FolderPaneSwitcher/locale/switcher.dtd"]);

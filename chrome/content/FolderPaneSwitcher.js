@@ -48,14 +48,15 @@ var FolderPaneSwitcher = {
   },
 
   goBackView: function () {
-    var currentMode = gFolderTreeView.mode;
+    var currentMode = gFolderTreeView.activeModes[gFolderTreeView.activeModes.length-1];
     var prevMode = null;
     var modes = Object.keys(gFolderTreeView._modes)
     for (var i in modes) {
       m = modes[i];
       if (m == currentMode) {
         if (prevMode) {
-          gFolderTreeView.mode = prevMode;
+//          gFolderTreeView.mode = prevMode;
+          FolderPaneSwitcher.setSingleMode(prevMode);
           return;
         }
       }
@@ -65,7 +66,8 @@ var FolderPaneSwitcher = {
       }
     }
     if (prevMode) {
-      gFolderTreeView.mode = prevMode;
+//      gFolderTreeView.mode = prevMode;
+      FolderPaneSwitcher.setSingleMode(prevMode);
     }
   },
 
@@ -84,7 +86,8 @@ var FolderPaneSwitcher = {
       if (m == currentMode) {
         if (prevMode) {
        //   gFolderTreeView.mode = prevMode;
-          gFolderTreeView.activeModes = prevMode;
+  //        gFolderTreeView.activeModes = prevMode;
+          FolderPaneSwitcher.setSingleMode(prevMode);
           return;
         }
       }
@@ -95,7 +98,9 @@ var FolderPaneSwitcher = {
     }
     if (prevMode) {
     //  gFolderTreeView.mode = prevMode;
-      gFolderTreeView.activeModes = prevMode;
+     // gFolderTreeView.activeModes = prevMode;
+      FolderPaneSwitcher.setSingleMode(prevMode);
+
     }
   
   
@@ -274,18 +279,46 @@ var FolderPaneSwitcher = {
     }
   },
 
+  setSingleMode: function (modeName) {
+    let currModes = gFolderTreeView.activeModes.slice();
+    if (modeName == "all")
+    for (viewName of currModes ) 
+    {
+      console.log("remove", viewName);
+       gFolderTreeView.activeModes = viewName; //toggles, removes if present, if all gone, set to kDefaultMode (="all")
+    }
+    else 
+    for (viewName of currModes ) 
+    {
+      console.log("remove", viewName);
+       gFolderTreeView.activeModes = viewName; //toggles, removes if present, if all gone, set to kDefaultMode (="all")
+       gFolderTreeView.activeModes = modeName;
+              gFolderTreeView.activeModes = "all"; //remove all
+              }
+    
+
+
+  },
+
+
   timer: null,
   timerCallback: {
     notify: function () {
       FolderPaneSwitcher.logger.debug("timerCallback.notify");
+      console.log("defMode", gFolderTreeView.kDefaultMode);
       FolderPaneSwitcher.cachedView = gFolderTreeView.activeModes.slice();
 //      FolderPaneSwitcher.viewsBeforeTimer = gFolderTreeView.activeModes.slice();
       console.log("no type views", FolderPaneSwitcher.viewsBeforeTimer);
+      FolderPaneSwitcher.setSingleMode("all");
+   
+      /*
       for (viewName of FolderPaneSwitcher.cachedView ) 
       {
         console.log("remove", viewName);
          gFolderTreeView.activeModes = viewName; //toggles, removes if present, if all gone, set to kDefaultMode (="all")
       }
+
+      */
 //      FolderPaneSwitcher.cachedView = gFolderTreeView.activeModes.slice();
     //!  gFolderTreeView.mode = "all";
   //  gFolderTreeView._activeModes.length = 0;
