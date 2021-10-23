@@ -281,12 +281,18 @@ var FolderPaneSwitcher = {
 
   setSingleMode: function (modeName) {
     let currModes = gFolderTreeView.activeModes.slice();
-    if (modeName == "all")
     for (viewName of currModes ) 
     {
       console.log("remove", viewName);
        gFolderTreeView.activeModes = viewName; //toggles, removes if present, if all gone, set to kDefaultMode (="all")
     }
+    if (modeName != "all") {
+      gFolderTreeView.activeModes = modeName;
+      gFolderTreeView.activeModes = "all"; //remove "all"
+
+    }
+
+/*
     else 
     for (viewName of currModes ) 
     {
@@ -296,7 +302,7 @@ var FolderPaneSwitcher = {
               gFolderTreeView.activeModes = "all"; //remove all
               }
     
-
+*/
 
   },
 
@@ -305,7 +311,9 @@ var FolderPaneSwitcher = {
   timerCallback: {
     notify: function () {
       FolderPaneSwitcher.logger.debug("timerCallback.notify");
-      console.log("defMode", gFolderTreeView.kDefaultMode);
+      console.log("defMode",  gFolderTreeView._modeNames);
+      gFolderTreeView.unregisterFolderTreeMode("favorite");
+      console.log("defMode nach unreg",  gFolderTreeView._modeNames);
       FolderPaneSwitcher.cachedView = gFolderTreeView.activeModes.slice();
 //      FolderPaneSwitcher.viewsBeforeTimer = gFolderTreeView.activeModes.slice();
       console.log("no type views", FolderPaneSwitcher.viewsBeforeTimer);

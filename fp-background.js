@@ -60,7 +60,7 @@ async function main() {
     ["content", "FolderPaneSwitcher", "chrome/content/"],
     ["locale", "FolderPaneSwitcher", "en-US", "chrome/locale/en-US/"],
     //      ["locale", "quickfolders", "ca", "chrome/locale/ca/"],
-    //      ["locale", "nostalgy", "de", "chrome/locale/de/"],
+    ["locale", "FolderPaneSwitcher", "de", "chrome/locale/de/"]
     /*      ["locale", "quickfolders", "es-MX", "chrome/locale/es-MX/"],
           ["locale", "quickfolders", "es", "chrome/locale/es/"],
           ["locale", "quickfolders", "fr", "chrome/locale/fr/"],
@@ -84,6 +84,7 @@ async function main() {
   ]);
 
 
+//  messenger.WindowListener.registerOptionsPage("chrome://FolderPaneSwitcher/content/options_n.html");
   messenger.WindowListener.registerOptionsPage("chrome://FolderPaneSwitcher/content/options.xhtml");
   //messenger.WindowListener.registerWindow("chrome://messenger/content/messenger.xhtml", "chrome/content/scripts/fp-messenger.js");
 

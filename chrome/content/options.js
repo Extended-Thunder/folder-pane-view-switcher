@@ -21,7 +21,7 @@ var FPVSOptions = {
         var rows = document.getElementById("grid-rows");
         var views = fpvsUtils.getViews();
         for (var viewNum in views) {
-            var row = document.createXULElement("row");
+            var row = document.createElement("tr");
             var prefName = "views." + viewNum + ".menu_enabled";
             var menu_checkbox = document.createXULElement("checkbox");
             var box_id = viewNum + "_menu_checkbox";
@@ -37,13 +37,19 @@ var FPVSOptions = {
             mapping.push([box_id, prefName, "bool"]);
             fpvsUtils.addEventListener(
                 menu_checkbox, "command", FPVSOptions.menuChangeHandler, true);
-            row.appendChild(menu_checkbox);
-            row.appendChild(arrows_checkbox);
+                let td1 = document.createElement("td");
+                td1.appendChild(menu_checkbox);
+            row.appendChild(td1);
+            let td2 = document.createElement("td");
+            td2.appendChild(arrows_checkbox);
+            row.appendChild(td2);
             var label = document.createXULElement("label");
             label.appendChild(document.createTextNode(
                 fpvsUtils.getStringPref(
                     fpvsUtils.viewsBranch, viewNum + ".display_name")));
-            row.appendChild(label);
+                    let td3 = document.createElement("td");
+                    td3.appendChild(label);
+                    row.appendChild(td3);
             rows.appendChild(row);
             FPVSOptions.menuChangeHandler({ 'target': menu_checkbox });
         }

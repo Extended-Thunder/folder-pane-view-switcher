@@ -5,4 +5,5 @@
 <!ENTITY options.enable_disable.label "Enable / disable views">
 <!ENTITY options.menu.label "Menu">
 <!ENTITY options.view_arrows.label "Arrows">
-<!ENTITY options.view.label "View">
+<!ENTITY options.view.label "View1">
+<!ENTITY options.reset.value "Reset">

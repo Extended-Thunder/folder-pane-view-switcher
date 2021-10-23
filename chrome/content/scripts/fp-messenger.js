@@ -12,33 +12,12 @@
 var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 
-//var { manage_emails } = ChromeUtils.import("chrome://nostalgy/content/manage_emails.jsm");
-
 Services.scriptloader.loadSubScript("chrome://FolderPaneSwitcher/content/utils.js", window, "UTF-8");
 Services.scriptloader.loadSubScript("chrome://FolderPaneSwitcher/content/FolderPaneSwitcher.js", window, "UTF-8");
-/*
 
-
- <script src="utils.js"/>
-  <script src="FolderPaneSwitcher.js"/>
- 
-Services.scriptloader.loadSubScript("chrome://nostalgy/content/folders.js", window, "UTF-8");
-Services.scriptloader.loadSubScript("chrome://nostalgy/content/nostalgy_keys.js", window, "UTF-8");
-Services.scriptloader.loadSubScript("chrome://nostalgy/content/sqlite.js", window, "UTF-8");
-Services.scriptloader.loadSubScript("chrome://nostalgy/content/nfpredict.js", window, "UTF-8");
-Services.scriptloader.loadSubScript("chrome://nostalgy/content/nostalgy.js", window, "UTF-8");
-Services.scriptloader.loadSubScript("chrome://nostalgy/content/header_parser.js", window, "UTF-8");
-Services.scriptloader.loadSubScript("chrome://nostalgy/content/edit_prefs.js", window, "UTF-8");
-*/
 
 function onLoad(activatedWhileWindowOpen) {
     console.log(Services.appinfo.version);
-    /*
-       let layout = WL.injectCSS("chrome://quickfolders/content/quickfolders-layout.css");
-       layout.setAttribute("title", "QuickFolderStyles");
-       
-    */
-/**/
     WL.injectElements(`
  
     <toolbarbutton id="FolderPaneSwitcher-forward-arrow-button"
@@ -62,7 +41,6 @@ function onLoad(activatedWhileWindowOpen) {
 
 function onUnload(isAddOnShutDown) {
     console.log("FPS unload");
-    window.FolderPaneSwitcher.onUnload();  //    window.onNostalgyUnload();
-    Components.classes["@mozilla.org/xre/app-info;1"].
-        getService(Components.interfaces.nsIXULRuntime).invalidateCachesOnRestart();
+    window.FolderPaneSwitcher.onUnload();  
+    Services.obs.notifyObservers(null, "startupcache-invalidate", null);          
 }
