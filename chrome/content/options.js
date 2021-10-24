@@ -74,13 +74,13 @@ var FPVSOptions = {
                     elt.value = Services.prefs.getIntPref(fpvsUtils.fpvsPrefRoot+pref);//fpvsUtils.prefBranch.getIntPref(pref);
                     break;
                 case "bool":
-                    elt.checked = fpvsUtils.prefBranch.getBoolPref(pref);
+                    elt.checked = Services.prefs.getBoolPref(fpvsUtils.fpvsPrefRoot+pref);
                     break;
                 case "string":
-                    elt.value = fpvsUtils.prefBranch.getStringPref(pref);
+                    elt.value = Services.prefs.getStringPref(fpvsUtils.fpvsPrefRoot+pref);
                     break;
                 case "char":
-                    elt.value = fpvsUtils.prefBranch.getCharPref(pref);
+                    elt.value = Services.prefs.getCharPref(fpvsUtils.fpvsPrefRoot+pref);
                     break;
                 default:
                     throw new Error("Unrecognized pref type: " + pref_type);
@@ -97,16 +97,16 @@ var FPVSOptions = {
             var pref_func;
             switch (pref_type) {
                 case "int":
-                    fpvsUtils.prefBranch.setIntPref(pref, elt.value);
+                    Services.prefs.setIntPref(fpvsUtils.fpvsPrefRoot+pref, elt.value);
                     break;
                 case "bool":
-                    fpvsUtils.prefBranch.setBoolPref(pref, elt.checked);
+                    Services.prefs.setBoolPref(fpvsUtils.fpvsPrefRoot+pref, elt.checked);
                     break;
                 case "string":
-                    fpvsUtils.prefBranch.setStringPref(pref, elt.value);
+                    Services.prefs.setStringPref(fpvsUtils.fpvsPrefRoot+pref, elt.value);
                     break;
                 case "char":
-                    fpvsUtils.prefBranch.setCharPref(pref, elt.value);
+                    Services.prefs.setCharPref(fpvsUtils.fpvsPrefRoot+pref, elt.value);
                     break;
                 default:
                     throw new Error("Unrecognized pref type: " + pref_type);
@@ -117,7 +117,7 @@ var FPVSOptions = {
 
     onUnload: function () {
         fpvsUtils.uninit();
- //       document.removeEventListener("dialogaccept", FPVSOptions.validatePrefs());
+        document.removeEventListener("dialogaccept", FPVSOptions.validatePrefs);
 
     }
 };
