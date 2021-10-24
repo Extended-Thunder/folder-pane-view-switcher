@@ -152,12 +152,13 @@ var FolderPaneSwitcher = {
     // it ourselves when we convert from overlay to bootstrapped, and there
     // shouldn't be any harm in setting the default values of preferences twice
     // (i.e., both Thunderbird and our code doing it).
+  /*
     var { DefaultPreferencesLoader } = ChromeUtils.import(
       "chrome://FolderPaneSwitcher/content/defaultPreferencesLoader.jsm");
     var loader = new DefaultPreferencesLoader();
     loader.parseUri("chrome://FolderPaneSwitcher/content/scripts/" +
       "fp-prefs.js");
-
+*/
     fpvsUtils.init();
 
     if (!this.logger) {

@@ -1,3 +1,6 @@
+var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+
+
 var FPVSOptions = {
     mapping: [
         ["FolderPaneSwitcher-arrows-checkbox", "arrows", "bool"],
@@ -54,6 +57,8 @@ var FPVSOptions = {
             FPVSOptions.menuChangeHandler({ 'target': menu_checkbox });
         }
         FPVSOptions.loadPrefs();
+        document.addEventListener("dialogaccept", FPVSOptions.validatePrefs);
+ 
     },
 
     loadPrefs: function () {
@@ -63,9 +68,10 @@ var FPVSOptions = {
             var pref = mapping[1];
             var pref_type = mapping[2];
             var pref_func;
+            console.log("getprefs", mapping);
             switch (pref_type) {
                 case "int":
-                    elt.value = fpvsUtils.prefBranch.getIntPref(pref);
+                    elt.value = Services.prefs.getIntPref(fpvsUtils.fpvsPrefRoot+pref);//fpvsUtils.prefBranch.getIntPref(pref);
                     break;
                 case "bool":
                     elt.checked = fpvsUtils.prefBranch.getBoolPref(pref);
@@ -111,6 +117,8 @@ var FPVSOptions = {
 
     onUnload: function () {
         fpvsUtils.uninit();
+ //       document.removeEventListener("dialogaccept", FPVSOptions.validatePrefs());
+
     }
 };
 

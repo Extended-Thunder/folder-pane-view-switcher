@@ -6,6 +6,7 @@ var fpvsPrefRoot = "extensions.FolderPaneSwitcher.";
 var fpvsUtils = {
     event_handlers: [],
     pref_observers: [],
+    fpvsPrefRoot: fpvsPrefRoot,
 
     init: function() {
         this.prefService = Components
