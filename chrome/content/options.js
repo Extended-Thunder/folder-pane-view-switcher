@@ -40,8 +40,8 @@ var FPVSOptions = {
             mapping.push([box_id, prefName, "bool"]);
             fpvsUtils.addEventListener(
                 menu_checkbox, "command", FPVSOptions.menuChangeHandler, true);
-                let td1 = document.createElement("td");
-                td1.appendChild(menu_checkbox);
+            let td1 = document.createElement("td");
+            td1.appendChild(menu_checkbox);
             row.appendChild(td1);
             let td2 = document.createElement("td");
             td2.appendChild(arrows_checkbox);
@@ -50,15 +50,16 @@ var FPVSOptions = {
             label.appendChild(document.createTextNode(
                 fpvsUtils.getStringPref(
                     fpvsUtils.viewsBranch, viewNum + ".display_name")));
-                    let td3 = document.createElement("td");
-                    td3.appendChild(label);
-                    row.appendChild(td3);
+            let td3 = document.createElement("td");
+            td3.appendChild(label);
+            row.appendChild(td3);
             rows.appendChild(row);
-            FPVSOptions.menuChangeHandler({ 'target': menu_checkbox });
+  //          FPVSOptions.menuChangeHandler({ 'target': menu_checkbox });
         }
         FPVSOptions.loadPrefs();
         document.addEventListener("dialogaccept", FPVSOptions.validatePrefs);
- 
+//        document.addEventListener("dialogextra1", FPVSOptions.loadPrefs);
+
     },
 
     loadPrefs: function () {
@@ -71,16 +72,16 @@ var FPVSOptions = {
             console.log("getprefs", mapping);
             switch (pref_type) {
                 case "int":
-                    elt.value = Services.prefs.getIntPref(fpvsUtils.fpvsPrefRoot+pref);//fpvsUtils.prefBranch.getIntPref(pref);
+                    elt.value = Services.prefs.getIntPref(fpvsUtils.fpvsPrefRoot + pref);//fpvsUtils.prefBranch.getIntPref(pref);
                     break;
                 case "bool":
-                    elt.checked = Services.prefs.getBoolPref(fpvsUtils.fpvsPrefRoot+pref);
+                    elt.checked = Services.prefs.getBoolPref(fpvsUtils.fpvsPrefRoot + pref);
                     break;
                 case "string":
-                    elt.value = Services.prefs.getStringPref(fpvsUtils.fpvsPrefRoot+pref);
+                    elt.value = Services.prefs.getStringPref(fpvsUtils.fpvsPrefRoot + pref);
                     break;
                 case "char":
-                    elt.value = Services.prefs.getCharPref(fpvsUtils.fpvsPrefRoot+pref);
+                    elt.value = Services.prefs.getCharPref(fpvsUtils.fpvsPrefRoot + pref);
                     break;
                 default:
                     throw new Error("Unrecognized pref type: " + pref_type);
@@ -97,16 +98,16 @@ var FPVSOptions = {
             var pref_func;
             switch (pref_type) {
                 case "int":
-                    Services.prefs.setIntPref(fpvsUtils.fpvsPrefRoot+pref, elt.value);
+                    Services.prefs.setIntPref(fpvsUtils.fpvsPrefRoot + pref, elt.value);
                     break;
                 case "bool":
-                    Services.prefs.setBoolPref(fpvsUtils.fpvsPrefRoot+pref, elt.checked);
+                    Services.prefs.setBoolPref(fpvsUtils.fpvsPrefRoot + pref, elt.checked);
                     break;
                 case "string":
-                    Services.prefs.setStringPref(fpvsUtils.fpvsPrefRoot+pref, elt.value);
+                    Services.prefs.setStringPref(fpvsUtils.fpvsPrefRoot + pref, elt.value);
                     break;
                 case "char":
-                    Services.prefs.setCharPref(fpvsUtils.fpvsPrefRoot+pref, elt.value);
+                    Services.prefs.setCharPref(fpvsUtils.fpvsPrefRoot + pref, elt.value);
                     break;
                 default:
                     throw new Error("Unrecognized pref type: " + pref_type);

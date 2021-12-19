@@ -16,7 +16,7 @@ Services.scriptloader.loadSubScript("chrome://FolderPaneSwitcher/content/utils.j
 Services.scriptloader.loadSubScript("chrome://FolderPaneSwitcher/content/FolderPaneSwitcher.js", window, "UTF-8");
 
 
-function onLoad(activatedWhileWindowOpen) {
+async function onLoad(activatedWhileWindowOpen) {
     console.log(Services.appinfo.version);
     WL.injectElements(`
  
@@ -35,8 +35,16 @@ function onLoad(activatedWhileWindowOpen) {
  
 `, ["chrome://FolderPaneSwitcher/locale/switcher.dtd"]);
 
-    console.log("messenger-FPS");
+    console.log("messenger-FPS");//, window.gFolderTree.isInited);
+//    window.setTimeout(window.FolderPaneSwitcher.onLoad, 30000);
+    console.log("messenger-FPS inited", window.gFolderTreeView.isInited);
+
+    while (!window.gFolderTreeView.isInited) {
+        console.log("waiting");
+        await new Promise(resolve => window.setTimeout(resolve, 100));
+    };
     window.FolderPaneSwitcher.onLoad();
+    console.log("window", window);
 }
 
 function onUnload(isAddOnShutDown) {

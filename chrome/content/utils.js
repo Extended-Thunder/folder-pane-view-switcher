@@ -9,11 +9,11 @@ var fpvsUtils = {
     fpvsPrefRoot: fpvsPrefRoot,
 
     init: function() {
-        this.prefService = Components
-            .classes["@mozilla.org/preferences-service;1"]
-            .getService(Components.interfaces.nsIPrefService);
-        this.prefBranch = this.prefService.getBranch(fpvsPrefRoot);
-        this.viewsBranch = this.prefService.getBranch(fpvsPrefRoot + "views.");
+ //       this.prefService = Components
+ //           .classes["@mozilla.org/preferences-service;1"]
+ //           .getService(Components.interfaces.nsIPrefService);
+        this.prefBranch = Services.prefs.getBranch(fpvsPrefRoot);//   this.prefService.getBranch(fpvsPrefRoot);
+        this.viewsBranch = Services.prefs.getBranch(fpvsPrefRoot + "views.");//  this.prefService.getBranch(fpvsPrefRoot + "views.");
     },
 
     uninit: function() {
@@ -31,7 +31,7 @@ var fpvsUtils = {
     },
 
     addObserver: function(branch, pref, observer, holdWeak) {
-        branch.addObserver(pref, observer, holdWeak);
+        branch.addObserver(pref, observer);  //, holdWeak
         this.pref_observers.push([branch, pref, observer]);
     },
 
@@ -46,7 +46,7 @@ var fpvsUtils = {
     getViews: function(byName) {
         var views = {};
         var obj = {};
-        var children = this.viewsBranch.getChildList("", obj);
+        var children = this.viewsBranch.getChildList("");//, obj);
         var regex = /^(\d+)\./;
         for (var child of children) {
             var match = regex.exec(child);

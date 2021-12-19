@@ -31,10 +31,10 @@
 var FolderPaneSwitcher = {
   addRemoveButtonsObserver: {
     observe: function () {
-      var prefBranch = Components.classes["@mozilla.org/preferences-service;1"]
-        .getService(Components.interfaces.nsIPrefBranch);
+//      var prefBranch = Components.classes["@mozilla.org/preferences-service;1"]
+//        .getService(Components.interfaces.nsIPrefBranch);
       var should_be_hidden =
-        !prefBranch.getBoolPref("extensions.FolderPaneSwitcher.arrows");
+        !Services.prefs.getBoolPref("extensions.FolderPaneSwitcher.arrows");
       var is_hidden =
         !!document.getElementById(
           "FolderPaneSwitcher-back-arrow-button").hidden;
@@ -125,6 +125,7 @@ var FolderPaneSwitcher = {
     },
 
     observe: function (aSubject, aTopic, aData) {
+      console.log("viewobserver", aSubject, aData);
       var match = /^(\d+)\.(.*_enabled)$/.exec(aData);
       if (!match) return;
       var viewNum = match[1];
@@ -134,8 +135,10 @@ var FolderPaneSwitcher = {
         viewNum + ".name");
       var view = this.views[name];
       view[which] = enabled;
-      if (which != 'menu_enabled') return;
+ //     if (which != 'menu_enabled') return;
+      if (which != 'arrows_enabled') return;
       if (enabled) {
+      console.log ( "reregister", );
         gFolderTreeView.registerFolderTreeMode(name, view['handler'],
           view['display_name']);
       } else {
@@ -159,6 +162,7 @@ var FolderPaneSwitcher = {
     loader.parseUri("chrome://FolderPaneSwitcher/content/scripts/" +
       "fp-prefs.js");
 */
+console.log("FPVS onload");
     fpvsUtils.init();
 
     if (!this.logger) {
@@ -313,8 +317,8 @@ var FolderPaneSwitcher = {
     notify: function () {
       FolderPaneSwitcher.logger.debug("timerCallback.notify");
       console.log("defMode",  gFolderTreeView._modeNames);
-      gFolderTreeView.unregisterFolderTreeMode("favorite");
-      console.log("defMode nach unreg",  gFolderTreeView._modeNames);
+   //   gFolderTreeView.unregisterFolderTreeMode("favorite");
+   //   console.log("defMode nach unreg",  gFolderTreeView._modeNames);
       FolderPaneSwitcher.cachedView = gFolderTreeView.activeModes.slice();
 //      FolderPaneSwitcher.viewsBeforeTimer = gFolderTreeView.activeModes.slice();
       console.log("no type views", FolderPaneSwitcher.viewsBeforeTimer);
@@ -350,9 +354,9 @@ var FolderPaneSwitcher = {
     if (FolderPaneSwitcher.timer) {
       FolderPaneSwitcher.timer.cancel();
     }
-    var prefBranch = Components.classes["@mozilla.org/preferences-service;1"]
-      .getService(Components.interfaces.nsIPrefBranch);
-    var delay = 1000; //!prefBranch.getIntPref("extensions.FolderPaneSwitcher.delay");
+  //  var prefBranch = Components.classes["@mozilla.org/preferences-service;1"]
+  //    .getService(Components.interfaces.nsIPrefBranch);
+    var delay = Services.prefs.getIntPref("extensions.FolderPaneSwitcher.delay");
     var t = Components.classes["@mozilla.org/timer;1"]
       .createInstance(Components.interfaces.nsITimer);
     t.initWithCallback(FolderPaneSwitcher.timerCallback, delay,
