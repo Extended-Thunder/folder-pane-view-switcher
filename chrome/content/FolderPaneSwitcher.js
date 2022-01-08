@@ -29,6 +29,10 @@
 
 
 var FolderPaneSwitcher = {
+
+ originalModeNames: [],
+ originalModes: [],
+ originalModeDisplayNames: [],
   addRemoveButtonsObserver: {
     observe: function () {
 //      var prefBranch = Components.classes["@mozilla.org/preferences-service;1"]
@@ -74,9 +78,9 @@ var FolderPaneSwitcher = {
   goForwardView: function (event) {
   
   console.log("goforw");
-  console.log("actmodes", gFolderTreeView._activeModes, gFolderTreeView._modes);
+  console.log("_actmodes, _modes", gFolderTreeView._activeModes, gFolderTreeView._modes);
   //gFolderTreeView.activeModes = "favorite";//gFolderTreeView._modes["favorite"];
-  console.log("actmodes2", gFolderTreeView._activeModes, gFolderTreeView.activeModes, gFolderTreeView.activeModes[0]);
+  console.log("actmodes, actModes[0]",  gFolderTreeView.activeModes, gFolderTreeView.activeModes[0]);
       var currentMode = gFolderTreeView.activeModes[gFolderTreeView.activeModes.length-1];
     var prevMode = null;
     console.log("keys", Object.keys(gFolderTreeView._modes), Object.keys(gFolderTreeView._modes).reverse() );
@@ -163,7 +167,7 @@ var FolderPaneSwitcher = {
       "fp-prefs.js");
 */
 console.log("FPVS onload");
-    fpvsUtils.init();
+   fpvsUtils.init();  //set pref branches
 
     if (!this.logger) {
       this.logger = console;
@@ -175,9 +179,16 @@ console.log("FPVS onload");
           */
     }
     var me = FolderPaneSwitcher;
+    me.originalModeNames = gFolderTreeView._modeNames;
+    me.originalModes = gFolderTreeView._modes;
+    me.originalModeDisplayNames = gFolderTreeView._modeDisplayNames;
+    console.log("all possible mode names",  gFolderTreeView._modeNames);
+     
+ 
+ 
     var title = document.getElementById("folderPaneHeader");
-    fpvsUtils.updateViews(gFolderTreeView);
-    this.views = fpvsUtils.getViews(true);
+    fpvsUtils.updateViews(gFolderTreeView); //save views as "dontworryaboutit"
+    this.views = fpvsUtils.getViews(true);  //get real view name
     this.viewsObserver.register(this.logger, this.views);
 
     var prefBranch = Components.classes["@mozilla.org/preferences-service;1"]
@@ -217,7 +228,14 @@ console.log("FPVS onload");
   },
 
   onUnload: function () {
-    fpvsUtils.uninit();
+    fpvsUtils.uninit(); //remove observers, eventlisteners
+    //restore all initial modes
+  //  for (mode in FolderPaneSwitcher.possible_view_names)  {
+ //     gFolderTreeView.registerFolderTreeMode(mode, view['handler'],
+   //   view['display_name']);
+//;    };
+debugger;
+gFolderTreeView.unregisterFolderTreeMode("recent");
   },
 
   folderListener: {
@@ -286,10 +304,13 @@ console.log("FPVS onload");
 
   setSingleMode: function (modeName) {
     let currModes = gFolderTreeView.activeModes.slice();
+    console.log("setSingleMode: currModes", currModes);
+  //  if (! currModes.includes("all" )) gFolderTreeView.activeModes = "all"; //so we don't end with no defaultview
+    console.log("setSingleMode: actModes",  gFolderTreeView.activeModes);
     for (viewName of currModes ) 
     {
       console.log("remove", viewName);
-       gFolderTreeView.activeModes = viewName; //toggles, removes if present, if all gone, set to kDefaultMode (="all")
+       if (viewName != "all") gFolderTreeView.activeModes = viewName; //toggles, removes if present, if all gone, set to kDefaultMode (="all")
     }
     if (modeName != "all") {
       gFolderTreeView.activeModes = modeName;

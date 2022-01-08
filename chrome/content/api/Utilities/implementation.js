@@ -30,30 +30,6 @@ var Utilities = class extends ExtensionCommon.ExtensionAPI {
         isMailTab (isMailTab) {
           console.log("isMailTab"+isMailTab);
           win.manage_emails.isMailTab = isMailTab;
-        },
-        
- 
-        logDebug (text) {
-          console.log(text);
-        },
-      
-        
-        openLinkExternally: function(url) {
-          let uri = url;
-          if (!(uri instanceof Ci.nsIURI)) {
-            uri = Services.io.newURI(url);
-          }
-          
-          Cc["@mozilla.org/uriloader/external-protocol-service;1"]
-            .getService(Ci.nsIExternalProtocolService)
-            .loadURI(uri);
-        },
-
-        showXhtmlPage: function(uri) {
-          let mail3PaneWindow = Components.classes["@mozilla.org/appshell/window-mediator;1"]
-            .getService(Components.interfaces.nsIWindowMediator)
-            .getMostRecentWindow("mail:3pane");  
-          mail3PaneWindow.openDialog(uri);
         }
   
 

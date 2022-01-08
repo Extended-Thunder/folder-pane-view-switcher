@@ -30,9 +30,10 @@ var FPVSOptions = {
             var box_id = viewNum + "_menu_checkbox";
             menu_checkbox.setAttribute("id", box_id);
             mapping.push([box_id, prefName, "bool"]);
-            if (views[viewNum]['name'] == "all")
+         //   if (views[viewNum]['name'] == "all")
                 // All Folders view can't be completely disabled.
-                menu_checkbox.disabled = true;
+                //!! functionality of menu has changed. Disable all settings here
+       //         menu_checkbox.disabled = true;
             prefName = "views." + viewNum + ".arrows_enabled";
             var arrows_checkbox = document.createXULElement("checkbox");
             box_id = viewNum + "_arrows_checkbox";
@@ -58,7 +59,6 @@ var FPVSOptions = {
         }
         FPVSOptions.loadPrefs();
         document.addEventListener("dialogaccept", FPVSOptions.validatePrefs);
-//        document.addEventListener("dialogextra1", FPVSOptions.loadPrefs);
 
     },
 
@@ -72,7 +72,7 @@ var FPVSOptions = {
             console.log("getprefs", mapping);
             switch (pref_type) {
                 case "int":
-                    elt.value = Services.prefs.getIntPref(fpvsUtils.fpvsPrefRoot + pref);//fpvsUtils.prefBranch.getIntPref(pref);
+                    elt.value = Services.prefs.getIntPref(fpvsUtils.fpvsPrefRoot + pref);
                     break;
                 case "bool":
                     elt.checked = Services.prefs.getBoolPref(fpvsUtils.fpvsPrefRoot + pref);

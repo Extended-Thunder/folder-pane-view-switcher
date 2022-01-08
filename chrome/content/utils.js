@@ -9,11 +9,8 @@ var fpvsUtils = {
     fpvsPrefRoot: fpvsPrefRoot,
 
     init: function() {
- //       this.prefService = Components
- //           .classes["@mozilla.org/preferences-service;1"]
- //           .getService(Components.interfaces.nsIPrefService);
-        this.prefBranch = Services.prefs.getBranch(fpvsPrefRoot);//   this.prefService.getBranch(fpvsPrefRoot);
-        this.viewsBranch = Services.prefs.getBranch(fpvsPrefRoot + "views.");//  this.prefService.getBranch(fpvsPrefRoot + "views.");
+         this.prefBranch = Services.prefs.getBranch(fpvsPrefRoot);
+        this.viewsBranch = Services.prefs.getBranch(fpvsPrefRoot + "views.");
     },
 
     uninit: function() {
@@ -47,6 +44,7 @@ var fpvsUtils = {
         var views = {};
         var obj = {};
         var children = this.viewsBranch.getChildList("");//, obj);
+        console.log("children in viewsbranch", children);
         var regex = /^(\d+)\./;
         for (var child of children) {
             var match = regex.exec(child);
@@ -95,6 +93,7 @@ var fpvsUtils = {
 
     updateViews: function(treeView) {
         var storedViews = this.getViews();
+        console.log("storedViews in updateViews", storedViews, "all mode names",treeView._modeNames );
         for (var commonName of treeView._modeNames) {
             var found = false;
             for (var viewNum in storedViews) {
@@ -115,6 +114,7 @@ var fpvsUtils = {
             if (found) continue;
             var i;
             for (i = 0; String(i) in storedViews; i++) ;
+            console.log("no of views stored", i);
             this.setStringPref(this.viewsBranch, i + ".name", commonName);
             this.setStringPref(this.viewsBranch, i + ".display_name",
                                this.getViewDisplayName(treeView, commonName));
