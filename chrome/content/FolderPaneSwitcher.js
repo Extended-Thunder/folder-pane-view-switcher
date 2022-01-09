@@ -33,6 +33,56 @@ var FolderPaneSwitcher = {
  originalModeNames: [],
  originalModes: [],
  originalModeDisplayNames: [],
+ selectedViews: [],
+
+ setViewInUI: function (viewname, enabled) {
+   //debugger;
+
+  let popupF = document.getElementById("folderPaneOptionsPopup");
+  let items = popupF.querySelectorAll("menuitem");
+  let item = popupF.querySelector(`[value=${viewname}]`);
+  item.hidden = !enabled;
+  console.log("popup", popupF,items, viewname, item );
+
+
+  
+popupF = document.getElementById("menu_FolderViewsPopup");
+items = popupF.querySelectorAll("menuitem");
+item = popupF.querySelector(`[value=${viewname}]`);
+item.hidden = !enabled;
+console.log("menu_FolderViewsPopup", popupF,items, viewname );
+/*
+for (item of  items)  {
+  if (item.value == "recent") { item.hidden = true;
+    console.log("found",item);
+};};
+*/
+
+popupF = document.getElementById("appMenu-foldersView");
+ items = popupF.querySelectorAll("toolbarbutton");
+item = popupF.querySelector(`[value=${viewname}]`);
+  item.setAttribute("hidden", !enabled);
+  console.log("appMenu-foldersView", popupF,items, viewname );
+
+
+
+ },
+
+ setViewForArrows: function (viewname, enabled) {
+   if (enabled) {
+     if (!FolderPaneSwitcher.selectedViews.includes(viewname)) FolderPaneSwitcher.selectedViews.push(viewname); 
+
+   } else {
+    FolderPaneSwitcher.selectedViews = FolderPaneSwitcher.selectedViews.filter( value => value != viewname);  
+   };
+   console.log("selectedviews", FolderPaneSwitcher.selectedViews);
+   //if current view is no longer in selectedViews, then set selectedViews[0]
+   if (! FolderPaneSwitcher.selectedViews.includes (gFolderTreeView.activeModes[gFolderTreeView.activeModes.length-1]))
+          FolderPaneSwitcher.setSingleMode(FolderPaneSwitcher.selectedViews[0]);
+  
+
+ },
+ 
   addRemoveButtonsObserver: {
     observe: function () {
 //      var prefBranch = Components.classes["@mozilla.org/preferences-service;1"]
@@ -52,6 +102,23 @@ var FolderPaneSwitcher = {
   },
 
   goBackView: function () {
+  
+  
+    var currentView = gFolderTreeView.activeModes[gFolderTreeView.activeModes.length-1];
+    console.log("goback, currentview", currentView);
+    let currInd = FolderPaneSwitcher.selectedViews.findIndex((name) => name == currentView);
+    console.log("goback, currind, length", currInd, FolderPaneSwitcher.selectedViews.length);
+    
+    if (currInd >0) currInd--
+    //FolderPaneSwitcher.setSingleMode(FolderPaneSwitcher.selectedViews[currInd+1])
+    else currInd = FolderPaneSwitcher.selectedViews.length-1;
+    console.log("next view, _actmodes, _modes", FolderPaneSwitcher.selectedViews[currInd], gFolderTreeView._activeModes, gFolderTreeView._modes);
+    FolderPaneSwitcher.setSingleMode(FolderPaneSwitcher.selectedViews[currInd]);
+    //gFolderTreeView.activeModes = "favorite";//gFolderTreeView._modes["favorite"];
+    console.log("actmodes, actModes[0]",  gFolderTreeView.activeModes, gFolderTreeView.activeModes[0]);
+  
+    /*
+  
     var currentMode = gFolderTreeView.activeModes[gFolderTreeView.activeModes.length-1];
     var prevMode = null;
     var modes = Object.keys(gFolderTreeView._modes)
@@ -73,14 +140,27 @@ var FolderPaneSwitcher = {
 //      gFolderTreeView.mode = prevMode;
       FolderPaneSwitcher.setSingleMode(prevMode);
     }
+
+    */
   },
 
   goForwardView: function (event) {
   
-  console.log("goforw");
-  console.log("_actmodes, _modes", gFolderTreeView._activeModes, gFolderTreeView._modes);
+
+  var currentView = gFolderTreeView.activeModes[gFolderTreeView.activeModes.length-1];
+  console.log("goforw, currentview", currentView);
+  let currInd = FolderPaneSwitcher.selectedViews.findIndex((name) => name == currentView);
+  console.log("goforw, currind, length", currInd, FolderPaneSwitcher.selectedViews.length);
+  
+  if (currInd < FolderPaneSwitcher.selectedViews.length-1) currInd++
+  //FolderPaneSwitcher.setSingleMode(FolderPaneSwitcher.selectedViews[currInd+1])
+  else currInd = 0;
+  console.log("next view, _actmodes, _modes", FolderPaneSwitcher.selectedViews[currInd], gFolderTreeView._activeModes, gFolderTreeView._modes);
+  FolderPaneSwitcher.setSingleMode(FolderPaneSwitcher.selectedViews[currInd]);
   //gFolderTreeView.activeModes = "favorite";//gFolderTreeView._modes["favorite"];
   console.log("actmodes, actModes[0]",  gFolderTreeView.activeModes, gFolderTreeView.activeModes[0]);
+/*
+
       var currentMode = gFolderTreeView.activeModes[gFolderTreeView.activeModes.length-1];
     var prevMode = null;
     console.log("keys", Object.keys(gFolderTreeView._modes), Object.keys(gFolderTreeView._modes).reverse() );
@@ -107,7 +187,7 @@ var FolderPaneSwitcher = {
 
     }
   
-  
+  */
   },
 
   views: null,
@@ -139,16 +219,27 @@ var FolderPaneSwitcher = {
         viewNum + ".name");
       var view = this.views[name];
       view[which] = enabled;
- //     if (which != 'menu_enabled') return;
-      if (which != 'arrows_enabled') return;
+      console.log("viewobserver", aSubject, aData, "name", name, viewNum, which, enabled);
+      
+      
+      if (which == 'menu_enabled') {
+        FolderPaneSwitcher.setViewInUI(name, enabled); 
+        return;
+      };
+      if (which == 'arrows_enabled') {
+  //      debugger;
+        FolderPaneSwitcher.setViewForArrows(name, enabled);
+      };
+   /*
       if (enabled) {
-      console.log ( "reregister", );
+ //     console.log ( "reregister", );
         gFolderTreeView.registerFolderTreeMode(name, view['handler'],
           view['display_name']);
       } else {
         view['handler'] = gFolderTreeView._modes[name];
         gFolderTreeView.unregisterFolderTreeMode(name);
       }
+      */
     }
   },
 
@@ -167,7 +258,12 @@ var FolderPaneSwitcher = {
       "fp-prefs.js");
 */
 console.log("FPVS onload");
-   fpvsUtils.init();  //set pref branches
+//init popup in case it was never opened
+gFolderTreeView.initFolderPaneOptionsPopup();
+
+
+
+fpvsUtils.init();  //set pref branches
 
     if (!this.logger) {
       this.logger = console;
@@ -180,18 +276,26 @@ console.log("FPVS onload");
     }
     var me = FolderPaneSwitcher;
     me.originalModeNames = gFolderTreeView._modeNames;
+//    me.selectedViews = me.originalModeNames; //start with all views
     me.originalModes = gFolderTreeView._modes;
     me.originalModeDisplayNames = gFolderTreeView._modeDisplayNames;
     console.log("all possible mode names",  gFolderTreeView._modeNames);
      
- 
+  //  me.selectedViews = me.originalModeNames; //start with all views
  
     var title = document.getElementById("folderPaneHeader");
     fpvsUtils.updateViews(gFolderTreeView); //save views as "dontworryaboutit"
     this.views = fpvsUtils.getViews(true);  //get real view name
     this.viewsObserver.register(this.logger, this.views);
+console.log("views in load", this.views);
+for (let [key, value] of Object.entries(this.views)) {
+  me.setViewInUI(key, value.menu_enabled);
+  if (value.arrows_enabled)  me.selectedViews.push(key);
+};
 
-    var prefBranch = Components.classes["@mozilla.org/preferences-service;1"]
+console.log("selviews", me.selectedViews);
+ 
+   var prefBranch = Components.classes["@mozilla.org/preferences-service;1"]
       .getService(Components.interfaces.nsIPrefBranch);
 
     title.addEventListener("dragexit", me.onDragExit, false);
@@ -234,8 +338,8 @@ console.log("FPVS onload");
  //     gFolderTreeView.registerFolderTreeMode(mode, view['handler'],
    //   view['display_name']);
 //;    };
-debugger;
-gFolderTreeView.unregisterFolderTreeMode("recent");
+//debugger;
+//gFolderTreeView.unregisterFolderTreeMode("recent");
   },
 
   folderListener: {
@@ -304,20 +408,25 @@ gFolderTreeView.unregisterFolderTreeMode("recent");
 
   setSingleMode: function (modeName) {
     let currModes = gFolderTreeView.activeModes.slice();
-    console.log("setSingleMode: currModes", currModes);
+    console.log("setSingleMode: currModes", currModes, "set to", modeName);
   //  if (! currModes.includes("all" )) gFolderTreeView.activeModes = "all"; //so we don't end with no defaultview
     console.log("setSingleMode: actModes",  gFolderTreeView.activeModes);
+   
+    gFolderTreeView.activeModes = modeName;
+    
     for (viewName of currModes ) 
     {
       console.log("remove", viewName);
-       if (viewName != "all") gFolderTreeView.activeModes = viewName; //toggles, removes if present, if all gone, set to kDefaultMode (="all")
+       if (viewName !=modeName) gFolderTreeView.activeModes = viewName; //toggles, removes if present, if all gone, set to kDefaultMode (="all")
     }
-    if (modeName != "all") {
+ 
+ 
+    /*   if (modeName != "all") {
       gFolderTreeView.activeModes = modeName;
       gFolderTreeView.activeModes = "all"; //remove "all"
 
     }
-
+*/
 /*
     else 
     for (viewName of currModes ) 

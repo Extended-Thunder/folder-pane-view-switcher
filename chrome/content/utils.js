@@ -9,7 +9,7 @@ var fpvsUtils = {
     fpvsPrefRoot: fpvsPrefRoot,
 
     init: function() {
-         this.prefBranch = Services.prefs.getBranch(fpvsPrefRoot);
+        this.prefBranch = Services.prefs.getBranch(fpvsPrefRoot);
         this.viewsBranch = Services.prefs.getBranch(fpvsPrefRoot + "views.");
     },
 
