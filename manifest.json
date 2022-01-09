@@ -1,6 +1,6 @@
 {
     "name": "__MSG_appName__",
-    "version": "5.0.0",
+    "version": "5.1.0",
     "description": "__MSG_appDesc__",
     "author": "Jonathan Kamens, Klaus Buecher",
     "default_locale": "en-US",

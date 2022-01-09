@@ -34,9 +34,20 @@ var FolderPaneSwitcher = {
  originalModes: [],
  originalModeDisplayNames: [],
  selectedViews: [],
+ menuEnabledViews: [],
 
  setViewInUI: function (viewname, enabled) {
    //debugger;
+
+
+   if (enabled) {
+    if (!FolderPaneSwitcher.menuEnabledViews.includes(viewname)) FolderPaneSwitcher.menuEnabledViews.push(viewname); 
+
+  } else {
+   FolderPaneSwitcher.menuEnabledViews = FolderPaneSwitcher.menuEnabledViews.filter( value => value != viewname);  
+  };
+  console.log("menuEnabledViews", FolderPaneSwitcher.menuEnabledViews);
+  
 
   let popupF = document.getElementById("folderPaneOptionsPopup");
   let items = popupF.querySelectorAll("menuitem");
@@ -219,13 +230,14 @@ fpvsUtils.init();  //set pref branches
   //  me.selectedViews = me.originalModeNames; //start with all views
  
     var title = document.getElementById("folderPaneHeader");
-    fpvsUtils.updateViews(gFolderTreeView); //save views as "dontworryaboutit"
+    fpvsUtils.updateViews(gFolderTreeView); //save views as "dontworryaboutit", if none in prefs
     this.views = fpvsUtils.getViews(true);  //get real view name
     this.viewsObserver.register(this.logger, this.views);
 console.log("views in load", this.views);
 for (let [key, value] of Object.entries(this.views)) {
   me.setViewInUI(key, value.menu_enabled);
-  if (value.arrows_enabled)  me.selectedViews.push(key);
+  me.setViewForArrows(key, value.arrows_enabled);
+  //both also take care to set selectedViews and menuEnabledViews
 };
 
 console.log("selviews", me.selectedViews);
@@ -248,6 +260,7 @@ console.log("selviews", me.selectedViews);
     // Thunderbird (see bz#674807). To work around it, I register a
     // folder listener to detect when a move or copy is
     // completed. This is gross, but appears to work well enough.
+    //By 2022, the bug is wontfix
     var ns =
       Components.classes["@mozilla.org/messenger/msgnotificationservice;1"]
         .getService(Components.interfaces.nsIMsgFolderNotificationService);
@@ -309,6 +322,7 @@ console.log("selviews", me.selectedViews);
 
   onDragExit: function (aEvent) {
     FolderPaneSwitcher.logger.debug("onDragExit(" + aEvent.type + ")");
+    console.log("dragexit should never happen as the bug is wontfix");
     if (FolderPaneSwitcher.timer) {
       FolderPaneSwitcher.timer.cancel();
       FolderPaneSwitcher.timer = null;
@@ -325,10 +339,12 @@ console.log("selviews", me.selectedViews);
     FolderPaneSwitcher.logger.debug("onDragDrop(" + aEvent.type + ")");
    console.log("onDragDrop(" + aEvent.type + ")");
     if (FolderPaneSwitcher.cachedView) {
-      for (viewname of FolderPaneSwitcher.cachedView)  {
+      FolderPaneSwitcher.setSingleMode(FolderPaneSwitcher.cachedView);
+/*      for (viewname of FolderPaneSwitcher.cachedView)  {
         console.log("onDrDr, add ", viewname);
         gFolderTreeView.activeModes = viewname; 
       }
+*/
       FolderPaneSwitcher.cachedView = null;
       FolderPaneSwitcher.currentFolder = null;
     }
@@ -337,10 +353,9 @@ console.log("selviews", me.selectedViews);
   setSingleMode: function (modeName) {
     let currModes = gFolderTreeView.activeModes.slice();
     console.log("setSingleMode: currModes", currModes, "set to", modeName);
-  //  if (! currModes.includes("all" )) gFolderTreeView.activeModes = "all"; //so we don't end with no defaultview
     console.log("setSingleMode: actModes",  gFolderTreeView.activeModes);
    
-    gFolderTreeView.activeModes = modeName;
+    if (!gFolderTreeView.activeModes.includes(modeName) ) gFolderTreeView.activeModes = modeName;
     
     for (viewName of currModes ) 
     {
@@ -355,30 +370,12 @@ console.log("selviews", me.selectedViews);
     notify: function () {
       FolderPaneSwitcher.logger.debug("timerCallback.notify");
       console.log("defMode",  gFolderTreeView._modeNames);
-   //   gFolderTreeView.unregisterFolderTreeMode("favorite");
-   //   console.log("defMode nach unreg",  gFolderTreeView._modeNames);
-      FolderPaneSwitcher.cachedView = gFolderTreeView.activeModes.slice();
-//      FolderPaneSwitcher.viewsBeforeTimer = gFolderTreeView.activeModes.slice();
-      console.log("no type views", FolderPaneSwitcher.viewsBeforeTimer);
+      FolderPaneSwitcher.cachedView = gFolderTreeView.activeModes[gFolderTreeView.activeModes.length-1];// if singlemode  gFolderTreeView.activeModes.slice();
+      FolderPaneSwitcher.viewsBeforeTimer = gFolderTreeView.activeModes.slice();
+      console.log("viewsBeforeTimer", FolderPaneSwitcher.viewsBeforeTimer);
       FolderPaneSwitcher.setSingleMode("all");
    
-      /*
-      for (viewName of FolderPaneSwitcher.cachedView ) 
-      {
-        console.log("remove", viewName);
-         gFolderTreeView.activeModes = viewName; //toggles, removes if present, if all gone, set to kDefaultMode (="all")
-      }
-
-      */
-//      FolderPaneSwitcher.cachedView = gFolderTreeView.activeModes.slice();
-    //!  gFolderTreeView.mode = "all";
-  //  gFolderTreeView._activeModes.length = 0;
-  //  gFolderTreeView._activeModes.push( "all");
-  //  gFolderTreeView._activeModes.push( "favorites");
-  //    gFolderTreeView.activeModes =  "all";
-  //    gFolderTreeView.activeModes =  "favorite";
-
-      FolderPaneSwitcher.timer = null;
+       FolderPaneSwitcher.timer = null;
 
       var t = Components.classes["@mozilla.org/timer;1"]
         .createInstance(Components.interfaces.nsITimer);
@@ -392,8 +389,6 @@ console.log("selviews", me.selectedViews);
     if (FolderPaneSwitcher.timer) {
       FolderPaneSwitcher.timer.cancel();
     }
-  //  var prefBranch = Components.classes["@mozilla.org/preferences-service;1"]
-  //    .getService(Components.interfaces.nsIPrefBranch);
     var delay = Services.prefs.getIntPref("extensions.FolderPaneSwitcher.delay");
     var t = Components.classes["@mozilla.org/timer;1"]
       .createInstance(Components.interfaces.nsITimer);
