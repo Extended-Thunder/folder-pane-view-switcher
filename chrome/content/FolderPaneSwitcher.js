@@ -234,11 +234,15 @@ fpvsUtils.init();  //set pref branches
     this.views = fpvsUtils.getViews(true);  //get real view name
     this.viewsObserver.register(this.logger, this.views);
 console.log("views in load", this.views);
+let actViews = gFolderTreeView.activeModes; //there might be views active that are not yet in the prefs
 for (let [key, value] of Object.entries(this.views)) {
   me.setViewInUI(key, value.menu_enabled);
+  if (value.menu_enabled)  actViews = actViews.filter( element =>  element !=key);
   me.setViewForArrows(key, value.arrows_enabled);
   //both also take care to set selectedViews and menuEnabledViews
 };
+//remove any views still in activeModes but not in prefs
+actViews.forEach (key =>  gFolderTreeView.activeModes = key); //remove
 
 console.log("selviews", me.selectedViews);
  

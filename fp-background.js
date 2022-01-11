@@ -47,9 +47,6 @@ async function main() {
     ["content", "FolderPaneSwitcher", "chrome/content/"],
     ["locale", "FolderPaneSwitcher", "en-US", "chrome/locale/en-US/"],
      ["locale", "FolderPaneSwitcher", "de", "chrome/locale/de/"]
-    ["locale", "FolderPaneSwitcher", "fr", "chrome/locale/fr/"]
-    ["locale", "FolderPaneSwitcher", "nl", "chrome/locale/nl/"]
-    ["locale", "FolderPaneSwitcher", "zh_CN", "chrome/locale/zh_CN/"]
     
   ]);
 
