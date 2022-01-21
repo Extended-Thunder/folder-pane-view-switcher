@@ -181,17 +181,7 @@ var FolderPaneSwitcher = {
       if (which == 'arrows_enabled') {
         FolderPaneSwitcher.setViewForArrows(name, enabled);
       };
-      /*
-         if (enabled) {
-    //     console.log ( "reregister", );
-           gFolderTreeView.registerFolderTreeMode(name, view['handler'],
-             view['display_name']);
-         } else {
-           view['handler'] = gFolderTreeView._modes[name];
-           gFolderTreeView.unregisterFolderTreeMode(name);
-         }
-         */
-    }
+        }
   },
 
   onLoad: function () {
@@ -201,13 +191,13 @@ var FolderPaneSwitcher = {
     // it ourselves when we convert from overlay to bootstrapped, and there
     // shouldn't be any harm in setting the default values of preferences twice
     // (i.e., both Thunderbird and our code doing it).
-    /*
-      var { DefaultPreferencesLoader } = ChromeUtils.import(
-        "chrome://FolderPaneSwitcher/content/defaultPreferencesLoader.jsm");
-      var loader = new DefaultPreferencesLoader();
-      loader.parseUri("chrome://FolderPaneSwitcher/content/scripts/" +
-        "fp-prefs.js");
-  */
+    
+      // var { DefaultPreferencesLoader } = ChromeUtils.import(
+      //   "chrome://FolderPaneSwitcher/content/defaultPreferencesLoader.jsm");
+      // var loader = new DefaultPreferencesLoader();
+      // loader.parseUri("chrome://FolderPaneSwitcher/content/scripts/" +
+      //   "fp-prefs.js");
+ 
 //    console.log("FPVS onload");
     //init popup in case it was never opened
     gFolderTreeView.initFolderPaneOptionsPopup();
@@ -218,12 +208,12 @@ var FolderPaneSwitcher = {
 
     if (!this.logger) {
       this.logger = console;
-      /*
-                  Log4Moz.getConfiguredLogger("extensions.FolderPaneSwitcher",
-                  Log4Moz.Level.Trace,
-                  Log4Moz.Level.Info,
-                  Log4Moz.Level.Debug);
-          */
+      
+                  // Log4Moz.getConfiguredLogger("extensions.FolderPaneSwitcher",
+                  // Log4Moz.Level.Trace,
+                  // Log4Moz.Level.Info,
+                  // Log4Moz.Level.Debug);
+          
     }
     var me = FolderPaneSwitcher;
     me.originalModeNames = gFolderTreeView._modeNames;
@@ -349,11 +339,11 @@ var FolderPaneSwitcher = {
  //   console.log("onDragDrop(" + aEvent.type + ")");
     if (FolderPaneSwitcher.cachedView) {
       FolderPaneSwitcher.setSingleMode(FolderPaneSwitcher.cachedView);
-      /*      for (viewname of FolderPaneSwitcher.cachedView)  {
-              console.log("onDrDr, add ", viewname);
-              gFolderTreeView.activeModes = viewname; 
-            }
-      */
+            // for (viewname of FolderPaneSwitcher.cachedView)  {
+            //   console.log("onDrDr, add ", viewname);
+            //   gFolderTreeView.activeModes = viewname; 
+            // }
+      
       FolderPaneSwitcher.cachedView = null;
       FolderPaneSwitcher.currentFolder = null;
     }

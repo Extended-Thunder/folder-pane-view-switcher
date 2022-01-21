@@ -13,7 +13,7 @@
 var lastTab = 0, lastWindow = 0;
 
 
-/*
+
 messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
  // if (temporary) return; // skip during development
   switch (reason) {
@@ -35,7 +35,7 @@ messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
       // see below
   }
 });
-*/
+
 
 
 async function main() {
@@ -55,11 +55,7 @@ async function main() {
     messenger.WindowListener.registerWindow("chrome://messenger/content/messenger.xhtml", "chrome/content/scripts/fp-messenger.js");
 
  
-  /* 
-   
-     messenger.WindowListener.registerStartupScript("chrome/content/scripts/qf-startup.js");
-     messenger.WindowListener.registerShutdownScript("chrome/content/scripts/qf-shutdown.js");
- */
+  
   /*
    * Start listening for opened windows. Whenever a window is opened, the registered
    * JS file is loaded. To prevent namespace collisions, the files are loaded into
