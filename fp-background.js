@@ -39,7 +39,7 @@ messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
 
 
 async function main() {
-  console.log("backgr");
+
   messenger.WindowListener.registerDefaultPrefs("chrome/content/scripts/fp-prefs.js");
 
 

@@ -13,7 +13,7 @@ var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 var win = Services.wm.getMostRecentWindow("mail:3pane"); 
 
 
-console.log("impl utilities");
+//console.log("impl utilities");
 var Utilities = class extends ExtensionCommon.ExtensionAPI {
   getAPI(context) {    
     
@@ -28,7 +28,7 @@ var Utilities = class extends ExtensionCommon.ExtensionAPI {
       Utilities: {
 
         isMailTab (isMailTab) {
-          console.log("isMailTab"+isMailTab);
+ //         console.log("isMailTab"+isMailTab);
           win.manage_emails.isMailTab = isMailTab;
         }
   

@@ -44,7 +44,7 @@ var fpvsUtils = {
         var views = {};
         var obj = {};
         var children = this.viewsBranch.getChildList("");//, obj);
-        console.log("children in viewsbranch", children);
+ //       console.log("children in viewsbranch", children);
         var regex = /^(\d+)\./;
         for (var child of children) {
             var match = regex.exec(child);
@@ -93,7 +93,7 @@ var fpvsUtils = {
 
     updateViews: function(treeView) {
         var storedViews = this.getViews();
-        console.log("storedViews in updateViews", storedViews, "all mode names",treeView._modeNames );
+//        console.log("storedViews in updateViews", storedViews, "all mode names",treeView._modeNames );
         for (var commonName of treeView._modeNames) {
             var found = false;
             for (var viewNum in storedViews) {
@@ -114,7 +114,7 @@ var fpvsUtils = {
             if (found) continue;
             var i;
             for (i = 0; String(i) in storedViews; i++) ;
-            console.log("no of views stored", i);
+ //           console.log("no of views stored", i);
             this.setStringPref(this.viewsBranch, i + ".name", commonName);
             this.setStringPref(this.viewsBranch, i + ".display_name",
                                this.getViewDisplayName(treeView, commonName));
