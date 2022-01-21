@@ -17,7 +17,7 @@ Services.scriptloader.loadSubScript("chrome://FolderPaneSwitcher/content/FolderP
 
 
 async function onLoad(activatedWhileWindowOpen) {
-//    console.log(Services.appinfo.version);
+    //    console.log(Services.appinfo.version);
     WL.injectElements(`
  
     <toolbarbutton id="FolderPaneSwitcher-forward-arrow-button"
@@ -35,20 +35,20 @@ async function onLoad(activatedWhileWindowOpen) {
  
 `, ["chrome://FolderPaneSwitcher/locale/switcher.dtd"]);
 
-//    console.log("messenger-FPS");//, window.gFolderTree.isInited);
-//    window.setTimeout(window.FolderPaneSwitcher.onLoad, 30000);
-//    console.log("messenger-FPS inited", window.gFolderTreeView.isInited);
+    //    console.log("messenger-FPS");//, window.gFolderTree.isInited);
+    //    window.setTimeout(window.FolderPaneSwitcher.onLoad, 30000);
+    //    console.log("messenger-FPS inited", window.gFolderTreeView.isInited);
 
     while (!window.gFolderTreeView.isInited) {
-//        console.log("waiting");
+        //        console.log("waiting");
         await new Promise(resolve => window.setTimeout(resolve, 100));
     };
     window.FolderPaneSwitcher.onLoad();
-//    console.log("window", window);
+    //    console.log("window", window);
 }
 
 function onUnload(isAddOnShutDown) {
-//    console.log("FPS unload");
-    window.FolderPaneSwitcher.onUnload();  
-    Services.obs.notifyObservers(null, "startupcache-invalidate", null);          
+    //    console.log("FPS unload");
+    window.FolderPaneSwitcher.onUnload();
+    Services.obs.notifyObservers(null, "startupcache-invalidate", null);
 }

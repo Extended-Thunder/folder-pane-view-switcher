@@ -2,8 +2,7 @@
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
 <?xml-stylesheet href="chrome://messenger/skin/preferences/preferences.css" type="text/css"?>
 <!---->
-  <!DOCTYPE dialog [
-<!ENTITY % options SYSTEM "chrome://FolderPaneSwitcher/locale/switcher.dtd">
+<!DOCTYPE dialog [ <!ENTITY % options SYSTEM "chrome://FolderPaneSwitcher/locale/switcher.dtd">
 %options;
 ]>
 
@@ -13,63 +12,55 @@
 
 <!DOCTYPE dialog SYSTEM 'chrome://FolderPaneSwitcher/locale/switcher.dtd'>
 -->
-<dialog
-    id="FolderPaneSwitcher-preferences"
-    xmlns:html="http://www.w3.org/1999/xhtml"
-    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-    title="&options.title;"
-    buttons="accept,cancel"  
-    buttonlabelextra1="&options.reset.value;"
-    ondialogextra1="FPVSOptions.loadPrefs();"
-    ondialogaccept="return FPVSOptions.validatePrefs();"
-    onbeforeunload="return FPVSOptions.validatePrefs() ? null : 'err';"
- 
-    >
-     <!--   -->
- <script src="chrome://global/content/globalOverlay.js"/>
-  <script src="chrome://global/content/editMenuOverlay.js"/>
-  <script src="chrome://FolderPaneSwitcher/content/utils.js"/>
-  <script src="chrome://FolderPaneSwitcher/content/options.js"/>
+<dialog id="FolderPaneSwitcher-preferences" xmlns:html="http://www.w3.org/1999/xhtml"
+  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" title="&options.title;" buttons="accept,cancel"
+  buttonlabelextra1="&options.reset.value;" ondialogextra1="FPVSOptions.loadPrefs();"
+  ondialogaccept="return FPVSOptions.validatePrefs();"
+  onbeforeunload="return FPVSOptions.validatePrefs() ? null : 'err';">
+  <!--   -->
+  <script src="chrome://global/content/globalOverlay.js" />
+  <script src="chrome://global/content/editMenuOverlay.js" />
+  <script src="chrome://FolderPaneSwitcher/content/utils.js" />
+  <script src="chrome://FolderPaneSwitcher/content/options.js" />
   <prefpane id="pane1" label="&options.title;">
     <vbox>
       <hbox>
-	<checkbox id="FolderPaneSwitcher-arrows-checkbox"
-		  label="&options.arrows.label;"/>
+        <checkbox id="FolderPaneSwitcher-arrows-checkbox" label="&options.arrows.label;" />
       </hbox>
       <hbox>
-	<label>&options.delay.label;</label>
-	<html:input id="FolderPaneSwitcher-delay-textbox" type="number"/>
+        <label>&options.delay.label;</label>
+        <html:input id="FolderPaneSwitcher-delay-textbox" type="number" />
       </hbox>
-<!--  <hbox tooltiptext="Time after the view switch during which you can't drop into a folder. Prevents accidental dropping into the wrong folder immediately after the view switch.">
+      <!--  <hbox tooltiptext="Time after the view switch during which you can't drop into a folder. Prevents accidental dropping into the wrong folder immediately after the view switch.">
 	<label>Drop prevention delay (milliseconds) after view switch:</label>
 	<html:input id="FolderPaneSwitcher-drop-delay-textbox" type="number"
 		 preference="FolderPaneSwitcher-drop-delay-preference"/>
       </hbox> 
-    -->   
+    -->
       <label class="header">&options.enable_disable.label;</label>
 
       <div>
 
-        <html:table  id = "display-table1">
-      <html:thead>
-          <html:tr>
-              <html:th   style="width:25%"><label class="header">&options.menu.label;</label></html:th>
-              <html:th   style="width:25%"><label class="header">&options.view_arrows.label;</label></html:th>
-              <html:th   style="width:25%"><label class="header">&options.view.label;</label></html:th>
-  
-          </html:tr>
-      </html:thead>
-      <html:tbody id = "grid-rows">
-      </html:tbody>
-      </html:table>
+        <html:table id="display-table1">
+          <html:thead>
+            <html:tr>
+              <html:th style="width:25%"><label class="header">&options.menu.label;</label></html:th>
+              <html:th style="width:25%"><label class="header">&options.view_arrows.label;</label></html:th>
+              <html:th style="width:25%"><label class="header">&options.view.label;</label></html:th>
+
+            </html:tr>
+          </html:thead>
+          <html:tbody id="grid-rows">
+          </html:tbody>
+        </html:table>
 
 
 
-</div>
+      </div>
 
 
 
-  
+
     </vbox>
   </prefpane>
 

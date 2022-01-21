@@ -8,12 +8,12 @@ var fpvsUtils = {
     pref_observers: [],
     fpvsPrefRoot: fpvsPrefRoot,
 
-    init: function() {
+    init: function () {
         this.prefBranch = Services.prefs.getBranch(fpvsPrefRoot);
         this.viewsBranch = Services.prefs.getBranch(fpvsPrefRoot + "views.");
     },
 
-    uninit: function() {
+    uninit: function () {
         for (var args of this.event_handlers) {
             args[0].removeEventListener(args[1], args[2], args[3]);
         }
@@ -22,29 +22,29 @@ var fpvsUtils = {
         }
     },
 
-    addEventListener: function(target, type, listener, useCapture) {
+    addEventListener: function (target, type, listener, useCapture) {
         target.addEventListener(type, listener, useCapture);
         this.event_handlers.push([target, type, listener, useCapture]);
     },
 
-    addObserver: function(branch, pref, observer, holdWeak) {
+    addObserver: function (branch, pref, observer, holdWeak) {
         branch.addObserver(pref, observer);  //, holdWeak
         this.pref_observers.push([branch, pref, observer]);
     },
 
-    getStringPref: function(branch, prefName) {
+    getStringPref: function (branch, prefName) {
         return branch.getStringPref(prefName);
     },
 
-    setStringPref: function(branch, prefName, value) {
+    setStringPref: function (branch, prefName, value) {
         return branch.setStringPref(prefName, value);
     },
 
-    getViews: function(byName) {
+    getViews: function (byName) {
         var views = {};
         var obj = {};
         var children = this.viewsBranch.getChildList("");//, obj);
- //       console.log("children in viewsbranch", children);
+        //       console.log("children in viewsbranch", children);
         var regex = /^(\d+)\./;
         for (var child of children) {
             var match = regex.exec(child);
@@ -54,7 +54,7 @@ var fpvsUtils = {
             }
             try {
                 var display_name = this.getStringPref(this.viewsBranch,
-                                                      num + ".display_name");
+                    num + ".display_name");
             }
             catch (ex) {
                 continue;
@@ -83,7 +83,7 @@ var fpvsUtils = {
         return views;
     },
 
-    getViewDisplayName: function(treeView, commonName) {
+    getViewDisplayName: function (treeView, commonName) {
         if (commonName in treeView._modeDisplayNames) {
             return treeView._modeDisplayNames[commonName];
         }
@@ -91,9 +91,9 @@ var fpvsUtils = {
         return treeView.messengerBundle.getString(key);
     },
 
-    updateViews: function(treeView) {
+    updateViews: function (treeView) {
         var storedViews = this.getViews();
-//        console.log("storedViews in updateViews", storedViews, "all mode names",treeView._modeNames );
+        //        console.log("storedViews in updateViews", storedViews, "all mode names",treeView._modeNames );
         for (var commonName of treeView._modeNames) {
             var found = false;
             for (var viewNum in storedViews) {
@@ -102,7 +102,7 @@ var fpvsUtils = {
                     storedViews[viewNum]['found'] = true;
                     displayName = this.getViewDisplayName(treeView, commonName);
                     if (this.getStringPref(this.viewsBranch,
-                                           viewNum + ".display_name")
+                        viewNum + ".display_name")
                         != displayName) {
                         this.setStringPref(
                             this.viewsBranch, viewNum + ".display_name",
@@ -113,18 +113,18 @@ var fpvsUtils = {
             }
             if (found) continue;
             var i;
-            for (i = 0; String(i) in storedViews; i++) ;
- //           console.log("no of views stored", i);
+            for (i = 0; String(i) in storedViews; i++);
+            //           console.log("no of views stored", i);
             this.setStringPref(this.viewsBranch, i + ".name", commonName);
             this.setStringPref(this.viewsBranch, i + ".display_name",
-                               this.getViewDisplayName(treeView, commonName));
+                this.getViewDisplayName(treeView, commonName));
             this.viewsBranch.setBoolPref(i + ".menu_enabled", true);
             this.viewsBranch.setBoolPref(i + ".arrows_enabled", true);
             // So we don't reuse the same number.
-            storedViews[i] = {name: 'dontworryaboutit', found: true};
+            storedViews[i] = { name: 'dontworryaboutit', found: true };
         }
         for (var viewNum in storedViews) {
-            if (! storedViews[viewNum]['found']) {
+            if (!storedViews[viewNum]['found']) {
                 this.viewsBranch.deleteBranch(viewNum + ".");
             }
         }
