@@ -14,27 +14,27 @@ var lastTab = 0, lastWindow = 0;
 
 
 
-messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
-  // if (temporary) return; // skip during development
-  switch (reason) {
-    case "install":
-      {
-        const url = messenger.runtime.getURL("popup/installed.html");
-        //        const url = messenger.runtime.getURL("popup/about_content.html");
-        //await browser.tabs.create({ url });
-        await messenger.windows.create({ url, type: "popup", height: 780, width: 990, });
-      }
-      break;
-    case "update":
-      {
-        const url = messenger.runtime.getURL("popup/update.html");
-        //await browser.tabs.create({ url });
-        await messenger.windows.create({ url, type: "popup", height: 780, width: 990, });
-      }
-      break;
-    // see below
-  }
-});
+// messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
+//   // if (temporary) return; // skip during development
+//   switch (reason) {
+//     case "install":
+//       {
+//         const url = messenger.runtime.getURL("popup/installed.html");
+//         //        const url = messenger.runtime.getURL("popup/about_content.html");
+//         //await browser.tabs.create({ url });
+//         await messenger.windows.create({ url, type: "popup", height: 780, width: 990, });
+//       }
+//       break;
+//     case "update":
+//       {
+//         const url = messenger.runtime.getURL("popup/update.html");
+//         //await browser.tabs.create({ url });
+//         await messenger.windows.create({ url, type: "popup", height: 780, width: 990, });
+//       }
+//       break;
+//     // see below
+//   }
+// });
 
 
 
