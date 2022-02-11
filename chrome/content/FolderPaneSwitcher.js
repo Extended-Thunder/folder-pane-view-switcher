@@ -37,7 +37,7 @@ var FolderPaneSwitcher = {
   menuEnabledViews: [],
 
   setViewInUI: function (viewname, enabled) {
-    //debugger;
+
 
 
     if (enabled) {
@@ -46,15 +46,13 @@ var FolderPaneSwitcher = {
     } else {
       FolderPaneSwitcher.menuEnabledViews = FolderPaneSwitcher.menuEnabledViews.filter(value => value != viewname);
     };
-    //console.log("menuEnabledViews", FolderPaneSwitcher.menuEnabledViews);
-
+ 
 
     let popupF = document.getElementById("folderPaneOptionsPopup");
     let items = popupF.querySelectorAll("menuitem");
     let item = popupF.querySelector(`[value=${viewname}]`);
     if (item != null) {
       item.hidden = !enabled;
-      //   console.log("popup", popupF, items, viewname, item);;
     };
 
 

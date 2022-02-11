@@ -1,6 +1,5 @@
 /*
- * License:  see License.txt
- * Contributors:  see Changes.txt
+ * License:  MPL2
  */
 
 
