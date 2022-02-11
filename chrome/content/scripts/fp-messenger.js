@@ -15,14 +15,13 @@ async function onLoad(activatedWhileWindowOpen) {
     WL.injectElements(`
  
     <toolbarbutton id="FolderPaneSwitcher-forward-arrow-button"
-    insertbefore = "folderPaneOptionsButton"
+    insertbefore="folderPaneOptionsButton"
     oncommand="FolderPaneSwitcher.goForwardView(event);"
-
     image="chrome://FolderPaneSwitcher/content/right-arrow.png"
-
     />
+
     <toolbarbutton id="FolderPaneSwitcher-back-arrow-button"
-    insertbefore= "FolderPaneSwitcher-forward-arrow-button"
+    insertbefore="FolderPaneSwitcher-forward-arrow-button"
     image="chrome://FolderPaneSwitcher/content/left-arrow.png"
     oncommand="FolderPaneSwitcher.goBackView(event);"
     />
