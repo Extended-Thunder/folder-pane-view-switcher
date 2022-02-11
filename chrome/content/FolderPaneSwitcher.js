@@ -49,7 +49,6 @@ var FolderPaneSwitcher = {
  
 
     let popupF = document.getElementById("folderPaneOptionsPopup");
-    let items = popupF.querySelectorAll("menuitem");
     let item = popupF.querySelector(`[value=${viewname}]`);
     if (item != null) {
       item.hidden = !enabled;
@@ -58,14 +57,12 @@ var FolderPaneSwitcher = {
 
 
     popupF = document.getElementById("menu_FolderViewsPopup");
-    items = popupF.querySelectorAll("menuitem");
-    item = popupF.querySelector(`[value=${viewname}]`);
+     item = popupF.querySelector(`[value=${viewname}]`);
     if (item != null) {
       item.hidden = !enabled;
       //    console.log("menu_FolderViewsPopup", popupF, items, viewname);
     };
     popupF = document.getElementById("appMenu-foldersView");
-    items = popupF.querySelectorAll("toolbarbutton");
     item = popupF.querySelector(`[value=${viewname}]`);
     if (item != null) {
       item.setAttribute("hidden", !enabled);
