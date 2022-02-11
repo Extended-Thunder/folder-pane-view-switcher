@@ -172,29 +172,16 @@ var FolderPaneSwitcher = {
       if (which == 'menu_enabled') {
         FolderPaneSwitcher.setViewInUI(name, enabled);
         return;
-      };
+      } else {
       if (which == 'arrows_enabled') {
         FolderPaneSwitcher.setViewForArrows(name, enabled);
       };
+    };
     }
   },
 
   onLoad: function () {
-    // Current Thunderbird nightly builds do not load default preferences
-    // from overlay add-ons. They're probably going to fix this, but it may go
-    // away again at some point in the future, and in any case we'll need to do
-    // it ourselves when we convert from overlay to bootstrapped, and there
-    // shouldn't be any harm in setting the default values of preferences twice
-    // (i.e., both Thunderbird and our code doing it).
-
-    // var { DefaultPreferencesLoader } = ChromeUtils.import(
-    //   "chrome://FolderPaneSwitcher/content/defaultPreferencesLoader.jsm");
-    // var loader = new DefaultPreferencesLoader();
-    // loader.parseUri("chrome://FolderPaneSwitcher/content/scripts/" +
-    //   "fp-prefs.js");
-
-    //    console.log("FPVS onload");
-    //init popup in case it was never opened
+      //init popup in case it was never opened
     gFolderTreeView.initFolderPaneOptionsPopup();
 
 
@@ -204,11 +191,7 @@ var FolderPaneSwitcher = {
     if (!this.logger) {
       this.logger = console;
 
-      // Log4Moz.getConfiguredLogger("extensions.FolderPaneSwitcher",
-      // Log4Moz.Level.Trace,
-      // Log4Moz.Level.Info,
-      // Log4Moz.Level.Debug);
-
+   
     }
     var me = FolderPaneSwitcher;
     me.originalModeNames = gFolderTreeView._modeNames;
