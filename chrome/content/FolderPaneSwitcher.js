@@ -79,7 +79,6 @@ var FolderPaneSwitcher = {
     } else {
       FolderPaneSwitcher.selectedViews = FolderPaneSwitcher.selectedViews.filter(value => value != viewname);
     };
-    //   console.log("selectedviews", FolderPaneSwitcher.selectedViews);
     //if current view is no longer in selectedViews, then set selectedViews[0]
     if (!FolderPaneSwitcher.selectedViews.includes(gFolderTreeView.activeModes[gFolderTreeView.activeModes.length - 1]))
       FolderPaneSwitcher.setSingleMode(FolderPaneSwitcher.selectedViews[0]);
@@ -147,7 +146,7 @@ var FolderPaneSwitcher = {
       this.views = views;
       fpvsUtils.addObserver(fpvsUtils.viewsBranch, "", this);
       for (var name in views) {
-        view = views[name];
+        let view = views[name];
         if (!view['menu_enabled']) {
           this.observe(fpvsUtils.viewsBranch, "",
             view['number'] + '.menu_enabled');
