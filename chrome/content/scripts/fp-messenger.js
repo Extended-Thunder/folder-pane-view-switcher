@@ -1,10 +1,5 @@
 /*
- * License:  see License.txt
- * Code until Nostalgy 0.3.0/Nostalgy 1.1.15: Zlib
- * Code additions for TB 78 or later: Creative Commons (CC BY-ND 4.0):
- *      Attribution-NoDerivatives 4.0 International (CC BY-ND 4.0) 
- 
- * Contributors:  see Changes.txt
+ * License:  MPL2
  */
 
 
@@ -17,7 +12,6 @@ Services.scriptloader.loadSubScript("chrome://FolderPaneSwitcher/content/FolderP
 
 
 async function onLoad(activatedWhileWindowOpen) {
-    //    console.log(Services.appinfo.version);
     WL.injectElements(`
  
     <toolbarbutton id="FolderPaneSwitcher-forward-arrow-button"
@@ -35,20 +29,14 @@ async function onLoad(activatedWhileWindowOpen) {
  
 `, ["chrome://FolderPaneSwitcher/locale/switcher.dtd"]);
 
-    //    console.log("messenger-FPS");//, window.gFolderTree.isInited);
-    //    window.setTimeout(window.FolderPaneSwitcher.onLoad, 30000);
-    //    console.log("messenger-FPS inited", window.gFolderTreeView.isInited);
 
     while (!window.gFolderTreeView.isInited) {
-        //        console.log("waiting");
         await new Promise(resolve => window.setTimeout(resolve, 100));
     };
     window.FolderPaneSwitcher.onLoad();
-    //    console.log("window", window);
 }
 
 function onUnload(isAddOnShutDown) {
-    //    console.log("FPS unload");
     window.FolderPaneSwitcher.onUnload();
     Services.obs.notifyObservers(null, "startupcache-invalidate", null);
 }
