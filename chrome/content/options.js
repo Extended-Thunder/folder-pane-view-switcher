@@ -69,7 +69,6 @@ var FPVSOptions = {
             var pref = mapping[1];
             var pref_type = mapping[2];
             var pref_func;
-            //           console.log("getprefs", mapping);
             switch (pref_type) {
                 case "int":
                     elt.value = Services.prefs.getIntPref(fpvsUtils.fpvsPrefRoot + pref);

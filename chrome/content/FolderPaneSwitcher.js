@@ -59,9 +59,7 @@ var FolderPaneSwitcher = {
     let item = document.querySelector(`#appMenu-foldersView [value=${viewname}]`);
     if (item != null) {
       item.setAttribute("hidden", !enabled);
-      //     console.log("appMenu-foldersView", popupF, items, viewname);
-
-    };
+      };
 
   },
 
@@ -172,16 +170,12 @@ var FolderPaneSwitcher = {
     me.originalModeNames = gFolderTreeView._modeNames;
     me.originalModes = gFolderTreeView._modes;
     me.originalModeDisplayNames = gFolderTreeView._modeDisplayNames;
-    //    console.log("all possible mode names", gFolderTreeView._modeNames);
-
-    //  me.selectedViews = me.originalModeNames; //start with all views
+      //  me.selectedViews = me.originalModeNames; //start with all views
 
     var title = document.getElementById("folderPaneHeader");
-    //   var title = document.getElementById("FolderPaneSwitcher-back-arrow-button");
     fpvsUtils.updateViews(gFolderTreeView); //save views as "dontworryaboutit", if none in prefs
     this.views = fpvsUtils.getViews(true);  //get real view name
     this.viewsObserver.register(this.logger, this.views);
-    //    console.log("views in load", this.views);
     let actViews = gFolderTreeView.activeModes; //there might be views active that are not yet in the prefs
     for (let [key, value] of Object.entries(this.views)) {
       me.setViewInUI(key, value.menu_enabled);
@@ -192,9 +186,7 @@ var FolderPaneSwitcher = {
     //remove any views still in activeModes but not in prefs
     actViews.forEach(key => gFolderTreeView.activeModes = key); //remove
 
-    //    console.log("selviews", me.selectedViews);
-
-    var prefBranch = Components.classes["@mozilla.org/preferences-service;1"]
+     var prefBranch = Components.classes["@mozilla.org/preferences-service;1"]
       .getService(Components.interfaces.nsIPrefBranch);
 
     title.addEventListener("dragexit", me.onDragExit, false);
@@ -289,28 +281,18 @@ var FolderPaneSwitcher = {
 
   onDragDrop: function (aEvent) {
     FolderPaneSwitcher.logger.debug("onDragDrop(" + aEvent.type + ")");
-    //   console.log("onDragDrop(" + aEvent.type + ")");
     if (FolderPaneSwitcher.cachedView) {
       FolderPaneSwitcher.setSingleMode(FolderPaneSwitcher.cachedView);
-      // for (viewname of FolderPaneSwitcher.cachedView)  {
-      //   console.log("onDrDr, add ", viewname);
-      //   gFolderTreeView.activeModes = viewname; 
-      // }
-
-      FolderPaneSwitcher.cachedView = null;
+        FolderPaneSwitcher.cachedView = null;
       FolderPaneSwitcher.currentFolder = null;
     }
   },
 
   setSingleMode: function (modeName) {
     let currModes = gFolderTreeView.activeModes.slice();
-    //    console.log("setSingleMode: currModes", currModes, "set to", modeName);
-    //    console.log("setSingleMode: actModes", gFolderTreeView.activeModes);
-
-    if (!gFolderTreeView.activeModes.includes(modeName)) gFolderTreeView.activeModes = modeName;
+     if (!gFolderTreeView.activeModes.includes(modeName)) gFolderTreeView.activeModes = modeName;
 
     for (viewName of currModes) {
-      //     console.log("remove", viewName);
       if (viewName != modeName) gFolderTreeView.activeModes = viewName; //toggles, removes if present, if all gone, set to kDefaultMode (="all")
     }
   },
@@ -320,10 +302,8 @@ var FolderPaneSwitcher = {
   timerCallback: {
     notify: function () {
       FolderPaneSwitcher.logger.debug("timerCallback.notify");
-      //     console.log("defMode", gFolderTreeView._modeNames);
       FolderPaneSwitcher.cachedView = gFolderTreeView.activeModes[gFolderTreeView.activeModes.length - 1];// if singlemode  gFolderTreeView.activeModes.slice();
       FolderPaneSwitcher.viewsBeforeTimer = gFolderTreeView.activeModes.slice();
-      //     console.log("viewsBeforeTimer", FolderPaneSwitcher.viewsBeforeTimer);
       FolderPaneSwitcher.setSingleMode("all");
 
       FolderPaneSwitcher.timer = null;
@@ -337,7 +317,6 @@ var FolderPaneSwitcher = {
   },
 
   resetTimer: function () {
-    //   console.log("resettimer");
     if (FolderPaneSwitcher.timer) {
       FolderPaneSwitcher.timer.cancel();
     }
