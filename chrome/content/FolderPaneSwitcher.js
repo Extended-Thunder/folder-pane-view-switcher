@@ -48,22 +48,15 @@ var FolderPaneSwitcher = {
     };
  
 
-    let popupF = document.getElementById("folderPaneOptionsPopup");
-    let item = popupF.querySelector(`[value=${viewname}]`);
+     let item = document.querySelector(`#folderPaneOptionsPopup [value=${viewname}]`);
     if (item != null) {
       item.hidden = !enabled;
     };
-
-
-
-    popupF = document.getElementById("menu_FolderViewsPopup");
-     item = popupF.querySelector(`[value=${viewname}]`);
+      let item = document.querySelector(`#menu_FolderViewsPopup [value=${viewname}]`);
     if (item != null) {
       item.hidden = !enabled;
-      //    console.log("menu_FolderViewsPopup", popupF, items, viewname);
-    };
-    popupF = document.getElementById("appMenu-foldersView");
-    item = popupF.querySelector(`[value=${viewname}]`);
+     };
+    let item = document.querySelector(`#appMenu-foldersView [value=${viewname}]`);
     if (item != null) {
       item.setAttribute("hidden", !enabled);
       //     console.log("appMenu-foldersView", popupF, items, viewname);
@@ -106,34 +99,19 @@ var FolderPaneSwitcher = {
 
 
     var currentView = gFolderTreeView.activeModes[gFolderTreeView.activeModes.length - 1];
-    //   console.log("goback, currentview", currentView);
-    let currInd = FolderPaneSwitcher.selectedViews.findIndex((name) => name == currentView);
-    //    console.log("goback, currind, length", currInd, FolderPaneSwitcher.selectedViews.length);
-
-    if (currInd > 0) currInd--
-    //FolderPaneSwitcher.setSingleMode(FolderPaneSwitcher.selectedViews[currInd+1])
-    else currInd = FolderPaneSwitcher.selectedViews.length - 1;
-    //   console.log("next view, _actmodes, _modes", FolderPaneSwitcher.selectedViews[currInd], gFolderTreeView._activeModes, gFolderTreeView._modes);
-    FolderPaneSwitcher.setSingleMode(FolderPaneSwitcher.selectedViews[currInd]);
-    //gFolderTreeView.activeModes = "favorite";//gFolderTreeView._modes["favorite"];
-    //  console.log("actmodes, actModes[0]", gFolderTreeView.activeModes, gFolderTreeView.activeModes[0]);
-  },
+   let currInd = FolderPaneSwitcher.selectedViews.findIndex((name) => name == currentView);
+   
+    currInd = (currInd + FolderPaneSwitcher.selectedViews.length - 1) % FolderPaneSwitcher.selectedViews.length;
+      FolderPaneSwitcher.setSingleMode(FolderPaneSwitcher.selectedViews[currInd]);
+   },
 
   goForwardView: function (event) {
 
 
     var currentView = gFolderTreeView.activeModes[gFolderTreeView.activeModes.length - 1];
-    //   console.log("goforw, currentview", currentView);
     let currInd = FolderPaneSwitcher.selectedViews.findIndex((name) => name == currentView);
-    //   console.log("goforw, currind, length", currInd, FolderPaneSwitcher.selectedViews.length);
-
-    if (currInd < FolderPaneSwitcher.selectedViews.length - 1) currInd++
-    //FolderPaneSwitcher.setSingleMode(FolderPaneSwitcher.selectedViews[currInd+1])
-    else currInd = 0;
-    //   console.log("next view, _actmodes, _modes", FolderPaneSwitcher.selectedViews[currInd], gFolderTreeView._activeModes, gFolderTreeView._modes);
+     currInd = (currInd + 1) % FolderPaneSwitcher.selectedViews.length;
     FolderPaneSwitcher.setSingleMode(FolderPaneSwitcher.selectedViews[currInd]);
-    //gFolderTreeView.activeModes = "favorite";//gFolderTreeView._modes["favorite"];
-    //   console.log("actmodes, actModes[0]", gFolderTreeView.activeModes, gFolderTreeView.activeModes[0]);
   },
 
   views: null,
@@ -155,7 +133,6 @@ var FolderPaneSwitcher = {
     },
 
     observe: function (aSubject, aTopic, aData) {
-      //     console.log("viewobserver", aSubject, aData);
       var match = /^(\d+)\.(.*_enabled)$/.exec(aData);
       if (!match) return;
       var viewNum = match[1];
@@ -165,8 +142,7 @@ var FolderPaneSwitcher = {
         viewNum + ".name");
       var view = this.views[name];
       view[which] = enabled;
-      //     console.log("viewobserver", aSubject, aData, "name", name, viewNum, which, enabled);
-
+ 
 
       if (which == 'menu_enabled') {
         FolderPaneSwitcher.setViewInUI(name, enabled);
