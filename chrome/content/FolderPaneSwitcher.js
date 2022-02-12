@@ -46,16 +46,16 @@ var FolderPaneSwitcher = {
     } else {
       FolderPaneSwitcher.menuEnabledViews = FolderPaneSwitcher.menuEnabledViews.filter(value => value != viewname);
     };
- 
 
-     let item = document.querySelector(`#folderPaneOptionsPopup [value=${viewname}]`);
+
+    let item = document.querySelector(`#folderPaneOptionsPopup [value=${viewname}]`);
     if (item != null) {
       item.hidden = !enabled;
     };
-      let item = document.querySelector(`#menu_FolderViewsPopup [value=${viewname}]`);
+    let item = document.querySelector(`#menu_FolderViewsPopup [value=${viewname}]`);
     if (item != null) {
       item.hidden = !enabled;
-     };
+    };
     let item = document.querySelector(`#appMenu-foldersView [value=${viewname}]`);
     if (item != null) {
       item.setAttribute("hidden", !enabled);
@@ -99,18 +99,18 @@ var FolderPaneSwitcher = {
 
 
     var currentView = gFolderTreeView.activeModes[gFolderTreeView.activeModes.length - 1];
-   let currInd = FolderPaneSwitcher.selectedViews.findIndex((name) => name == currentView);
-   
+    let currInd = FolderPaneSwitcher.selectedViews.findIndex((name) => name == currentView);
+
     currInd = (currInd + FolderPaneSwitcher.selectedViews.length - 1) % FolderPaneSwitcher.selectedViews.length;
-      FolderPaneSwitcher.setSingleMode(FolderPaneSwitcher.selectedViews[currInd]);
-   },
+    FolderPaneSwitcher.setSingleMode(FolderPaneSwitcher.selectedViews[currInd]);
+  },
 
   goForwardView: function (event) {
 
 
     var currentView = gFolderTreeView.activeModes[gFolderTreeView.activeModes.length - 1];
     let currInd = FolderPaneSwitcher.selectedViews.findIndex((name) => name == currentView);
-     currInd = (currInd + 1) % FolderPaneSwitcher.selectedViews.length;
+    currInd = (currInd + 1) % FolderPaneSwitcher.selectedViews.length;
     FolderPaneSwitcher.setSingleMode(FolderPaneSwitcher.selectedViews[currInd]);
   },
 
@@ -142,21 +142,21 @@ var FolderPaneSwitcher = {
         viewNum + ".name");
       var view = this.views[name];
       view[which] = enabled;
- 
+
 
       if (which == 'menu_enabled') {
         FolderPaneSwitcher.setViewInUI(name, enabled);
         return;
       } else {
-      if (which == 'arrows_enabled') {
-        FolderPaneSwitcher.setViewForArrows(name, enabled);
+        if (which == 'arrows_enabled') {
+          FolderPaneSwitcher.setViewForArrows(name, enabled);
+        };
       };
-    };
     }
   },
 
   onLoad: function () {
-      //init popup in case it was never opened
+    //init popup in case it was never opened
     gFolderTreeView.initFolderPaneOptionsPopup();
 
 
@@ -166,7 +166,7 @@ var FolderPaneSwitcher = {
     if (!this.logger) {
       this.logger = console;
 
-   
+
     }
     var me = FolderPaneSwitcher;
     me.originalModeNames = gFolderTreeView._modeNames;

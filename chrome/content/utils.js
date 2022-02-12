@@ -42,7 +42,7 @@ var fpvsUtils = {
 
     getViews: function (byName) {
         var views = {};
-         var children = this.viewsBranch.getChildList("");//, obj);
+        var children = this.viewsBranch.getChildList("");//, obj);
         var regex = /^(\d+)\./;
         for (var child of children) {
             var match = regex.exec(child);
