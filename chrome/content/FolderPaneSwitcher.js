@@ -30,9 +30,6 @@
 
 var FolderPaneSwitcher = {
 
-  originalModeNames: [],
-  originalModes: [],
-  originalModeDisplayNames: [],
   selectedViews: [],
   menuEnabledViews: [],
 
@@ -116,7 +113,7 @@ var FolderPaneSwitcher = {
 
   viewsBeforeTimer: null,
 
-  viewsObserver: {
+  viewsObserver: {   //... this observes the prefs, not the views
     register: function (logger, views) {
       this.logger = logger;
       this.views = views;
@@ -163,15 +160,9 @@ var FolderPaneSwitcher = {
 
     if (!this.logger) {
       this.logger = console;
-
-
     }
     var me = FolderPaneSwitcher;
-    me.originalModeNames = gFolderTreeView._modeNames;
-    me.originalModes = gFolderTreeView._modes;
-    me.originalModeDisplayNames = gFolderTreeView._modeDisplayNames;
-      //  me.selectedViews = me.originalModeNames; //start with all views
-
+  
     var title = document.getElementById("folderPaneHeader");
     fpvsUtils.updateViews(gFolderTreeView); //save views as "dontworryaboutit", if none in prefs
     this.views = fpvsUtils.getViews(true);  //get real view name
