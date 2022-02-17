@@ -49,14 +49,14 @@ var FolderPaneSwitcher = {
     if (item != null) {
       item.hidden = !enabled;
     };
-    let item = document.querySelector(`#menu_FolderViewsPopup [value=${viewname}]`);
+    item = document.querySelector(`#menu_FolderViewsPopup [value=${viewname}]`);
     if (item != null) {
       item.hidden = !enabled;
     };
-    let item = document.querySelector(`#appMenu-foldersView [value=${viewname}]`);
+    item = document.querySelector(`#appMenu-foldersView [value=${viewname}]`);
     if (item != null) {
       item.setAttribute("hidden", !enabled);
-      };
+    };
 
   },
 
@@ -162,7 +162,7 @@ var FolderPaneSwitcher = {
       this.logger = console;
     }
     var me = FolderPaneSwitcher;
-  
+
     var title = document.getElementById("folderPaneHeader");
     fpvsUtils.updateViews(gFolderTreeView); //save views as "dontworryaboutit", if none in prefs
     this.views = fpvsUtils.getViews(true);  //get real view name
@@ -177,7 +177,7 @@ var FolderPaneSwitcher = {
     //remove any views still in activeModes but not in prefs
     actViews.forEach(key => gFolderTreeView.activeModes = key); //remove
 
-     var prefBranch = Components.classes["@mozilla.org/preferences-service;1"]
+    var prefBranch = Components.classes["@mozilla.org/preferences-service;1"]
       .getService(Components.interfaces.nsIPrefBranch);
 
     title.addEventListener("dragexit", me.onDragExit, false);
@@ -274,14 +274,14 @@ var FolderPaneSwitcher = {
     FolderPaneSwitcher.logger.debug("onDragDrop(" + aEvent.type + ")");
     if (FolderPaneSwitcher.cachedView) {
       FolderPaneSwitcher.setSingleMode(FolderPaneSwitcher.cachedView);
-        FolderPaneSwitcher.cachedView = null;
+      FolderPaneSwitcher.cachedView = null;
       FolderPaneSwitcher.currentFolder = null;
     }
   },
 
   setSingleMode: function (modeName) {
     let currModes = gFolderTreeView.activeModes.slice();
-     if (!gFolderTreeView.activeModes.includes(modeName)) gFolderTreeView.activeModes = modeName;
+    if (!gFolderTreeView.activeModes.includes(modeName)) gFolderTreeView.activeModes = modeName;
 
     for (viewName of currModes) {
       if (viewName != modeName) gFolderTreeView.activeModes = viewName; //toggles, removes if present, if all gone, set to kDefaultMode (="all")
