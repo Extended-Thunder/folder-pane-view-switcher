@@ -1,0 +1,10 @@
+{
+    "appName": {
+        "message": "Folder Pane View Switcher",
+        "description": "The name of the add-on, displayed in various places."
+    },
+    "appDesc": {
+        "message": "Umschalten der Ordneransicht per Pfeiltaste. Beim Verschieben von emails mit der Maus schaltet die Ansicht dafür auf 'alle Ordner' um",
+        "description": "A short description of the add-on."
+    }
+}
