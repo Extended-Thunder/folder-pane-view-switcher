@@ -11,33 +11,76 @@
 
 var lastTab = 0, lastWindow = 0;
 
+var defPrefs = {
+
+  all: { arrow: false, menu: true, pos: -1 },
+  smart: { arrow: true, menu: true, pos: -1 },
+  recent: { arrow: true, menu: false, pos: -1 },
+  unread: { arrow: true, menu: true, pos: -1 },
+  favorite: { arrow: true, menu: true, pos: -1 }
+};
+
+var defChk = {arrows: true};
+var defDelay = {delay: 1000};
 
 
- messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
-   // if (temporary) return; // skip during development
-   switch (reason) {
-     case "install":
-       {
-         const url = messenger.runtime.getURL("popup/installed.html");
 
-         await browser.tabs.create({ url });
-//         await messenger.windows.create({ url, type: "popup", height: 780, width: 990, });
-       }
-       break;
-     case "update":
-       {
-         const url = messenger.runtime.getURL("popup/update.html");
-         await browser.tabs.create({ url });
-         //await messenger.windows.create({ url, type: "popup", height: 780, width: 990, });
-       }
-       break;
+messenger.browserAction.onClicked.addListener(async (tab, info) => {
 
-   }
- });
+  const url = messenger.runtime.getURL("content/options.html");
+  //await browser.tabs.create({ url });
+  messenger.windows.create({ url, type: "popup" });//, height: 780, width: 990, });
 
+});
+
+
+
+
+
+messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
+  // if (temporary) return; // skip during development
+  switch (reason) {
+    case "install":
+      {
+        browser.storage.local.set({ "prefs": defPrefs });
+        browser.storage.local.set(defChk);
+        browser.storage.local.set(defDelay);
+        const url = messenger.runtime.getURL("popup/installed.html");
+
+        await browser.tabs.create({ url });
+        //         await messenger.windows.create({ url, type: "popup", height: 780, width: 990, });
+      }
+      break;
+    case "update":
+      {
+        const url = messenger.runtime.getURL("popup/update.html");
+        await browser.tabs.create({ url });
+        //await messenger.windows.create({ url, type: "popup", height: 780, width: 990, });
+      }
+      break;
+
+  }
+});
+
+const url = messenger.runtime.getURL("content/options.html");
+//await browser.tabs.create({ url });
+messenger.windows.create({ url, type: "popup" });//, height: 780, width: 990, });
 
 
 async function main() {
+  let modes = await messenger.Utilities.getActiveViewModes();
+  console.log("bgrd modes", modes);
+
+  modes = await messenger.Utilities.getAllViewModes();
+  console.log("bgrd allmodes", modes);
+  /**/
+  for (vieww of modes) {
+    let name1 = await messenger.Utilities.getViewDisplayName(vieww);
+    console.log("name", name1);
+  }
+  ;
+  let name1 = await messenger.Utilities.getViewDisplayName("all");
+  console.log("name", name1);
 
   messenger.WindowListener.registerDefaultPrefs("chrome/content/scripts/fp-prefs.js");
 
@@ -50,7 +93,7 @@ async function main() {
   ]);
 
 
-  messenger.WindowListener.registerOptionsPage("chrome://FolderPaneSwitcher/content/options.xhtml");
+ // messenger.WindowListener.registerOptionsPage("chrome://FolderPaneSwitcher/content/options.xhtml");
   messenger.WindowListener.registerWindow("chrome://messenger/content/messenger.xhtml", "chrome/content/scripts/fp-messenger.js");
 
 

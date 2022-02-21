@@ -1,0 +1,54 @@
+[
+  {
+    "namespace": "Utilities",
+    "functions": [
+      {
+        "name": "isMailTab",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          {
+            "name": "isMailTab",
+            "type": "boolean",
+            "description": "is activated Tab a mailTab?"
+          }
+        ]
+      },
+      {
+        "name": "getActiveViewModes",
+        "type": "function",
+        "async": true,
+        "parameters": []
+      },
+      {
+        "name": "getAllViewModes",
+        "type": "function",
+        "async": true,
+        "parameters": []
+      },
+      {
+        "name": "getViewDisplayName",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          {
+            "name": "commonName",
+            "type": "string",
+            "description": "viewName"
+          }
+        ]
+      },
+      {
+        "name": "openLinkExternally",
+        "type": "function",
+        "parameters": [
+          {
+            "name": "url",
+            "type": "string",
+            "description": "url to open in browser"
+          }
+        ]
+      }
+    ]
+  }
+]

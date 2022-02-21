@@ -17,6 +17,27 @@
 			"fp-background.js"
 		]
 	},
+
+	"permissions": ["storage"],
+
+	"options_ui": {
+		"page": "./content/options.html",
+		"open_in_tab": true,
+		"browser_style": true
+	
+	  },
+
+
+
+	  "browser_action": {
+
+		"default_title": "ff++",
+		"default_icon": "skin/find.svg"
+	
+	  },
+	 
+
+
 	"icons": {
 		"48": "icon.png"
 	},
@@ -34,6 +55,20 @@
 					]
 				],
 				"script": "chrome/content/api/WindowListener/implementation.js"
+			}
+		},
+		"Utilities": {
+			"schema": "chrome/content/api/Utilities/schema.json",
+			"parent": {
+				"scopes": [
+					"addon_parent"
+				],
+				"paths": [
+					[
+						"Utilities"
+					]
+				],
+				"script": "chrome/content/api/Utilities/implementation.js"
 			}
 		},
 		"LegacyPrefs": {
