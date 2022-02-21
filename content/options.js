@@ -8,7 +8,7 @@ var FPVSOptions = {
         // Currently disabled
         //["FolderPaneSwitcher-drop-delay-textbox", "dropDelay", "int"],
     ],
-    chkboxSt: []
+    chkboxSt: [],
     
 
     arrowViews: [],
@@ -330,6 +330,7 @@ var FPVSOptions = {
             //        elt.setAttribute("checked", FPVSOptions.prefs.prefs[view].menu);
             FPVSOptions.prefs.prefs[view].menu = elt.checked;
             if (elt.checked)  FPVSOptions.menuViews.push(view);
+       //     messenger.Utilities.showViewInMenus(view, elt.checked)
  
         };
         await browser.storage.local.set(FPVSOptions.prefs);

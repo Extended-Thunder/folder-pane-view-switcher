@@ -39,14 +39,22 @@
         ]
       },
       {
-        "name": "openLinkExternally",
+        "name": "showViewInMenus",
         "type": "function",
+        "async": true,
         "parameters": [
           {
-            "name": "url",
+            "name": "view",
             "type": "string",
-            "description": "url to open in browser"
+            "description": "view"
+          },
+          {
+            "name": "enabled",
+            "type": "bool",
+            "description": "show in menu"
           }
+
+
         ]
       }
     ]

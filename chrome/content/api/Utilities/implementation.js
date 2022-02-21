@@ -86,11 +86,26 @@ var Utilities = class extends ExtensionCommon.ExtensionAPI {
         },
 
 
-        showXhtmlPage: function (uri) {
+        showViewInMenus: async function (view, enabled) {
+   /*
           let mail3PaneWindow = Components.classes["@mozilla.org/appshell/window-mediator;1"]
             .getService(Components.interfaces.nsIWindowMediator)
             .getMostRecentWindow("mail:3pane");
-          mail3PaneWindow.openDialog(uri);
+         
+
+          let item = mail3PaneWindow.document.querySelector(`#folderPaneOptionsPopup [value=${view}]`);
+          if (item != null) {
+            item.hidden = !enabled;
+          };
+          item = mail3PaneWindow.document.querySelector(`#menu_FolderViewsPopup [value=${view}]`);
+          if (item != null) {
+            item.hidden = !enabled;
+          };
+          item = mail3PaneWindow.document.querySelector(`#appMenu-foldersView [value=${view}]`);
+          if (item != null) {
+            item.setAttribute("hidden", !enabled);
+          };
+ */     
         }
 
 
