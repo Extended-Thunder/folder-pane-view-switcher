@@ -12,7 +12,7 @@ Services.scriptloader.loadSubScript("chrome://FolderPaneSwitcher/content/FolderP
 
 
 async function onLoad(activatedWhileWindowOpen) {
-    WL.injectElements(`
+/*    WL.injectElements(`
  
     <toolbarbutton id="FolderPaneSwitcher-forward-arrow-button"
     insertbefore="folderPaneOptionsButton"
@@ -28,14 +28,14 @@ async function onLoad(activatedWhileWindowOpen) {
  
 `, ["chrome://FolderPaneSwitcher/locale/switcher.dtd"]);
 
-
+*/
     while (!window.gFolderTreeView.isInited) {
         await new Promise(resolve => window.setTimeout(resolve, 100));
     };
-    window.FolderPaneSwitcher.onLoad();
+ //   window.FolderPaneSwitcher.onLoad();
 }
 
 function onUnload(isAddOnShutDown) {
-    window.FolderPaneSwitcher.onUnload();
+//    window.FolderPaneSwitcher.onUnload();
     Services.obs.notifyObservers(null, "startupcache-invalidate", null);
 }

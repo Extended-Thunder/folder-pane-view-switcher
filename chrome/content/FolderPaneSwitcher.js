@@ -33,6 +33,7 @@ var FolderPaneSwitcher = {
   selectedViews: [],
   menuEnabledViews: [],
 
+ /*
   setViewInUI: function (viewname, enabled) {
 
 
@@ -73,7 +74,7 @@ var FolderPaneSwitcher = {
 
 
   },
-
+*/
   addRemoveButtonsObserver: {
     observe: function () {
       var should_be_hidden =
@@ -90,6 +91,7 @@ var FolderPaneSwitcher = {
     }
   },
 
+  /*
   goBackView: function () {
 
 
@@ -108,7 +110,7 @@ var FolderPaneSwitcher = {
     currInd = (currInd + 1) % FolderPaneSwitcher.selectedViews.length;
     FolderPaneSwitcher.setSingleMode(FolderPaneSwitcher.selectedViews[currInd]);
   },
-
+*/
   views: null,
 
   viewsBeforeTimer: null,
@@ -150,18 +152,23 @@ var FolderPaneSwitcher = {
     }
   },
 
+  notifyForwardArrow: async function () {
+
+  },
   onLoad: function () {
     //init popup in case it was never opened
+    var me = FolderPaneSwitcher;
+    
     gFolderTreeView.initFolderPaneOptionsPopup();
 
-
-
+  //  let forwardArrow =  document.getElementById("FolderPaneSwitcher-forward-arrow-button");
+ //   forwardArrow.addEventListener("click", me.notifyForwardArrow, false);
     fpvsUtils.init();  //set pref branches
 
     if (!this.logger) {
       this.logger = console;
     }
-    var me = FolderPaneSwitcher;
+
 
     var title = document.getElementById("folderPaneHeader");
     fpvsUtils.updateViews(gFolderTreeView); //save views as "dontworryaboutit", if none in prefs

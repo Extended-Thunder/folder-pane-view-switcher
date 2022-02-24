@@ -50,8 +50,52 @@
           },
           {
             "name": "enabled",
-            "type": "bool",
+            "type": "boolean",
             "description": "show in menu"
+          }
+ 
+
+
+        ]
+      },
+      {     
+        "name": "toggleElementHidden",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          {
+            "name": "should_be_hidden",
+            "type": "boolean",
+            "description": "view"
+          }
+
+
+        ]
+      },
+ 
+      {
+        "name": "toggleActiveViewMode",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          {
+            "name": "view",
+            "type": "string",
+            "description": "view"
+          }
+
+
+        ]
+      },
+      {
+        "name": "setAllActiveViews",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          {
+            "name": "views",
+            "type": "string",
+            "description": "view"
           }
 
 

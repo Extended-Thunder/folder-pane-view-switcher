@@ -87,11 +87,13 @@ var Utilities = class extends ExtensionCommon.ExtensionAPI {
 
 
         showViewInMenus: async function (view, enabled) {
-   /*
-          let mail3PaneWindow = Components.classes["@mozilla.org/appshell/window-mediator;1"]
+   /*  */
+   console.log("showViewInMenus");
+   let mail3PaneWindow = Components.classes["@mozilla.org/appshell/window-mediator;1"]
             .getService(Components.interfaces.nsIWindowMediator)
             .getMostRecentWindow("mail:3pane");
-         
+            console.log("3pane",mail3PaneWindow);
+            console.log("3paneDoc",mail3PaneWindow.document);   
 
           let item = mail3PaneWindow.document.querySelector(`#folderPaneOptionsPopup [value=${view}]`);
           if (item != null) {
@@ -105,7 +107,42 @@ var Utilities = class extends ExtensionCommon.ExtensionAPI {
           if (item != null) {
             item.setAttribute("hidden", !enabled);
           };
- */     
+ 
+             
+        },
+
+        toggleElementHidden: async function (should_be_hidden) {
+          let mail3Pane = Components.classes['@mozilla.org/appshell/window-mediator;1'].getService(Components.interfaces.nsIWindowMediator).
+            getMostRecentWindow("mail:3pane");
+            let is_hidden =
+            !!mail3Pane.document.getElementById(
+              "FolderPaneSwitcher-back-arrow-button").hidden;
+          if (should_be_hidden != is_hidden) {
+            mail3Pane.document.getElementById("FolderPaneSwitcher-back-arrow-button").
+              hidden = should_be_hidden;
+              mail3Pane.document.getElementById("FolderPaneSwitcher-forward-arrow-button").
+              hidden = should_be_hidden;
+          }
+      
+        },
+
+
+
+        toggleActiveViewMode: async function (view) {
+          let mail3Pane = Components.classes['@mozilla.org/appshell/window-mediator;1'].getService(Components.interfaces.nsIWindowMediator).
+            getMostRecentWindow("mail:3pane");
+            mail3Pane.gFolderTreeView.activeModes = view;
+            return  ;
+        },
+
+
+
+        setAllActiveViews: async function (views) {
+          let mail3Pane = Components.classes['@mozilla.org/appshell/window-mediator;1'].getService(Components.interfaces.nsIWindowMediator).
+            getMostRecentWindow("mail:3pane");
+            console.log("views", views, views.split(','));
+            mail3Pane.gFolderTreeView._activeModes = views.split(',');
+            return  ;
         }
 
 

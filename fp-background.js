@@ -20,8 +20,8 @@ var defPrefs = {
   favorite: { arrow: true, menu: true, pos: -1 }
 };
 
-var defChk = {arrows: true};
-var defDelay = {delay: 1000};
+var defChk = { arrows: true };
+var defDelay = { delay: 1000 };
 
 
 
@@ -67,7 +67,130 @@ const url = messenger.runtime.getURL("content/options.html");
 messenger.windows.create({ url, type: "popup" });//, height: 780, width: 990, });
 
 
+
+
+
+async function manipulateWindow(window) {
+  // Skip in case it is not the window we want to manipulate.
+  // https://thunderbird-webextensions.readthedocs.io/en/latest/windows.html#windowtype
+  // * normal
+  // * popup
+  // * panel
+  // * app
+  // * devtools
+  // * addressBook
+  // * messageCompose
+  // * messageDisplay
+
+  if (`${window.type}` !== "normal") {
+    return;
+  }
+
+  const id = `${window.id}`;
+
+
+
+  await messenger.LegacyMenu.add(id, {
+    "id": "FolderPaneSwitcher-forward-arrow-button",
+    "type": "toolbarButton",
+    "reference": "folderPaneOptionsButton",
+    "position": "before",
+    "label": "",
+    //  "accesskey" : "B",
+    "image": "content/right-arrow.png",
+    "tooltip": "Next View"
+  });
+
+
+
+  await messenger.LegacyMenu.add(id, {
+    "id": "FolderPaneSwitcher-back-arrow-button",
+    "type": "toolbarButton",
+    "reference": "FolderPaneSwitcher-forward-arrow-button",
+    "position": "before",
+    "label": "",
+    //  "accesskey" : "B",
+    "image": "content/left-arrow.png",
+    "tooltip": "Previous View"
+  });
+
+
+};
+
+
+messenger.LegacyMenu.onCommand.addListener(async (windowsId, id) => {
+  if (id == "FolderPaneSwitcher-forward-arrow-button") {
+    console.log("forward clicked");
+    FolderPaneSwitcher.goForwardView();
+    //  messenger.NotifyTools.notifyExperiment({ windowsId, command: "addBookmark" });
+    return;
+  };
+
+  if (id == "FolderPaneSwitcher-back-arrow-button") {
+    console.log("back clicked");
+    FolderPaneSwitcher.goBackView();
+       //  messenger.NotifyTools.notifyExperiment({ windowsId, command: "help" });
+    return;
+  };
+
+
+});
+
+var FolderPaneSwitcher = {
+  setSingleMode: async function (modeName) {
+    let activeModes = await messenger.Utilities.getActiveViewModes();
+    let currModes = activeModes.slice();
+    if (!activeModes.includes(modeName)) await messenger.Utilities.toggleActiveViewMode(modeName);//  gFolderTreeView.activeModes = modeName;
+
+    for (viewName of currModes) {
+      if (viewName != modeName) await messenger.Utilities.toggleActiveViewMode(viewName);  //  gFolderTreeView.activeModes = viewName; //toggles, removes if present, if all gone, set to kDefaultMode (="all")
+    }
+  },
+
+  goForwardView: async function (event) {
+
+    let activeModes = await messenger.Utilities.getActiveViewModes();
+    let selectedViews = (await messenger.storage.local.get("arrowViews")).arrowViews;
+    console.log("selectedViews", selectedViews);
+
+    var currentView = activeModes[activeModes.length - 1];
+    let currInd = selectedViews.findIndex((name) => name == currentView);
+    currInd = (currInd + 1) % selectedViews.length;
+    FolderPaneSwitcher.setSingleMode(selectedViews[currInd]);
+  },
+
+  goBackView: async function () {
+
+    let activeModes = await messenger.Utilities.getActiveViewModes();
+    let selectedViews = (await messenger.storage.local.get("arrowViews")).arrowViews;
+    console.log("selectedViews", selectedViews);
+
+    var currentView = activeModes[activeModes.length - 1];
+    let currInd = selectedViews.findIndex((name) => name == currentView);
+
+    currInd = (currInd + selectedViews.length - 1) % selectedViews.length;
+    FolderPaneSwitcher.setSingleMode(selectedViews[currInd]);
+  }
+
+};
+
 async function main() {
+
+
+
+  const windows = await messenger.windows.getAll();
+  for (let window of windows) {
+    await manipulateWindow(window);
+  }
+  messenger.windows.onCreated.addListener((window) => {
+    manipulateWindow(window);
+  });
+
+
+
+
+
+
   let modes = await messenger.Utilities.getActiveViewModes();
   console.log("bgrd modes", modes);
 
@@ -93,7 +216,7 @@ async function main() {
   ]);
 
 
- // messenger.WindowListener.registerOptionsPage("chrome://FolderPaneSwitcher/content/options.xhtml");
+  // messenger.WindowListener.registerOptionsPage("chrome://FolderPaneSwitcher/content/options.xhtml");
   messenger.WindowListener.registerWindow("chrome://messenger/content/messenger.xhtml", "chrome/content/scripts/fp-messenger.js");
 
 

@@ -71,7 +71,15 @@
 				"script": "chrome/content/api/Utilities/implementation.js"
 			}
 		},
-		"LegacyPrefs": {
+		"LegacyMenu": {
+			"schema": "chrome/content/api/LegacyMenu/schema.json",
+			"parent": {
+			  "scopes": [ "addon_parent" ],
+			  "paths": [ [ "LegacyMenu" ] ],
+			  "script": "chrome/content/api/LegacyMenu/implementation.js"
+			}
+		  
+		},		"LegacyPrefs": {
 			"schema": "chrome/content/api/LegacyPrefs/schema.json",
 			"parent": {
 				"scopes": [

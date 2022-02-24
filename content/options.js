@@ -13,6 +13,8 @@ var FPVSOptions = {
 
     arrowViews: [],
 
+    activeViews: [],
+
     menuViews: [],
 
     menuChangeHandler: async function (event) {
@@ -135,7 +137,8 @@ var FPVSOptions = {
             lblckbx_shFPA.value = FPVSOptions.delay.delay;
 
             FPVSOptions.gviews = await messenger.Utilities.getAllViewModes();
-
+            FPVSOptions.activeViews =  await messenger.Utilities.getActiveViewModes();
+            console.log("actviews", FPVSOptions.activeViews);
 
             var btn_ok = document.getElementById("btn_accept");
 
@@ -288,6 +291,21 @@ var FPVSOptions = {
         }
     },
 
+    setViewForArrows: function (viewname, enabled) {
+        if (enabled) {
+          if (!FPVSOptions.arrowViews.includes(viewname)) FPVSOptions.arrowViews.push(viewname);
+    
+        } else {
+            FPVSOptions.arrowViews = FPVSOptions.arrowViews.filter(value => value != viewname);
+        };
+ /*
+        //if current view is no longer in selectedViews, then set selectedViews[0]
+        if (!FolderPaneSwitcher.selectedViews.includes(gFolderTreeView.activeModes[gFolderTreeView.activeModes.length - 1]))
+          FolderPaneSwitcher.setSingleMode(FolderPaneSwitcher.selectedViews[0]);
+  */  
+    
+      },
+
     resetPrefs: async function (event) {
 
         console.log("resetprefs", FPVSOptions.prefs);
@@ -330,30 +348,36 @@ var FPVSOptions = {
             //        elt.setAttribute("checked", FPVSOptions.prefs.prefs[view].menu);
             FPVSOptions.prefs.prefs[view].menu = elt.checked;
             if (elt.checked)  FPVSOptions.menuViews.push(view);
-       //     messenger.Utilities.showViewInMenus(view, elt.checked)
+            messenger.Utilities.showViewInMenus(view, elt.checked)
+
+        //    if (!FP)
+        //    FPVSOptions.setViewForArrows(view, elt.checked);
  
         };
+        //messenger.Utilities.setAllActiveViews(FPVSOptions.arrowViews.toString());//toggleActiveViewMode("recent")
         await browser.storage.local.set(FPVSOptions.prefs);
-        await browser.storage.local.set({"arrowViews": FPVSOptions.prefs});
-        await browser.storage.local.set({"menuViews": FPVSOptions.prefs});
+        await browser.storage.local.set({"arrowViews": FPVSOptions.arrowViews});
+        await browser.storage.local.set({"menuViews": FPVSOptions.menuViews});
  
 
         lblckbx_shFPA = document.getElementById("FolderPaneSwitcher-arrows-checkbox");
         FPVSOptions.arrowChk.arrows = lblckbx_shFPA.checked;
+        messenger.Utilities.toggleElementHidden(! lblckbx_shFPA.checked);
 
         lblckbx_shFPA = document.getElementById("FolderPaneSwitcher-delay-textbox");
         FPVSOptions.delay.delay = lblckbx_shFPA.value;
 
         await browser.storage.local.set(FPVSOptions.arrowChk);
         await browser.storage.local.set(FPVSOptions.delay);
+ /*
         let wnds = await browser.windows.getAll();
         console.log("wnds", wnds);
         let wnd1;
         for ( wnd1 of wnds) {
             console.log("wnd", wnd1);
-             browser.windows.remove(wnd1.id);  //window.close();
+   //          browser.windows.remove(wnd1.id);  //window.close();
         };
-
+*/
         let wnd = await browser.tabs.getCurrent();
         browser.tabs.remove(wnd.id);  //window.close();
 
