@@ -75,6 +75,7 @@ var FolderPaneSwitcher = {
 
   },
 */
+/*
   addRemoveButtonsObserver: {
     observe: function () {
       var should_be_hidden =
@@ -90,7 +91,7 @@ var FolderPaneSwitcher = {
       }
     }
   },
-
+*/
   /*
   goBackView: function () {
 
@@ -114,6 +115,7 @@ var FolderPaneSwitcher = {
   views: null,
 
   viewsBeforeTimer: null,
+/*
 
   viewsObserver: {   //... this observes the prefs, not the views
     register: function (logger, views) {
@@ -151,11 +153,12 @@ var FolderPaneSwitcher = {
       };
     }
   },
-
+*/
   notifyForwardArrow: async function () {
 
   },
   onLoad: function () {
+   // debugger;
     //init popup in case it was never opened
     var me = FolderPaneSwitcher;
     
@@ -169,16 +172,16 @@ var FolderPaneSwitcher = {
       this.logger = console;
     }
 
-
+console.log("onLad");
     var title = document.getElementById("folderPaneHeader");
     fpvsUtils.updateViews(gFolderTreeView); //save views as "dontworryaboutit", if none in prefs
     this.views = fpvsUtils.getViews(true);  //get real view name
-    this.viewsObserver.register(this.logger, this.views);
+    //this.viewsObserver.register(this.logger, this.views);
     let actViews = gFolderTreeView.activeModes; //there might be views active that are not yet in the prefs
     for (let [key, value] of Object.entries(this.views)) {
-      me.setViewInUI(key, value.menu_enabled);
+     // me.setViewInUI(key, value.menu_enabled);
       if (value.menu_enabled) actViews = actViews.filter(element => element != key); //removes key if present
-      me.setViewForArrows(key, value.arrows_enabled);
+    //  me.setViewForArrows(key, value.arrows_enabled);
       //both also take care to set selectedViews and menuEnabledViews
     };
     //remove any views still in activeModes but not in prefs
@@ -191,9 +194,9 @@ var FolderPaneSwitcher = {
     title.addEventListener("drop", me.onDragDrop, false);
     title.addEventListener("dragenter", me.onDragEnter, false);
     title.collapsed = false;
-    FolderPaneSwitcher.addRemoveButtonsObserver.observe();
-    fpvsUtils.addObserver(prefBranch, "extensions.FolderPaneSwitcher.arrows",
-      FolderPaneSwitcher.addRemoveButtonsObserver, false);
+ //   FolderPaneSwitcher.addRemoveButtonsObserver.observe();
+ //   fpvsUtils.addObserver(prefBranch, "extensions.FolderPaneSwitcher.arrows",
+ //     FolderPaneSwitcher.addRemoveButtonsObserver, false);
 
     var folderTree = document.getElementById("folderTree");
     folderTree.addEventListener("dragover", me.onDragOver, false);
@@ -253,6 +256,8 @@ var FolderPaneSwitcher = {
   },
 
   onDragEnter: function (aEvent) {
+    console.log("leg onDragEnter");
+
     FolderPaneSwitcher.logger.debug("onDragEnter");
     if (FolderPaneSwitcher.cachedView) {
       FolderPaneSwitcher.logger.debug("onDragEnter: switch already in progress");

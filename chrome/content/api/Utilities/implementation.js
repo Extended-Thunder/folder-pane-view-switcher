@@ -23,6 +23,28 @@ if (!ExtensionParent) var { ExtensionParent } = ChromeUtils.import("resource://g
 var win = Services.wm.getMostRecentWindow("mail:3pane");
 
 
+var FPVS = {
+  extension: ExtensionParent.GlobalManager.getExtension("FolderPaneSwitcher@kamens.us") 
+
+};
+
+var FPVSlisteners = {
+  onDragExit: async function () {
+    FPVS.notifyTools.notifyBackground({command: "onDragExit"});
+  },
+  onDragDrop: async function () {
+    FPVS.notifyTools.notifyBackground({command: "onDragDrop"});
+
+  },
+  onDragEnter: async function () {
+    FPVS.notifyTools.notifyBackground({command: "onDragEnter"});
+  },
+  onDragOver: async function () {
+    FPVS.notifyTools.notifyBackground({command: "onDragOver"});
+  }
+
+
+};
 //console.log("impl utilities");
 var Utilities = class extends ExtensionCommon.ExtensionAPI {
   getAPI(context) {
@@ -74,6 +96,21 @@ var Utilities = class extends ExtensionCommon.ExtensionAPI {
           return allViews;//{modeDisplayNames: modeDisplayNames, allViews: allViews};
         },
 
+        isTreeInited: async function (id) {
+          console.log("isTreeInited");
+          let mail3Pane = Components.classes['@mozilla.org/appshell/window-mediator;1'].getService(Components.interfaces.nsIWindowMediator).
+            getMostRecentWindow("mail:3pane");
+          console.log("isTreeInited");
+          try {
+            let inited = mail3Pane.gFolderTreeView.isInited;
+            console.log("inited", inited);
+            return inited;//{modeDisplayNames: modeDisplayNames, allViews: allViews};
+          }
+          catch (e) {
+            return false;
+          };
+
+        },
 
 
         getViewDisplayName: async function (commonName) {
@@ -82,18 +119,31 @@ var Utilities = class extends ExtensionCommon.ExtensionAPI {
           let key = "folderPaneModeHeader_" + commonName;
           let nameString = mail3Pane.gFolderTreeView.messengerBundle.getString(key);
           console.log("legname", nameString);
-          return  nameString;
+          return nameString;
         },
 
+        registerListener: async function(eventType, DOMid, windowId) {
+          let mail3Pane = Components.classes['@mozilla.org/appshell/window-mediator;1'].getService(Components.interfaces.nsIWindowMediator).
+          getMostRecentWindow("mail:3pane");
+          console.log("registerListener");
+          let item = mail3Pane.document.getElementById(DOMid);
+          item.addEventListener("dragexit", FPVSlisteners.onDragExit, false);
+          item.addEventListener("drop", FPVSlisteners.onDragDrop, false);
+          item.addEventListener("dragenter", FPVSlisteners.onDragEnter, false);
+          item.addEventListener("dragover", FPVSlisteners.onDragOver, false);
+        
+       //   if (item) 
+
+        },
 
         showViewInMenus: async function (view, enabled) {
-   /*  */
-   console.log("showViewInMenus");
-   let mail3PaneWindow = Components.classes["@mozilla.org/appshell/window-mediator;1"]
+          /*  */
+          console.log("showViewInMenus");
+          let mail3PaneWindow = Components.classes["@mozilla.org/appshell/window-mediator;1"]
             .getService(Components.interfaces.nsIWindowMediator)
             .getMostRecentWindow("mail:3pane");
-            console.log("3pane",mail3PaneWindow);
-            console.log("3paneDoc",mail3PaneWindow.document);   
+          console.log("3pane", mail3PaneWindow);
+          console.log("3paneDoc", mail3PaneWindow.document);
 
           let item = mail3PaneWindow.document.querySelector(`#folderPaneOptionsPopup [value=${view}]`);
           if (item != null) {
@@ -107,23 +157,23 @@ var Utilities = class extends ExtensionCommon.ExtensionAPI {
           if (item != null) {
             item.setAttribute("hidden", !enabled);
           };
- 
-             
+
+
         },
 
         toggleElementHidden: async function (should_be_hidden) {
           let mail3Pane = Components.classes['@mozilla.org/appshell/window-mediator;1'].getService(Components.interfaces.nsIWindowMediator).
             getMostRecentWindow("mail:3pane");
-            let is_hidden =
+          let is_hidden =
             !!mail3Pane.document.getElementById(
               "FolderPaneSwitcher-back-arrow-button").hidden;
           if (should_be_hidden != is_hidden) {
             mail3Pane.document.getElementById("FolderPaneSwitcher-back-arrow-button").
               hidden = should_be_hidden;
-              mail3Pane.document.getElementById("FolderPaneSwitcher-forward-arrow-button").
+            mail3Pane.document.getElementById("FolderPaneSwitcher-forward-arrow-button").
               hidden = should_be_hidden;
           }
-      
+
         },
 
 
@@ -131,8 +181,8 @@ var Utilities = class extends ExtensionCommon.ExtensionAPI {
         toggleActiveViewMode: async function (view) {
           let mail3Pane = Components.classes['@mozilla.org/appshell/window-mediator;1'].getService(Components.interfaces.nsIWindowMediator).
             getMostRecentWindow("mail:3pane");
-            mail3Pane.gFolderTreeView.activeModes = view;
-            return  ;
+          mail3Pane.gFolderTreeView.activeModes = view;
+          return;
         },
 
 
@@ -140,9 +190,9 @@ var Utilities = class extends ExtensionCommon.ExtensionAPI {
         setAllActiveViews: async function (views) {
           let mail3Pane = Components.classes['@mozilla.org/appshell/window-mediator;1'].getService(Components.interfaces.nsIWindowMediator).
             getMostRecentWindow("mail:3pane");
-            console.log("views", views, views.split(','));
-            mail3Pane.gFolderTreeView._activeModes = views.split(',');
-            return  ;
+          console.log("views", views, views.split(','));
+          mail3Pane.gFolderTreeView._activeModes = views.split(',');
+          return;
         }
 
 
@@ -150,3 +200,7 @@ var Utilities = class extends ExtensionCommon.ExtensionAPI {
     }
   };
 }
+
+
+Services.scriptloader.loadSubScript(FPVS.extension.rootURI.resolve("chrome/content/scripts/notifyTools.js"), FPVS, "UTF-8");
+

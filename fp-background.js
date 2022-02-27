@@ -86,10 +86,18 @@ async function manipulateWindow(window) {
     return;
   }
 
-  const id = `${window.id}`;
+  let id = `${window.id}`;
+  console.log("manipulateWindow");
 
+  let inited = await messenger.Utilities.isTreeInited(id);
+  while (!inited) {
+    await new Promise(resolve => window.setTimeout(resolve, 100));
+    inited = await messenger.Utilities.isTreeInited();
+  };
 
+  await messenger.Utilities.registerListener("all", "folderPaneHeader", id);
 
+  /**/
   await messenger.LegacyMenu.add(id, {
     "id": "FolderPaneSwitcher-forward-arrow-button",
     "type": "toolbarButton",
@@ -129,7 +137,7 @@ messenger.LegacyMenu.onCommand.addListener(async (windowsId, id) => {
   if (id == "FolderPaneSwitcher-back-arrow-button") {
     console.log("back clicked");
     FolderPaneSwitcher.goBackView();
-       //  messenger.NotifyTools.notifyExperiment({ windowsId, command: "help" });
+    //  messenger.NotifyTools.notifyExperiment({ windowsId, command: "help" });
     return;
   };
 
@@ -137,6 +145,12 @@ messenger.LegacyMenu.onCommand.addListener(async (windowsId, id) => {
 });
 
 var FolderPaneSwitcher = {
+
+  cachedView: null,
+
+  selectedFolder: null,
+
+
   setSingleMode: async function (modeName) {
     let activeModes = await messenger.Utilities.getActiveViewModes();
     let currModes = activeModes.slice();
@@ -170,6 +184,32 @@ var FolderPaneSwitcher = {
 
     currInd = (currInd + selectedViews.length - 1) % selectedViews.length;
     FolderPaneSwitcher.setSingleMode(selectedViews[currInd]);
+  },
+
+  onDragEnter: function (aEvent) {
+    console.log("not onDragEnter");
+
+    //    FolderPaneSwitcher.logger.debug("onDragEnter");
+    if (FolderPaneSwitcher.cachedView) {
+      //      FolderPaneSwitcher.logger.debug("onDragEnter: switch already in progress");
+    }
+    else {
+      FolderPaneSwitcher.resetTimer();
+    }
+  },
+
+  resetTimer: function () {
+    /*
+       if (FolderPaneSwitcher.timer) {
+         FolderPaneSwitcher.timer.cancel();
+       }
+       var delay = Services.prefs.getIntPref("extensions.FolderPaneSwitcher.delay");
+       var t = Components.classes["@mozilla.org/timer;1"]
+         .createInstance(Components.interfaces.nsITimer);
+       t.initWithCallback(FolderPaneSwitcher.timerCallback, delay,
+         Components.interfaces.nsITimer.TYPE_ONE_SHOT);
+       FolderPaneSwitcher.timer = t;
+       */
   }
 
 };
@@ -188,6 +228,29 @@ async function main() {
 
 
 
+  messenger.NotifyTools.onNotifyBackground.addListener(async (info) => {
+    console.log(info);
+    switch (info.command) {
+      case "onDragExit":
+        console.log("bgr onDragExit");
+        break;
+      case "onDragDrop":
+        console.log("bgr onDragDrop");
+        break;
+
+      case "onDragEnter":
+        console.log("bgr onDragEnter");
+        FolderPaneSwitcher.onDragEnter(null);
+
+        break;
+      case "onDragOver":
+        console.log("bgr onDragOver");
+        //         FolderPaneSwitcher.onDragOver(null);
+
+        break;
+
+    }
+  });
 
 
 

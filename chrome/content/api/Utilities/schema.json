@@ -26,6 +26,19 @@
         "async": true,
         "parameters": []
       },
+     {
+        "name": "isTreeInited",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          {
+            "name": "id",
+            "type": "string",
+            "description": "window id"
+          }
+
+        ]
+      },
       {
         "name": "getViewDisplayName",
         "type": "function",
@@ -36,6 +49,28 @@
             "type": "string",
             "description": "viewName"
           }
+        ]
+      },
+      {
+        "name": "registerListener",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          {
+            "name": "eventType",
+            "type": "string",
+            "description": "event"
+          },
+          {
+            "name": "DOMid",
+            "type": "string",
+            "description": "DOMid"
+          },
+          {
+            "name": "windowId",
+            "type": "string",
+            "description": "windowId"
+          }         
         ]
       },
       {
