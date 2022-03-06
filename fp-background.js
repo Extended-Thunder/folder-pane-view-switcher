@@ -5,9 +5,7 @@
 
 
 /*
- * Documentation:
- * https://github.com/thundernest/addon-developer-support/wiki/Using-the-WindowListener-API-to-convert-a-Legacy-Overlay-WebExtension-into-a-MailExtension-for-Thunderbird-78
- */
+  */
 
 var lastTab = 0, lastWindow = 0;
 
@@ -21,10 +19,10 @@ var defPrefs = {
 };
 
 var defChk = { arrows: true };
-var defDelay = { delay: 1000 };
+var defDelay = { delay: 300 };
 
 
-
+/*
 messenger.browserAction.onClicked.addListener(async (tab, info) => {
 
   const url = messenger.runtime.getURL("content/options.html");
@@ -34,7 +32,7 @@ messenger.browserAction.onClicked.addListener(async (tab, info) => {
 });
 
 
-
+*/
 
 
 messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
@@ -370,7 +368,7 @@ messenger.messages.onMoved.addListener( async (originalMessages, movedMessages) 
 
   //messenger.WindowListener.registerDefaultPrefs("chrome/content/scripts/fp-prefs.js");
 
-
+/*
   messenger.WindowListener.registerChromeUrl([
     ["content", "FolderPaneSwitcher", "chrome/content/"],
     ["locale", "FolderPaneSwitcher", "en-US", "chrome/locale/en-US/"],
@@ -378,7 +376,7 @@ messenger.messages.onMoved.addListener( async (originalMessages, movedMessages) 
 
   ]);
 
-
+*/
   // messenger.WindowListener.registerOptionsPage("chrome://FolderPaneSwitcher/content/options.xhtml");
   //messenger.WindowListener.registerWindow("chrome://messenger/content/messenger.xhtml", "chrome/content/scripts/fp-messenger.js");
 

@@ -29,34 +29,11 @@
 
 
 
-	  "browser_action": {
-
-		"default_title": "ff++",
-		"default_icon": "skin/find.svg"
-	
-	  },
-	 
-
-
 	"icons": {
 		"48": "icon.png"
 	},
 	"manifest_version": 2,
 	"experiment_apis": {
-		"WindowListener": {
-			"schema": "chrome/content/api/WindowListener/schema.json",
-			"parent": {
-				"scopes": [
-					"addon_parent"
-				],
-				"paths": [
-					[
-						"WindowListener"
-					]
-				],
-				"script": "chrome/content/api/WindowListener/implementation.js"
-			}
-		},
 		"Utilities": {
 			"schema": "chrome/content/api/Utilities/schema.json",
 			"parent": {
