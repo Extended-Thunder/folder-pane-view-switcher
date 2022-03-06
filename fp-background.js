@@ -368,7 +368,7 @@ messenger.messages.onMoved.addListener( async (originalMessages, movedMessages) 
   let name1 = await messenger.Utilities.getViewDisplayName("all");
   console.log("name", name1);
 
-  messenger.WindowListener.registerDefaultPrefs("chrome/content/scripts/fp-prefs.js");
+  //messenger.WindowListener.registerDefaultPrefs("chrome/content/scripts/fp-prefs.js");
 
 
   messenger.WindowListener.registerChromeUrl([
@@ -380,7 +380,7 @@ messenger.messages.onMoved.addListener( async (originalMessages, movedMessages) 
 
 
   // messenger.WindowListener.registerOptionsPage("chrome://FolderPaneSwitcher/content/options.xhtml");
-  messenger.WindowListener.registerWindow("chrome://messenger/content/messenger.xhtml", "chrome/content/scripts/fp-messenger.js");
+  //messenger.WindowListener.registerWindow("chrome://messenger/content/messenger.xhtml", "chrome/content/scripts/fp-messenger.js");
 
 
 
@@ -392,7 +392,7 @@ messenger.messages.onMoved.addListener( async (originalMessages, movedMessages) 
    */
 
 
-  messenger.WindowListener.startListening();
+  //messenger.WindowListener.startListening();
 }
 
 main();

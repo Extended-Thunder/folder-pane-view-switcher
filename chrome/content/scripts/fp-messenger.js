@@ -4,11 +4,11 @@
 
 
 
-var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+//var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 
-Services.scriptloader.loadSubScript("chrome://FolderPaneSwitcher/content/utils.js", window, "UTF-8");
-Services.scriptloader.loadSubScript("chrome://FolderPaneSwitcher/content/FolderPaneSwitcher.js", window, "UTF-8");
+//Services.scriptloader.loadSubScript("chrome://FolderPaneSwitcher/content/utils.js", window, "UTF-8");
+//Services.scriptloader.loadSubScript("chrome://FolderPaneSwitcher/content/FolderPaneSwitcher.js", window, "UTF-8");
 
 
 async function onLoad(activatedWhileWindowOpen) {
@@ -28,14 +28,15 @@ async function onLoad(activatedWhileWindowOpen) {
  
 `, ["chrome://FolderPaneSwitcher/locale/switcher.dtd"]);
 
-*/
+
     while (!window.gFolderTreeView.isInited) {
         await new Promise(resolve => window.setTimeout(resolve, 100));
     };
+    */
  //   window.FolderPaneSwitcher.onLoad();
 }
 
 function onUnload(isAddOnShutDown) {
 //    window.FolderPaneSwitcher.onUnload();
-    Services.obs.notifyObservers(null, "startupcache-invalidate", null);
+//    Services.obs.notifyObservers(null, "startupcache-invalidate", null);
 }
