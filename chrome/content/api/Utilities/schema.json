@@ -1,8 +1,14 @@
-[
+[  
   {
     "namespace": "Utilities",
     "functions": [
       {
+        "name": "initFolderPaneOptionsPopup",
+        "type": "function",
+        "async": true,
+        "parameters": []
+      },
+    {
         "name": "isMailTab",
         "type": "function",
         "async": true,
@@ -13,6 +19,12 @@
             "description": "is activated Tab a mailTab?"
           }
         ]
+      },
+      {
+        "name": "getLastHoveredFolder",
+        "type": "function",
+        "async": true,
+        "parameters": []
       },
       {
         "name": "getActiveViewModes",
@@ -26,7 +38,13 @@
         "async": true,
         "parameters": []
       },
-     {
+      {
+        "name": "inDragSession",
+        "type": "function",
+        "async": true,
+        "parameters": []
+      },
+      {
         "name": "isTreeInited",
         "type": "function",
         "async": true,
@@ -36,7 +54,6 @@
             "type": "string",
             "description": "window id"
           }
-
         ]
       },
       {
@@ -70,7 +87,7 @@
             "name": "windowId",
             "type": "string",
             "description": "windowId"
-          }         
+          }
         ]
       },
       {
@@ -88,12 +105,9 @@
             "type": "boolean",
             "description": "show in menu"
           }
- 
-
-
         ]
       },
-      {     
+      {
         "name": "toggleElementHidden",
         "type": "function",
         "async": true,
@@ -103,11 +117,8 @@
             "type": "boolean",
             "description": "view"
           }
-
-
         ]
       },
- 
       {
         "name": "toggleActiveViewMode",
         "type": "function",
@@ -118,8 +129,6 @@
             "type": "string",
             "description": "view"
           }
-
-
         ]
       },
       {
@@ -132,8 +141,6 @@
             "type": "string",
             "description": "view"
           }
-
-
         ]
       }
     ]

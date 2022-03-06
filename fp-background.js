@@ -49,12 +49,15 @@ messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
 
         await browser.tabs.create({ url });
         //         await messenger.windows.create({ url, type: "popup", height: 780, width: 990, });
+     //   main();
       }
       break;
     case "update":
       {
         const url = messenger.runtime.getURL("popup/update.html");
         await browser.tabs.create({ url });
+      //  await messenger.NotifyTools.removeAllListeners();
+      //  main();
         //await messenger.windows.create({ url, type: "popup", height: 780, width: 990, });
       }
       break;
@@ -96,6 +99,7 @@ async function manipulateWindow(window) {
   };
 
   await messenger.Utilities.registerListener("all", "folderPaneHeader", id);
+  await messenger.Utilities.initFolderPaneOptionsPopup();
 
   /**/
   await messenger.LegacyMenu.add(id, {
@@ -148,7 +152,13 @@ var FolderPaneSwitcher = {
 
   cachedView: null,
 
-  selectedFolder: null,
+  selectedFolder: null,  //not in use??
+
+  timer: null,
+
+  watchTimer: null,
+
+  logger: console,
 
 
   setSingleMode: async function (modeName) {
@@ -184,9 +194,10 @@ var FolderPaneSwitcher = {
 
     currInd = (currInd + selectedViews.length - 1) % selectedViews.length;
     FolderPaneSwitcher.setSingleMode(selectedViews[currInd]);
+    FolderPaneSwitcher.cachedView = null;
   },
 
-  onDragEnter: function (aEvent) {
+  onDragEnter: function () {
     console.log("not onDragEnter");
 
     //    FolderPaneSwitcher.logger.debug("onDragEnter");
@@ -194,22 +205,100 @@ var FolderPaneSwitcher = {
       //      FolderPaneSwitcher.logger.debug("onDragEnter: switch already in progress");
     }
     else {
+      console.log("onDragEnter resettimer");
       FolderPaneSwitcher.resetTimer();
     }
   },
 
-  resetTimer: function () {
+  onDragExit: function (aEvent) {
+   // FolderPaneSwitcher.logger.debug("onDragExit(" + aEvent.type + ")");
+    //   console.log("dragexit should never happen as the bug is wontfix");
+    if (FolderPaneSwitcher.timer) {
+      FolderPaneSwitcher.timer.cancel();
+      FolderPaneSwitcher.timer = null;
+    }
+  },
+
+  onDragDrop: function (aEvent) {
+    FolderPaneSwitcher.logger.debug("onDragDrop(" + aEvent.type + ")");
+    if (FolderPaneSwitcher.cachedView) {
+      FolderPaneSwitcher.setSingleMode(FolderPaneSwitcher.cachedView);
+      FolderPaneSwitcher.cachedView = null;
+      FolderPaneSwitcher.currentFolder = null;
+    }
+  },
+
+
+  timerCallback: {
+    notify: async function () {
+      FolderPaneSwitcher.logger.debug("timerCallback.notify");
+      debugger;
+      let activeViews = await messenger.Utilities.getActiveViewModes();
+      FolderPaneSwitcher.cachedView = activeViews[activeViews.length - 1];// if singlemode  gFolderTreeView.activeModes.slice();
+      // FolderPaneSwitcher.viewsBeforeTimer = gFolderTreeView.activeModes.slice();
+      FolderPaneSwitcher.logger.debug("cachedmode", FolderPaneSwitcher.cachedView);
+      FolderPaneSwitcher.setSingleMode("all");
+
+      FolderPaneSwitcher.timer = 0;
+      FolderPaneSwitcher.watchTimer = window.setTimeout(FolderPaneSwitcher.watchTimerCallback.notify, 1500, FolderPaneSwitcher);
+      /*
+            var t = Components.classes["@mozilla.org/timer;1"]
+              .createInstance(Components.interfaces.nsITimer);
+            t.initWithCallback(FolderPaneSwitcher.watchTimerCallback, 250,
+              Components.interfaces.nsITimer.TYPE_REPEATING_SLACK);
+            FolderPaneSwitcher.watchTimer = t;
+            */
+    },
+  },
+
+
+  watchTimerCallback: {
+    notify: async function () {
+      if (FolderPaneSwitcher.cachedView) {
+        //    FolderPaneSwitcher.cachedView = null;
+        let inDragSession = await messenger.Utilities.inDragSession();
+        if (!inDragSession) {
+          await FolderPaneSwitcher.onDragDrop({ type: "watchTimer" });
+        };
+       /*
+        var dragService = Components
+          .classes["@mozilla.org/widget/dragservice;1"]
+          .getService(Components.interfaces.nsIDragService);
+        var dragSession = dragService.getCurrentSession();
+        if (!dragSession) {
+          FolderPaneSwitcher.onDragDrop({ type: "watchTimer" });
+        }
+        */
+      };
+      if (!FolderPaneSwitcher.cachedView) {  //there is intentionally no else because of the side effects of the await above
+        // It's null either because we just called onDragDrop or
+        // because something else finished the drop.
+        //       FolderPaneSwitcher.watchTimer.cancel();
+        //window.clearTimeout(FolderPaneSwitcher.watchTimer);
+
+        FolderPaneSwitcher.watchTimer = 0;
+      }
+    }
+  },
+
+  resetTimer: async function () {
+    FolderPaneSwitcher.logger.debug("resettimer");
+    debugger;
+    if (FolderPaneSwitcher.timer) {
+      window.clearTimeout(FolderPaneSwitcher.timer);
+      //       FolderPaneSwitcher.timer.cancel();
+    };
+    let delay = await messenger.storage.local.get("delay");
+    console.log("delay", delay);
+    FolderPaneSwitcher.timer = window.setTimeout(FolderPaneSwitcher.timerCallback.notify, delay.delay, FolderPaneSwitcher);
     /*
-       if (FolderPaneSwitcher.timer) {
-         FolderPaneSwitcher.timer.cancel();
-       }
-       var delay = Services.prefs.getIntPref("extensions.FolderPaneSwitcher.delay");
-       var t = Components.classes["@mozilla.org/timer;1"]
-         .createInstance(Components.interfaces.nsITimer);
-       t.initWithCallback(FolderPaneSwitcher.timerCallback, delay,
-         Components.interfaces.nsITimer.TYPE_ONE_SHOT);
-       FolderPaneSwitcher.timer = t;
-       */
+          var delay = Services.prefs.getIntPref("extensions.FolderPaneSwitcher.delay");
+         var t = Components.classes["@mozilla.org/timer;1"]
+           .createInstance(Components.interfaces.nsITimer);
+         t.initWithCallback(FolderPaneSwitcher.timerCallback, delay,
+           Components.interfaces.nsITimer.TYPE_ONE_SHOT);
+         FolderPaneSwitcher.timer = t;
+         */
   }
 
 };
@@ -227,24 +316,35 @@ async function main() {
   });
 
 
+messenger.messages.onMoved.addListener( async (originalMessages, movedMessages) =>
+{
+  let lastHoveredFolder = await messenger.Utilities.getLastHoveredFolder();
+  let newFolder = movedMessages.messages[0].folder;
+  console.log("folder, ", lastHoveredFolder);
+  console.log("eqhul", lastHoveredFolder.toString() == newFolder.toString() , movedMessages);
+  FolderPaneSwitcher.onDragDrop({ type: "msgsMoveCopyCompleted" });
+ 
+});
+
 
   messenger.NotifyTools.onNotifyBackground.addListener(async (info) => {
-    console.log(info);
+    //   console.log(info);
     switch (info.command) {
       case "onDragExit":
-        console.log("bgr onDragExit");
+        //     console.log("bgr onDragExit");
         break;
       case "onDragDrop":
-        console.log("bgr onDragDrop");
-        break;
+              console.log("bgr onDragDrop");
+        FolderPaneSwitcher.onDragDrop({type:"dragdrop"});
+      break;
 
       case "onDragEnter":
         console.log("bgr onDragEnter");
-        FolderPaneSwitcher.onDragEnter(null);
+        FolderPaneSwitcher.onDragEnter();
 
         break;
       case "onDragOver":
-        console.log("bgr onDragOver");
+            console.log("bgr onDragOver");//, info.folder);
         //         FolderPaneSwitcher.onDragOver(null);
 
         break;

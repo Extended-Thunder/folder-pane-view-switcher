@@ -162,7 +162,7 @@ var FolderPaneSwitcher = {
     //init popup in case it was never opened
     var me = FolderPaneSwitcher;
     
-    gFolderTreeView.initFolderPaneOptionsPopup();
+   // gFolderTreeView.initFolderPaneOptionsPopup();
 
   //  let forwardArrow =  document.getElementById("FolderPaneSwitcher-forward-arrow-button");
  //   forwardArrow.addEventListener("click", me.notifyForwardArrow, false);
@@ -190,9 +190,9 @@ console.log("onLad");
     var prefBranch = Components.classes["@mozilla.org/preferences-service;1"]
       .getService(Components.interfaces.nsIPrefBranch);
 
-    title.addEventListener("dragexit", me.onDragExit, false);
-    title.addEventListener("drop", me.onDragDrop, false);
-    title.addEventListener("dragenter", me.onDragEnter, false);
+    //title.addEventListener("dragexit", me.onDragExit, false);
+    //title.addEventListener("drop", me.onDragDrop, false);
+   // title.addEventListener("dragenter", me.onDragEnter, false);
     title.collapsed = false;
  //   FolderPaneSwitcher.addRemoveButtonsObserver.observe();
  //   fpvsUtils.addObserver(prefBranch, "extensions.FolderPaneSwitcher.arrows",

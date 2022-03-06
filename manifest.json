@@ -18,7 +18,7 @@
 		]
 	},
 
-	"permissions": ["storage"],
+	"permissions": ["storage", "accountsRead", "accountsFolders", "messagesRead"],
 
 	"options_ui": {
 		"page": "./content/options.html",
