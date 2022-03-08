@@ -28,9 +28,12 @@ var FPVS = {
 
 };
 var FPVSlisteners = {
-  onDragExit: async function () {
+  onDragExit: async function (event) {
+    if (event.target.id == "folderPaneHeader") {
+      console.log("leg onDragExit");
 
-    FPVS.notifyTools.notifyBackground({ command: "onDragExit" });
+      FPVS.notifyTools.notifyBackground({ command: "onDragExit" });
+    };
   },
   onDragDrop: async function (event) {
     if (event.target.id == "folderPaneHeader") {
@@ -40,7 +43,7 @@ var FPVSlisteners = {
 
   },
   onDragEnter: async function (event) {
-    console.log("d.ent", event);
+    //  console.log("d.ent", event);
     if (event.target.id == "folderPaneHeader") {
       console.log("leg dragennter");
       FPVS.notifyTools.notifyBackground({ command: "onDragEnter" });
@@ -48,16 +51,18 @@ var FPVSlisteners = {
   },
   onDragOver: async function (event) {
     // FolderPaneSwitcher.logger.trace("onDragOver"); // too verbose for debug
-    console.log("dragover", event);
-    /* */
-    let mail3Pane = Components.classes['@mozilla.org/appshell/window-mediator;1'].getService(Components.interfaces.nsIWindowMediator).
-      getMostRecentWindow("mail:3pane");
+    if (event.target.id != "folderPaneHeader") {
+      console.log("dragover", event);
+      /* */
+      let mail3Pane = Components.classes['@mozilla.org/appshell/window-mediator;1'].getService(Components.interfaces.nsIWindowMediator).
+        getMostRecentWindow("mail:3pane");
 
-    //   let mail3Pane = event.ownerGlobal.window;
+      //   let mail3Pane = event.ownerGlobal.window;
 
-    let currentFolder =
-      mail3Pane.gFolderTreeView.getFolderAtCoords(event.clientX, event.clientY);
-    console.log("dragover", currentFolder);
+      let currentFolder =
+        mail3Pane.gFolderTreeView.getFolderAtCoords(event.clientX, event.clientY);
+      console.log("dragover folder", currentFolder);
+    }
 
     //FPVS.notifyTools.notifyBackground({ command: "onDragOver", folder: FPVS.extension.folderManager.convert(currentFolder) });
 
@@ -96,11 +101,43 @@ var Utilities = class extends ExtensionCommon.ExtensionAPI {
       // FPVS.notifyTools.notifyBackground({ command: "onDragOver", folder: context.extension.folderManager.convert(currentFolder) });
       //   console.log("dragover2",currentFolder, context.extension.folderManager.convert(currentFolder), FPVS);
     };
+    /* */
+    var folderListener = {
+      msgsMoveCopyCompleted: function (aMove, aSrcMsgs, aDestFolder, aDestMsgs) {
+        //    FolderPaneSwitcher.logger.debug("msgsMoveCopyCompleted");
+        if (aDestFolder == currentFolder) {
+          // Still remotely possible that someone else could be copying
+          // into the same folder at the same time as us, but this is
+          // the best we can do until they fix the event bug.
+          //  FolderPaneSwitcher.onDragDrop({ type: "msgsMoveCopyCompleted" });
+          FPVS.notifyTools.notifyBackground({ command: "folderListener", type: "msgsMoveCopyCompleted" });
+        }
+        else {
+          //     FolderPaneSwitcher.logger.debug("msgsMoveCopyCompleted: non-matching folder");
+        }
+      },
+      folderMoveCopyCompleted: function (aMove, aSrcFolder, aDestFolder) {
+        //    FolderPaneSwitcher.logger.debug("folderMoveCopyCompleted");
+        if (aDestFolder == currentFolder) {
+          // Still remotely possible that someone else could be copying
+          // into the same folder at the same time as us, but this is
+          // the best we can do until they fix the event bug.
+          //         FolderPaneSwitcher.onDragDrop({ type: "folderMoveCopyCompleted" });
+          FPVS.notifyTools.notifyBackground({ command: "folderListener", type: "folderMoveCopyCompleted" });
+        }
+        else {
+          //       FolderPaneSwitcher.logger.debug("folderMoveCopyCompleted: non-matching folder");
+        }
+      }
+    };
 
     return {
       Utilities: {
 
         firstCall: 1,
+
+
+
         //    currentFolder:null,
         /*
                 onDragOver: async function (event) {
@@ -207,20 +244,71 @@ var Utilities = class extends ExtensionCommon.ExtensionAPI {
           let mail3Pane = windowObject.window;
           console.log("registerListener", mail3Pane);
           let item = mail3Pane.document.getElementById(DOMid);
-          item.addEventListener("dragexit", FPVSlisteners.onDragExit, false);
-          item.addEventListener("drop", FPVSlisteners.onDragDrop, false);
+      //    item.addEventListener("dragexit", FPVSlisteners.onDragExit, false);
+      //    item.addEventListener("drop", FPVSlisteners.onDragDrop, false);
           item.addEventListener("dragenter", FPVSlisteners.onDragEnter, false);
-          item.addEventListener("dragover", FPVSlisteners.onDragOver, false);
+       //   item.addEventListener("dragover", FPVSlisteners.onDragOver, false);
           let folderTree = mail3Pane.document.getElementById("folderTree");
           console.log("foldertree", folderTree);
           //folderTree.addEventListener("drop", FPVSlisteners.onDragDrop, false); //event currentl broken/not coming/bubbling   Utilities
-          folderTree.addEventListener("dragover", onDragOver, false);
+    //      folderTree.addEventListener("dragover", onDragOver, false);
+
+
+          // Dragexit and dragdrop don't actually get sent when the user
+          // drops a message into a folder. This is arguably a bug in
+          // Thunderbird (see bz#674807). To work around it, I register a
+          // folder listener to detect when a move or copy is
+          // completed. This is gross, but appears to work well enough.
+          //By 2022, the bug is wontfix
+          var ns =
+            Components.classes["@mozilla.org/messenger/msgnotificationservice;1"]
+              .getService(Components.interfaces.nsIMsgFolderNotificationService);
+          ns.addListener(folderListener, ns.msgsMoveCopyCompleted |
+            ns.folderMoveCopyCompleted);
 
 
 
           //   if (item) 
 
         },
+
+        unregisterListener: async function (eventType, DOMid, windowId) {
+          //      let mail3Pane = Components.classes['@mozilla.org/appshell/window-mediator;1'].getService(Components.interfaces.nsIWindowMediator).
+          //      getMostRecentWindow("mail:3pane");
+          let windowObject = context.extension.windowManager.get(windowId);
+          let mail3Pane = windowObject.window;
+          console.log("unregisterListener", mail3Pane);
+          let item = mail3Pane.document.getElementById(DOMid);
+          item.removeEventListener("dragexit", FPVSlisteners.onDragExit);
+          item.removeEventListener("drop", FPVSlisteners.onDragDrop);
+          item.removeEventListener("dragenter", FPVSlisteners.onDragEnter);
+          item.removeEventListener("dragover", FPVSlisteners.onDragOver);
+          let folderTree = mail3Pane.document.getElementById("folderTree");
+          console.log("foldertree", folderTree);
+          //folderTree.addEventListener("drop", FPVSlisteners.onDragDrop, false); //event currentl broken/not coming/bubbling   Utilities
+          folderTree.removeEventListener("dragover", onDragOver);
+
+
+          // Dragexit and dragdrop don't actually get sent when the user
+          // drops a message into a folder. This is arguably a bug in
+          // Thunderbird (see bz#674807). To work around it, I register a
+          // folder listener to detect when a move or copy is
+          // completed. This is gross, but appears to work well enough.
+          //By 2022, the bug is wontfix
+ /*
+          var ns =
+            Components.classes["@mozilla.org/messenger/msgnotificationservice;1"]
+              .getService(Components.interfaces.nsIMsgFolderNotificationService);
+          ns.addListener(folderListener, ns.msgsMoveCopyCompleted |
+            ns.folderMoveCopyCompleted);
+*/
+
+
+          //   if (item) 
+
+        },
+
+
 
         showViewInMenus: async function (view, enabled) {
           /*  */

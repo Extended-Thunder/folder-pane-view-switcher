@@ -91,6 +91,28 @@
         ]
       },
       {
+        "name": "unregisterListener",
+        "type": "function",
+        "async": true,
+        "parameters": [
+          {
+            "name": "eventType",
+            "type": "string",
+            "description": "event"
+          },
+          {
+            "name": "DOMid",
+            "type": "string",
+            "description": "DOMid"
+          },
+          {
+            "name": "windowId",
+            "type": "string",
+            "description": "windowId"
+          }
+        ]
+      },
+     {
         "name": "showViewInMenus",
         "type": "function",
         "async": true,

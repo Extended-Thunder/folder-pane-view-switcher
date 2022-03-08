@@ -47,15 +47,15 @@ messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
 
         await browser.tabs.create({ url });
         //         await messenger.windows.create({ url, type: "popup", height: 780, width: 990, });
-     //   main();
+        //   main();
       }
       break;
     case "update":
       {
         const url = messenger.runtime.getURL("popup/update.html");
         await browser.tabs.create({ url });
-      //  await messenger.NotifyTools.removeAllListeners();
-      //  main();
+        //  await messenger.NotifyTools.removeAllListeners();
+        //  main();
         //await messenger.windows.create({ url, type: "popup", height: 780, width: 990, });
       }
       break;
@@ -127,6 +127,9 @@ async function manipulateWindow(window) {
 
 };
 
+
+
+messenger.windows.onRemoved.addListener( async (windowId) => {  await messenger.Utilities.unregisterListener("all", "folderPaneHeader", windowId);})
 
 messenger.LegacyMenu.onCommand.addListener(async (windowsId, id) => {
   if (id == "FolderPaneSwitcher-forward-arrow-button") {
@@ -209,17 +212,35 @@ var FolderPaneSwitcher = {
   },
 
   onDragExit: function (aEvent) {
-   // FolderPaneSwitcher.logger.debug("onDragExit(" + aEvent.type + ")");
-    //   console.log("dragexit should never happen as the bug is wontfix");
+    // FolderPaneSwitcher.logger.debug("onDragExit(" + aEvent.type + ")");
+       console.log("dragexit should never happen as the bug is wontfix");
     if (FolderPaneSwitcher.timer) {
-      FolderPaneSwitcher.timer.cancel();
-      FolderPaneSwitcher.timer = null;
-    }
+      window.clearTimeout(FolderPaneSwitcher.timer);
+      FolderPaneSwitcher.timer = 0;
+      console.log("kill timer");
+    };
+    if (FolderPaneSwitcher.watchTimer) {
+      window.clearTimeout(FolderPaneSwitcher.watchTimer);
+      FolderPaneSwitcher.watchTimer = 0;
+      console.log("kill watchTimer");
+    };
+
   },
 
   onDragDrop: function (aEvent) {
     FolderPaneSwitcher.logger.debug("onDragDrop(" + aEvent.type + ")");
-    if (FolderPaneSwitcher.cachedView) {
+    if (FolderPaneSwitcher.timer) { //so we don't double call setSingleMode
+      window.clearTimeout(FolderPaneSwitcher.timer);
+      FolderPaneSwitcher.timer = 0;
+      console.log("kill timer");
+    };
+    if (FolderPaneSwitcher.watchTimer) {
+      window.clearTimeout(FolderPaneSwitcher.watchTimer);
+      FolderPaneSwitcher.watchTimer = 0;
+      console.log("kill watchTimer");
+    };
+
+  if (FolderPaneSwitcher.cachedView) {
       FolderPaneSwitcher.setSingleMode(FolderPaneSwitcher.cachedView);
       FolderPaneSwitcher.cachedView = null;
       FolderPaneSwitcher.currentFolder = null;
@@ -230,14 +251,14 @@ var FolderPaneSwitcher = {
   timerCallback: {
     notify: async function () {
       FolderPaneSwitcher.logger.debug("timerCallback.notify");
-      debugger;
+      //debugger;
       let activeViews = await messenger.Utilities.getActiveViewModes();
       FolderPaneSwitcher.cachedView = activeViews[activeViews.length - 1];// if singlemode  gFolderTreeView.activeModes.slice();
       // FolderPaneSwitcher.viewsBeforeTimer = gFolderTreeView.activeModes.slice();
       FolderPaneSwitcher.logger.debug("cachedmode", FolderPaneSwitcher.cachedView);
       FolderPaneSwitcher.setSingleMode("all");
 
-      FolderPaneSwitcher.timer = 0;
+ //     FolderPaneSwitcher.timer = 0;
       FolderPaneSwitcher.watchTimer = window.setTimeout(FolderPaneSwitcher.watchTimerCallback.notify, 1500, FolderPaneSwitcher);
       /*
             var t = Components.classes["@mozilla.org/timer;1"]
@@ -252,21 +273,23 @@ var FolderPaneSwitcher = {
 
   watchTimerCallback: {
     notify: async function () {
+      FolderPaneSwitcher.logger.debug("watchTimerCallback.notify");
       if (FolderPaneSwitcher.cachedView) {
         //    FolderPaneSwitcher.cachedView = null;
         let inDragSession = await messenger.Utilities.inDragSession();
+        console.log("watchtimer indragsession", inDragSession);
         if (!inDragSession) {
           await FolderPaneSwitcher.onDragDrop({ type: "watchTimer" });
         };
-       /*
-        var dragService = Components
-          .classes["@mozilla.org/widget/dragservice;1"]
-          .getService(Components.interfaces.nsIDragService);
-        var dragSession = dragService.getCurrentSession();
-        if (!dragSession) {
-          FolderPaneSwitcher.onDragDrop({ type: "watchTimer" });
-        }
-        */
+        /*
+         var dragService = Components
+           .classes["@mozilla.org/widget/dragservice;1"]
+           .getService(Components.interfaces.nsIDragService);
+         var dragSession = dragService.getCurrentSession();
+         if (!dragSession) {
+           FolderPaneSwitcher.onDragDrop({ type: "watchTimer" });
+         }
+         */
       };
       if (!FolderPaneSwitcher.cachedView) {  //there is intentionally no else because of the side effects of the await above
         // It's null either because we just called onDragDrop or
@@ -280,15 +303,17 @@ var FolderPaneSwitcher = {
   },
 
   resetTimer: async function () {
-    FolderPaneSwitcher.logger.debug("resettimer");
-    debugger;
+
+    //debugger;
     if (FolderPaneSwitcher.timer) {
       window.clearTimeout(FolderPaneSwitcher.timer);
+      FolderPaneSwitcher.timer = 0;
       //       FolderPaneSwitcher.timer.cancel();
     };
-    let delay = await messenger.storage.local.get("delay");
-    console.log("delay", delay);
+    FolderPaneSwitcher.logger.debug("resettimer");
+       let delay = await messenger.storage.local.get("delay");
     FolderPaneSwitcher.timer = window.setTimeout(FolderPaneSwitcher.timerCallback.notify, delay.delay, FolderPaneSwitcher);
+    console.log("delay", delay, FolderPaneSwitcher.timer);
     /*
           var delay = Services.prefs.getIntPref("extensions.FolderPaneSwitcher.delay");
          var t = Components.classes["@mozilla.org/timer;1"]
@@ -313,28 +338,29 @@ async function main() {
     manipulateWindow(window);
   });
 
-
-messenger.messages.onMoved.addListener( async (originalMessages, movedMessages) =>
-{
-  let lastHoveredFolder = await messenger.Utilities.getLastHoveredFolder();
-  let newFolder = movedMessages.messages[0].folder;
-  console.log("folder, ", lastHoveredFolder);
-  console.log("eqhul", lastHoveredFolder.toString() == newFolder.toString() , movedMessages);
-  FolderPaneSwitcher.onDragDrop({ type: "msgsMoveCopyCompleted" });
- 
-});
-
-
+  /*
+  messenger.messages.onMoved.addListener( async (originalMessages, movedMessages) =>
+  {
+    let lastHoveredFolder = await messenger.Utilities.getLastHoveredFolder();
+    let newFolder = movedMessages.messages[0].folder;
+    console.log("folder, ", lastHoveredFolder);
+    console.log("eqhul", lastHoveredFolder.toString() == newFolder.toString() , movedMessages);
+    FolderPaneSwitcher.onDragDrop({ type: "msgsMoveCopyCompleted" });
+   
+  });
+   
+  */
   messenger.NotifyTools.onNotifyBackground.addListener(async (info) => {
     //   console.log(info);
     switch (info.command) {
       case "onDragExit":
         //     console.log("bgr onDragExit");
+        FolderPaneSwitcher.onDragDrop({ type: "dragexit" });
         break;
       case "onDragDrop":
-              console.log("bgr onDragDrop");
-        FolderPaneSwitcher.onDragDrop({type:"dragdrop"});
-      break;
+        console.log("bgr onDragDrop");
+        FolderPaneSwitcher.onDragDrop({ type: "dragdrop" });
+        break;
 
       case "onDragEnter":
         console.log("bgr onDragEnter");
@@ -342,8 +368,14 @@ messenger.messages.onMoved.addListener( async (originalMessages, movedMessages) 
 
         break;
       case "onDragOver":
-            console.log("bgr onDragOver");//, info.folder);
+        console.log("bgr onDragOver");//, info.folder);
         //         FolderPaneSwitcher.onDragOver(null);
+
+        break;
+
+      case "folderListener": //this replaces an event indicating that the messge/folder drop is finished
+        console.log("bgr folderListener", info.type);//, info.folder);
+        FolderPaneSwitcher.onDragDrop({ type: info.type });
 
         break;
 
@@ -368,15 +400,15 @@ messenger.messages.onMoved.addListener( async (originalMessages, movedMessages) 
 
   //messenger.WindowListener.registerDefaultPrefs("chrome/content/scripts/fp-prefs.js");
 
-/*
-  messenger.WindowListener.registerChromeUrl([
-    ["content", "FolderPaneSwitcher", "chrome/content/"],
-    ["locale", "FolderPaneSwitcher", "en-US", "chrome/locale/en-US/"],
-    ["locale", "FolderPaneSwitcher", "de", "chrome/locale/de/"]
-
-  ]);
-
-*/
+  /*
+    messenger.WindowListener.registerChromeUrl([
+      ["content", "FolderPaneSwitcher", "chrome/content/"],
+      ["locale", "FolderPaneSwitcher", "en-US", "chrome/locale/en-US/"],
+      ["locale", "FolderPaneSwitcher", "de", "chrome/locale/de/"]
+  
+    ]);
+  
+  */
   // messenger.WindowListener.registerOptionsPage("chrome://FolderPaneSwitcher/content/options.xhtml");
   //messenger.WindowListener.registerWindow("chrome://messenger/content/messenger.xhtml", "chrome/content/scripts/fp-messenger.js");
 
