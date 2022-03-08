@@ -129,7 +129,7 @@ async function manipulateWindow(window) {
 
 
 
-messenger.windows.onRemoved.addListener( async (windowId) => {  await messenger.Utilities.unregisterListener("all", "folderPaneHeader", windowId);})
+messenger.windows.onRemoved.addListener(async (windowId) => { await messenger.Utilities.unregisterListener("all", "folderPaneHeader", windowId); })
 
 messenger.LegacyMenu.onCommand.addListener(async (windowsId, id) => {
   if (id == "FolderPaneSwitcher-forward-arrow-button") {
@@ -155,9 +155,9 @@ var FolderPaneSwitcher = {
 
   selectedFolder: null,  //not in use??
 
-  timer: null,
+  timer: 0,
 
-  watchTimer: null,
+  watchTimer: 0,
 
   logger: console,
 
@@ -195,11 +195,15 @@ var FolderPaneSwitcher = {
 
     currInd = (currInd + selectedViews.length - 1) % selectedViews.length;
     FolderPaneSwitcher.setSingleMode(selectedViews[currInd]);
-    FolderPaneSwitcher.cachedView = null;
+    // FolderPaneSwitcher.cachedView = null;
   },
 
   onDragEnter: function () {
-    console.log("not onDragEnter");
+    console.log("bgr FPVS onDragEnter");
+
+    if (!FolderPaneSwitcher.timer) {
+      FolderPaneSwitcher.cachedView = null;
+    };
 
     //    FolderPaneSwitcher.logger.debug("onDragEnter");
     if (FolderPaneSwitcher.cachedView) {
@@ -213,7 +217,7 @@ var FolderPaneSwitcher = {
 
   onDragExit: function (aEvent) {
     // FolderPaneSwitcher.logger.debug("onDragExit(" + aEvent.type + ")");
-       console.log("dragexit should never happen as the bug is wontfix");
+    console.log("dragexit should never happen as the bug is wontfix");
     if (FolderPaneSwitcher.timer) {
       window.clearTimeout(FolderPaneSwitcher.timer);
       FolderPaneSwitcher.timer = 0;
@@ -240,7 +244,8 @@ var FolderPaneSwitcher = {
       console.log("kill watchTimer");
     };
 
-  if (FolderPaneSwitcher.cachedView) {
+    if (FolderPaneSwitcher.cachedView) {
+      console.log("reset cached view", FolderPaneSwitcher.cachedView);
       FolderPaneSwitcher.setSingleMode(FolderPaneSwitcher.cachedView);
       FolderPaneSwitcher.cachedView = null;
       FolderPaneSwitcher.currentFolder = null;
@@ -258,7 +263,7 @@ var FolderPaneSwitcher = {
       FolderPaneSwitcher.logger.debug("cachedmode", FolderPaneSwitcher.cachedView);
       FolderPaneSwitcher.setSingleMode("all");
 
- //     FolderPaneSwitcher.timer = 0;
+      //     FolderPaneSwitcher.timer = 0;
       FolderPaneSwitcher.watchTimer = window.setTimeout(FolderPaneSwitcher.watchTimerCallback.notify, 1500, FolderPaneSwitcher);
       /*
             var t = Components.classes["@mozilla.org/timer;1"]
@@ -271,9 +276,10 @@ var FolderPaneSwitcher = {
   },
 
 
-  watchTimerCallback: {
+  watchTimerCallback: {   //needed because drop/dragend is not fired on folderPaneHeader
     notify: async function () {
       FolderPaneSwitcher.logger.debug("watchTimerCallback.notify");
+      FolderPaneSwitcher.timer = 0;
       if (FolderPaneSwitcher.cachedView) {
         //    FolderPaneSwitcher.cachedView = null;
         let inDragSession = await messenger.Utilities.inDragSession();
@@ -298,6 +304,7 @@ var FolderPaneSwitcher = {
         //window.clearTimeout(FolderPaneSwitcher.watchTimer);
 
         FolderPaneSwitcher.watchTimer = 0;
+        FolderPaneSwitcher.timer = 0;
       }
     }
   },
@@ -305,6 +312,16 @@ var FolderPaneSwitcher = {
   resetTimer: async function () {
 
     //debugger;
+
+    if (!FolderPaneSwitcher.timer) {
+      FolderPaneSwitcher.logger.debug("resettimer");
+      FolderPaneSwitcher.cachedView = null;
+      let delay = await messenger.storage.local.get("delay");
+      FolderPaneSwitcher.timer = window.setTimeout(FolderPaneSwitcher.timerCallback.notify, delay.delay, FolderPaneSwitcher);
+      console.log("delay", delay, FolderPaneSwitcher.timer);
+    };
+
+    /*
     if (FolderPaneSwitcher.timer) {
       window.clearTimeout(FolderPaneSwitcher.timer);
       FolderPaneSwitcher.timer = 0;
@@ -314,14 +331,7 @@ var FolderPaneSwitcher = {
        let delay = await messenger.storage.local.get("delay");
     FolderPaneSwitcher.timer = window.setTimeout(FolderPaneSwitcher.timerCallback.notify, delay.delay, FolderPaneSwitcher);
     console.log("delay", delay, FolderPaneSwitcher.timer);
-    /*
-          var delay = Services.prefs.getIntPref("extensions.FolderPaneSwitcher.delay");
-         var t = Components.classes["@mozilla.org/timer;1"]
-           .createInstance(Components.interfaces.nsITimer);
-         t.initWithCallback(FolderPaneSwitcher.timerCallback, delay,
-           Components.interfaces.nsITimer.TYPE_ONE_SHOT);
-         FolderPaneSwitcher.timer = t;
-         */
+          */
   }
 
 };
@@ -360,6 +370,10 @@ async function main() {
       case "onDragDrop":
         console.log("bgr onDragDrop");
         FolderPaneSwitcher.onDragDrop({ type: "dragdrop" });
+        break;
+      case "onDragLeave":
+        console.log("bgr onDragLeave");
+        FolderPaneSwitcher.onDragDrop({ type: "onDragLeave" });
         break;
 
       case "onDragEnter":

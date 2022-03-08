@@ -29,22 +29,32 @@ var FPVS = {
 };
 var FPVSlisteners = {
   onDragExit: async function (event) {
+
+    let dragService = Components
+      .classes["@mozilla.org/widget/dragservice;1"]
+      .getService(Components.interfaces.nsIDragService);
+    let dragSession = dragService.getCurrentSession();
+    console.log("foldpa dragsession", dragSession, !!dragSession, event);
+    if (!dragSession) {//{modeDisplayNames: modeDisplayNames, allViews: allViews};
+ //     FPVS.notifyTools.notifyBackground({ command: "onDragExit" });
+
+    };
     if (event.target.id == "folderPaneHeader") {
       console.log("leg onDragExit");
 
-      FPVS.notifyTools.notifyBackground({ command: "onDragExit" });
+  //    FPVS.notifyTools.notifyBackground({ command: "onDragExit" });
     };
   },
   onDragDrop: async function (event) {
     if (event.target.id == "folderPaneHeader") {
-      console.log("leg dragdropr");
+      console.log("leg dragdrop");
       FPVS.notifyTools.notifyBackground({ command: "onDragDrop" });
     };
 
   },
   onDragEnter: async function (event) {
     //  console.log("d.ent", event);
-    if (event.target.id == "folderPaneHeader") {
+    if (event.originalTarget.id == "folderPaneHeader") {
       console.log("leg dragennter");
       FPVS.notifyTools.notifyBackground({ command: "onDragEnter" });
     };
@@ -101,6 +111,17 @@ var Utilities = class extends ExtensionCommon.ExtensionAPI {
       // FPVS.notifyTools.notifyBackground({ command: "onDragOver", folder: context.extension.folderManager.convert(currentFolder) });
       //   console.log("dragover2",currentFolder, context.extension.folderManager.convert(currentFolder), FPVS);
     };
+
+    async function onDragLeave(event) {
+      console.log("leg foldtree dragdleave");
+      FPVS.notifyTools.notifyBackground({ command: "onDragLeave" });
+      if (event.target.id == "foldertree") {
+        console.log("leg onDragLeave");
+        //       FPVS.notifyTools.notifyBackground({ command: "onDragDrop" });
+      };
+
+    };
+
     /* */
     var folderListener = {
       msgsMoveCopyCompleted: function (aMove, aSrcMsgs, aDestFolder, aDestMsgs) {
@@ -207,7 +228,7 @@ var Utilities = class extends ExtensionCommon.ExtensionAPI {
             .classes["@mozilla.org/widget/dragservice;1"]
             .getService(Components.interfaces.nsIDragService);
           let dragSession = dragService.getCurrentSession();
-          console.log("dragsession", dragSession, !!dragSession);
+          console.log("leg dragsession", dragSession, !!dragSession);
           return !!dragSession;//{modeDisplayNames: modeDisplayNames, allViews: allViews};
         },
 
@@ -244,14 +265,27 @@ var Utilities = class extends ExtensionCommon.ExtensionAPI {
           let mail3Pane = windowObject.window;
           console.log("registerListener", mail3Pane);
           let item = mail3Pane.document.getElementById(DOMid);
-      //    item.addEventListener("dragexit", FPVSlisteners.onDragExit, false);
-      //    item.addEventListener("drop", FPVSlisteners.onDragDrop, false);
+          item.addEventListener("dragleave", FPVSlisteners.onDragExit, false);
+          item.addEventListener("dragend", FPVSlisteners.onDragDrop, false);
           item.addEventListener("dragenter", FPVSlisteners.onDragEnter, false);
-       //   item.addEventListener("dragover", FPVSlisteners.onDragOver, false);
+          item.addEventListener("drop", () => { console.log("foldpa drop"); }, false);  //not fired
+          item.addEventListener("dragend", () => { console.log("foldpa dragend"); }, false);  //not fired
+          item.addEventListener("dragexit", () => { console.log("foldpa dragexit"); }, false);  //not fired
+          item.addEventListener("dragover", () => { console.log("foldpa dragover"); }, false);  //not fired
+          item.addEventListener("dragenter", () => { console.log("foldpa dragenter"); }, false);  //not fired
+          item.addEventListener("dragleave", () => { console.log("foldpa dragleave"); }, false);  //not fired
+          item.addEventListener("mouseup", () => { console.log("foldpa mouseup"); }, false);  //not fired
+          item.addEventListener("pointerup", () => { console.log("foldpa pointerup"); }, false);  //not fired
+          item.addEventListener("mouseout", () => { console.log("foldpa mouseout"); }, false);  //not fired
+          //         item.addEventListener("dragenter", FPVSlisteners.onDragEnter, false);
+          //   item.addEventListener("dragover", FPVSlisteners.onDragOver, false);
           let folderTree = mail3Pane.document.getElementById("folderTree");
           console.log("foldertree", folderTree);
           //folderTree.addEventListener("drop", FPVSlisteners.onDragDrop, false); //event currentl broken/not coming/bubbling   Utilities
-    //      folderTree.addEventListener("dragover", onDragOver, false);
+          folderTree.addEventListener("dragover", onDragOver, false);
+          folderTree.addEventListener("drop", () => { console.log("fold drop"); }, false);  //not fired
+          folderTree.addEventListener("dragend", () => { console.log("fold dragend"); }, false);  //not fired
+          folderTree.addEventListener("dragleave", onDragLeave, false);
 
 
           // Dragexit and dragdrop don't actually get sent when the user
@@ -295,13 +329,13 @@ var Utilities = class extends ExtensionCommon.ExtensionAPI {
           // folder listener to detect when a move or copy is
           // completed. This is gross, but appears to work well enough.
           //By 2022, the bug is wontfix
- /*
-          var ns =
-            Components.classes["@mozilla.org/messenger/msgnotificationservice;1"]
-              .getService(Components.interfaces.nsIMsgFolderNotificationService);
-          ns.addListener(folderListener, ns.msgsMoveCopyCompleted |
-            ns.folderMoveCopyCompleted);
-*/
+          /*
+                   var ns =
+                     Components.classes["@mozilla.org/messenger/msgnotificationservice;1"]
+                       .getService(Components.interfaces.nsIMsgFolderNotificationService);
+                   ns.addListener(folderListener, ns.msgsMoveCopyCompleted |
+                     ns.folderMoveCopyCompleted);
+         */
 
 
           //   if (item) 
