@@ -215,6 +215,20 @@ var FolderPaneSwitcher = {
     }
   },
 
+  onDragLeaveFolderPane: function (aEvent) {
+    FolderPaneSwitcher.logger.debug("onDragDrop(" + aEvent.type + ")");
+    console.log("leaveFolderPane", FolderPaneSwitcher.cachedView, FolderPaneSwitcher.timer, FolderPaneSwitcher.watchTimer);
+
+    if (FolderPaneSwitcher.cachedView && !FolderPaneSwitcher.timer) {
+      console.log("reset onDragLeaveFolderPane cached view", FolderPaneSwitcher.cachedView);
+      FolderPaneSwitcher.setSingleMode(FolderPaneSwitcher.cachedView);
+      FolderPaneSwitcher.cachedView = null;
+      FolderPaneSwitcher.currentFolder = null;
+      FolderPaneSwitcher.watchTimer = 0;
+    }
+  },
+
+
   onDragExit: function (aEvent) {
     // FolderPaneSwitcher.logger.debug("onDragExit(" + aEvent.type + ")");
     console.log("dragexit should never happen as the bug is wontfix");
@@ -375,7 +389,9 @@ async function main() {
         console.log("bgr onDragLeave");
         FolderPaneSwitcher.onDragDrop({ type: "onDragLeave" });
         break;
-
+      case "onDragLeaveFolderPane":
+        FolderPaneSwitcher.onDragLeaveFolderPane({ type: "onDragLeaveFolderPane" });
+        break;
       case "onDragEnter":
         console.log("bgr onDragEnter");
         FolderPaneSwitcher.onDragEnter();

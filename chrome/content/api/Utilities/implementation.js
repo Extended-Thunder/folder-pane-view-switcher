@@ -29,6 +29,7 @@ var FPVS = {
 };
 var FPVSlisteners = {
   onDragExit: async function (event) {
+    FPVS.notifyTools.notifyBackground({ command: "onDragLeaveFolderPane" });
 
     let dragService = Components
       .classes["@mozilla.org/widget/dragservice;1"]
