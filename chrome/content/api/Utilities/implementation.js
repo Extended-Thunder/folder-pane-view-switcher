@@ -266,7 +266,8 @@ var Utilities = class extends ExtensionCommon.ExtensionAPI {
           let mail3Pane = windowObject.window;
           console.log("registerListener", mail3Pane);
           let item = mail3Pane.document.getElementById(DOMid);
-          item.addEventListener("dragleave", FPVSlisteners.onDragExit, false);
+  //        item.addEventListener("dragleave", FPVSlisteners.onDragExit, true);  //gives problem if dragleave inside folderPaneHeader (e.g. between buttons and label)
+          item.addEventListener("mouseout", FPVSlisteners.onDragExit, false);  //dragleave
           item.addEventListener("dragend", FPVSlisteners.onDragDrop, false);
           item.addEventListener("dragenter", FPVSlisteners.onDragEnter, false);
           item.addEventListener("drop", () => { console.log("foldpa drop"); }, false);  //not fired
