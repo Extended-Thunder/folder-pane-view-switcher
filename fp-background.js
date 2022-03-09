@@ -22,18 +22,6 @@ var defChk = { arrows: true };
 var defDelay = { delay: 300 };
 
 
-/*
-messenger.browserAction.onClicked.addListener(async (tab, info) => {
-
-  const url = messenger.runtime.getURL("content/options.html");
-  //await browser.tabs.create({ url });
-  messenger.windows.create({ url, type: "popup" });//, height: 780, width: 990, });
-
-});
-
-
-*/
-
 
 messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
   // if (temporary) return; // skip during development
@@ -45,9 +33,6 @@ messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
         browser.storage.local.set(defDelay);
         const url = messenger.runtime.getURL("popup/installed.html");
 
-        await browser.tabs.create({ url });
-        //         await messenger.windows.create({ url, type: "popup", height: 780, width: 990, });
-        //   main();
       }
       break;
     case "update":
@@ -55,8 +40,6 @@ messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
         const url = messenger.runtime.getURL("popup/update.html");
         await browser.tabs.create({ url });
         //  await messenger.NotifyTools.removeAllListeners();
-        //  main();
-        //await messenger.windows.create({ url, type: "popup", height: 780, width: 990, });
       }
       break;
 
@@ -64,8 +47,7 @@ messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
 });
 
 const url = messenger.runtime.getURL("content/options.html");
-//await browser.tabs.create({ url });
-messenger.windows.create({ url, type: "popup" });//, height: 780, width: 990, });
+//messenger.windows.create({ url, type: "popup" });//, height: 780, width: 990, });
 
 
 
@@ -135,14 +117,12 @@ messenger.LegacyMenu.onCommand.addListener(async (windowsId, id) => {
   if (id == "FolderPaneSwitcher-forward-arrow-button") {
     console.log("forward clicked");
     FolderPaneSwitcher.goForwardView();
-    //  messenger.NotifyTools.notifyExperiment({ windowsId, command: "addBookmark" });
     return;
   };
 
   if (id == "FolderPaneSwitcher-back-arrow-button") {
     console.log("back clicked");
     FolderPaneSwitcher.goBackView();
-    //  messenger.NotifyTools.notifyExperiment({ windowsId, command: "help" });
     return;
   };
 
@@ -165,10 +145,10 @@ var FolderPaneSwitcher = {
   setSingleMode: async function (modeName) {
     let activeModes = await messenger.Utilities.getActiveViewModes();
     let currModes = activeModes.slice();
-    if (!activeModes.includes(modeName)) await messenger.Utilities.toggleActiveViewMode(modeName);//  gFolderTreeView.activeModes = modeName;
+    if (!activeModes.includes(modeName)) await messenger.Utilities.toggleActiveViewMode(modeName);
 
     for (viewName of currModes) {
-      if (viewName != modeName) await messenger.Utilities.toggleActiveViewMode(viewName);  //  gFolderTreeView.activeModes = viewName; //toggles, removes if present, if all gone, set to kDefaultMode (="all")
+      if (viewName != modeName) await messenger.Utilities.toggleActiveViewMode(viewName);
     }
   },
 
@@ -195,7 +175,6 @@ var FolderPaneSwitcher = {
 
     currInd = (currInd + selectedViews.length - 1) % selectedViews.length;
     FolderPaneSwitcher.setSingleMode(selectedViews[currInd]);
-    // FolderPaneSwitcher.cachedView = null;
   },
 
   onDragEnter: function () {
@@ -270,22 +249,13 @@ var FolderPaneSwitcher = {
   timerCallback: {
     notify: async function () {
       FolderPaneSwitcher.logger.debug("timerCallback.notify");
-      //debugger;
       let activeViews = await messenger.Utilities.getActiveViewModes();
-      FolderPaneSwitcher.cachedView = activeViews[activeViews.length - 1];// if singlemode  gFolderTreeView.activeModes.slice();
-      // FolderPaneSwitcher.viewsBeforeTimer = gFolderTreeView.activeModes.slice();
+      FolderPaneSwitcher.cachedView = activeViews[activeViews.length - 1];
       FolderPaneSwitcher.logger.debug("cachedmode", FolderPaneSwitcher.cachedView);
       FolderPaneSwitcher.setSingleMode("all");
 
       //     FolderPaneSwitcher.timer = 0;
       FolderPaneSwitcher.watchTimer = window.setTimeout(FolderPaneSwitcher.watchTimerCallback.notify, 1500, FolderPaneSwitcher);
-      /*
-            var t = Components.classes["@mozilla.org/timer;1"]
-              .createInstance(Components.interfaces.nsITimer);
-            t.initWithCallback(FolderPaneSwitcher.watchTimerCallback, 250,
-              Components.interfaces.nsITimer.TYPE_REPEATING_SLACK);
-            FolderPaneSwitcher.watchTimer = t;
-            */
     },
   },
 
@@ -301,15 +271,6 @@ var FolderPaneSwitcher = {
         if (!inDragSession) {
           await FolderPaneSwitcher.onDragDrop({ type: "watchTimer" });
         };
-        /*
-         var dragService = Components
-           .classes["@mozilla.org/widget/dragservice;1"]
-           .getService(Components.interfaces.nsIDragService);
-         var dragSession = dragService.getCurrentSession();
-         if (!dragSession) {
-           FolderPaneSwitcher.onDragDrop({ type: "watchTimer" });
-         }
-         */
       };
       if (!FolderPaneSwitcher.cachedView) {  //there is intentionally no else because of the side effects of the await above
         // It's null either because we just called onDragDrop or
@@ -335,25 +296,21 @@ var FolderPaneSwitcher = {
       console.log("delay", delay, FolderPaneSwitcher.timer);
     };
 
-    /*
-    if (FolderPaneSwitcher.timer) {
-      window.clearTimeout(FolderPaneSwitcher.timer);
-      FolderPaneSwitcher.timer = 0;
-      //       FolderPaneSwitcher.timer.cancel();
-    };
-    FolderPaneSwitcher.logger.debug("resettimer");
-       let delay = await messenger.storage.local.get("delay");
-    FolderPaneSwitcher.timer = window.setTimeout(FolderPaneSwitcher.timerCallback.notify, delay.delay, FolderPaneSwitcher);
-    console.log("delay", delay, FolderPaneSwitcher.timer);
-          */
+
+    // if (FolderPaneSwitcher.timer) {
+    //   window.clearTimeout(FolderPaneSwitcher.timer);
+    //   FolderPaneSwitcher.timer = 0;
+    // };
+    // FolderPaneSwitcher.logger.debug("resettimer");
+    //    let delay = await messenger.storage.local.get("delay");
+    // FolderPaneSwitcher.timer = window.setTimeout(FolderPaneSwitcher.timerCallback.notify, delay.delay, FolderPaneSwitcher);
+    // console.log("delay", delay, FolderPaneSwitcher.timer);
+
   }
 
 };
 
 async function main() {
-
-
-
   const windows = await messenger.windows.getAll();
   for (let window of windows) {
     await manipulateWindow(window);
@@ -362,18 +319,18 @@ async function main() {
     manipulateWindow(window);
   });
 
-  /*
-  messenger.messages.onMoved.addListener( async (originalMessages, movedMessages) =>
-  {
-    let lastHoveredFolder = await messenger.Utilities.getLastHoveredFolder();
-    let newFolder = movedMessages.messages[0].folder;
-    console.log("folder, ", lastHoveredFolder);
-    console.log("eqhul", lastHoveredFolder.toString() == newFolder.toString() , movedMessages);
-    FolderPaneSwitcher.onDragDrop({ type: "msgsMoveCopyCompleted" });
-   
-  });
-   
-  */
+  // for future use
+  // messenger.messages.onMoved.addListener( async (originalMessages, movedMessages) =>
+  // {
+  //   let lastHoveredFolder = await messenger.Utilities.getLastHoveredFolder();
+  //   let newFolder = movedMessages.messages[0].folder;
+  //   console.log("folder, ", lastHoveredFolder);
+  //   console.log("eqhul", lastHoveredFolder.toString() == newFolder.toString() , movedMessages);
+  //   FolderPaneSwitcher.onDragDrop({ type: "msgsMoveCopyCompleted" });
+
+  // });
+
+
   messenger.NotifyTools.onNotifyBackground.addListener(async (info) => {
     //   console.log(info);
     switch (info.command) {
@@ -398,9 +355,7 @@ async function main() {
 
         break;
       case "onDragOver":
-        console.log("bgr onDragOver");//, info.folder);
-        //         FolderPaneSwitcher.onDragOver(null);
-
+        console.log("bgr onDragOver");
         break;
 
       case "folderListener": //this replaces an event indicating that the messge/folder drop is finished
@@ -427,32 +382,6 @@ async function main() {
   ;
   let name1 = await messenger.Utilities.getViewDisplayName("all");
   console.log("name", name1);
-
-  //messenger.WindowListener.registerDefaultPrefs("chrome/content/scripts/fp-prefs.js");
-
-  /*
-    messenger.WindowListener.registerChromeUrl([
-      ["content", "FolderPaneSwitcher", "chrome/content/"],
-      ["locale", "FolderPaneSwitcher", "en-US", "chrome/locale/en-US/"],
-      ["locale", "FolderPaneSwitcher", "de", "chrome/locale/de/"]
-  
-    ]);
-  
-  */
-  // messenger.WindowListener.registerOptionsPage("chrome://FolderPaneSwitcher/content/options.xhtml");
-  //messenger.WindowListener.registerWindow("chrome://messenger/content/messenger.xhtml", "chrome/content/scripts/fp-messenger.js");
-
-
-
-  /*
-   * Start listening for opened windows. Whenever a window is opened, the registered
-   * JS file is loaded. To prevent namespace collisions, the files are loaded into
-   * an object inside the global window. The name of that object can be specified via
-   * the parameter of startListening(). This object also contains an extension member.
-   */
-
-
-  //messenger.WindowListener.startListening();
 }
 
 main();

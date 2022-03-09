@@ -4,19 +4,7 @@ var { ExtensionCommon } = ChromeUtils.import("resource://gre/modules/ExtensionCo
 var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 
-var { NetUtil } = ChromeUtils.import("resource://gre/modules/NetUtil.jsm");
-//das geht nicht:
-//var { QF } = ChromeUtils.import("chrome://quickfolders/content/quickfolders.js");  
-//var { utils } = ChromeUtils.import("chrome://quickfolders/content/quickfolders-util.js");
-//var { addonPrefs } = ChromeUtils.import("chrome://quickfolders/content/quickfolders-preferences.js");
-//Services.scriptloader.loadSubScript("chrome://quickfolders/content/quickfolders-preferences.js", window, "UTF-8");
-
 if (!ExtensionParent) var { ExtensionParent } = ChromeUtils.import("resource://gre/modules/ExtensionParent.jsm");
-//if (!manage_emailsExtension) var manage_emailsExtension = ExtensionParent.GlobalManager.getExtension("nostalgy@opto.one");
-//var { manage_emails } = ChromeUtils.import(manage_emailsExtension.rootURI.resolve("chrome://nostalgy/content/manage_emails.jsm"));
-
-
-
 
 // might be better to get the parent window of the current window
 // because we may be screwed otherwise.
@@ -28,23 +16,10 @@ var FPVS = {
 
 };
 var FPVSlisteners = {
-  onDragExit: async function (event) {
+  onDragExit: async function (event) { //now: mouseout
     FPVS.notifyTools.notifyBackground({ command: "onDragLeaveFolderPane" });
+    //    FPVS.notifyTools.notifyBackground({ command: "onDragExit" });
 
-    let dragService = Components
-      .classes["@mozilla.org/widget/dragservice;1"]
-      .getService(Components.interfaces.nsIDragService);
-    let dragSession = dragService.getCurrentSession();
-    console.log("foldpa dragsession", dragSession, !!dragSession, event);
-    if (!dragSession) {//{modeDisplayNames: modeDisplayNames, allViews: allViews};
- //     FPVS.notifyTools.notifyBackground({ command: "onDragExit" });
-
-    };
-    if (event.target.id == "folderPaneHeader") {
-      console.log("leg onDragExit");
-
-  //    FPVS.notifyTools.notifyBackground({ command: "onDragExit" });
-    };
   },
   onDragDrop: async function (event) {
     if (event.target.id == "folderPaneHeader") {
@@ -64,7 +39,6 @@ var FPVSlisteners = {
     // FolderPaneSwitcher.logger.trace("onDragOver"); // too verbose for debug
     if (event.target.id != "folderPaneHeader") {
       console.log("dragover", event);
-      /* */
       let mail3Pane = Components.classes['@mozilla.org/appshell/window-mediator;1'].getService(Components.interfaces.nsIWindowMediator).
         getMostRecentWindow("mail:3pane");
 
@@ -74,14 +48,11 @@ var FPVSlisteners = {
         mail3Pane.gFolderTreeView.getFolderAtCoords(event.clientX, event.clientY);
       console.log("dragover folder", currentFolder);
     }
-
-    //FPVS.notifyTools.notifyBackground({ command: "onDragOver", folder: FPVS.extension.folderManager.convert(currentFolder) });
-
   }
 
 
 };
-//console.log("impl utilities");
+
 var Utilities = class extends ExtensionCommon.ExtensionAPI {
   getAPI(context) {
 
@@ -97,20 +68,14 @@ var Utilities = class extends ExtensionCommon.ExtensionAPI {
     let currentFolder;
 
     async function onDragOver(event) {
-      //    console.log("dragover2", event);
-      //    console.log("contextevli", context);
       // FolderPaneSwitcher.logger.trace("onDragOver"); // too verbose for debug
-      /**/
       let mail3Pane = Components.classes['@mozilla.org/appshell/window-mediator;1'].getService(Components.interfaces.nsIWindowMediator).
         getMostRecentWindow("mail:3pane");
 
       // let  mail3Pane = event.ownerGlobal.window;
-      // let 
+
       currentFolder =
         mail3Pane.gFolderTreeView.getFolderAtCoords(event.clientX, event.clientY);
-
-      // FPVS.notifyTools.notifyBackground({ command: "onDragOver", folder: context.extension.folderManager.convert(currentFolder) });
-      //   console.log("dragover2",currentFolder, context.extension.folderManager.convert(currentFolder), FPVS);
     };
 
     async function onDragLeave(event) {
@@ -118,7 +83,6 @@ var Utilities = class extends ExtensionCommon.ExtensionAPI {
       FPVS.notifyTools.notifyBackground({ command: "onDragLeave" });
       if (event.target.id == "foldertree") {
         console.log("leg onDragLeave");
-        //       FPVS.notifyTools.notifyBackground({ command: "onDragDrop" });
       };
 
     };
@@ -158,26 +122,6 @@ var Utilities = class extends ExtensionCommon.ExtensionAPI {
 
         firstCall: 1,
 
-
-
-        //    currentFolder:null,
-        /*
-                onDragOver: async function (event) {
-                  console.log("dragover", event);
-                  // FolderPaneSwitcher.logger.trace("onDragOver"); // too verbose for debug
-         
-                  let mail3Pane = Components.classes['@mozilla.org/appshell/window-mediator;1'].getService(Components.interfaces.nsIWindowMediator).
-                    getMostRecentWindow("mail:3pane");
-        
-                  let  mail3Pane = event.ownerGlobal.window;
-                  let currentFolder =
-                    mail3Pane.gFolderTreeView.getFolderAtCoords(event.clientX, event.clientY);
-               
-               //   FPVS.notifyTools.notifyBackground({ command: "onDragOver"});//, folder: context.extension.folderManager.convert(currentFolder) });
-                  console.log("dragover",currentFolder);//, context.extension.folderManager.convert(Utilities.currentFolder), FPVS);
-              },
-        */
-
         initFolderPaneOptionsPopup: async function () {
           let mail3Pane = Components.classes['@mozilla.org/appshell/window-mediator;1'].getService(Components.interfaces.nsIWindowMediator).
             getMostRecentWindow("mail:3pane");
@@ -188,12 +132,6 @@ var Utilities = class extends ExtensionCommon.ExtensionAPI {
         isMailTab: async function (isMailTab) {
           //    console.log("isMailTab",isMailTab, win);
           let i = 0;
-          // /*
-          //           while (! win.manage_emails)  {
-          //             i++; console.log("i",i);
-          //               let w = await new Promise(resolve => win.setTimeout(resolve, 300));
-          //           };
-          // */
           if (Utilities.firstCall == 1) {
             await new Promise(resolve => setTimeout(resolve, 1500));
             Utilities.firstCall = 0;
@@ -209,7 +147,7 @@ var Utilities = class extends ExtensionCommon.ExtensionAPI {
         getActiveViewModes: async function () {
           let mail3Pane = Components.classes['@mozilla.org/appshell/window-mediator;1'].getService(Components.interfaces.nsIWindowMediator).
             getMostRecentWindow("mail:3pane");
-          // let modes = mail3Pane.gFolderTreeView._modeDisplayNames;
+
           let modes = mail3Pane.gFolderTreeView.activeModes;
           console.log("modes", modes);
           return modes;
@@ -221,7 +159,7 @@ var Utilities = class extends ExtensionCommon.ExtensionAPI {
             getMostRecentWindow("mail:3pane");
           let allViews = mail3Pane.gFolderTreeView._modeNames;
           console.log("allModes", allViews);
-          return allViews;//{modeDisplayNames: modeDisplayNames, allViews: allViews};
+          return allViews;
         },
 
         inDragSession: async function () {
@@ -230,7 +168,7 @@ var Utilities = class extends ExtensionCommon.ExtensionAPI {
             .getService(Components.interfaces.nsIDragService);
           let dragSession = dragService.getCurrentSession();
           console.log("leg dragsession", dragSession, !!dragSession);
-          return !!dragSession;//{modeDisplayNames: modeDisplayNames, allViews: allViews};
+          return !!dragSession;
         },
 
         isTreeInited: async function (id) {
@@ -241,7 +179,7 @@ var Utilities = class extends ExtensionCommon.ExtensionAPI {
           try {
             let inited = mail3Pane.gFolderTreeView.isInited;
             console.log("inited", inited);
-            return inited;//{modeDisplayNames: modeDisplayNames, allViews: allViews};
+            return inited;
           }
           catch (e) {
             return false;
@@ -266,24 +204,25 @@ var Utilities = class extends ExtensionCommon.ExtensionAPI {
           let mail3Pane = windowObject.window;
           console.log("registerListener", mail3Pane);
           let item = mail3Pane.document.getElementById(DOMid);
-  //        item.addEventListener("dragleave", FPVSlisteners.onDragExit, true);  //gives problem if dragleave inside folderPaneHeader (e.g. between buttons and label)
+          //        item.addEventListener("dragleave", FPVSlisteners.onDragExit, true);  //gives problem if dragleave inside folderPaneHeader (e.g. between buttons and label)
           item.addEventListener("mouseout", FPVSlisteners.onDragExit, false);  //dragleave
           item.addEventListener("dragend", FPVSlisteners.onDragDrop, false);
           item.addEventListener("dragenter", FPVSlisteners.onDragEnter, false);
-          item.addEventListener("drop", () => { console.log("foldpa drop"); }, false);  //not fired
-          item.addEventListener("dragend", () => { console.log("foldpa dragend"); }, false);  //not fired
-          item.addEventListener("dragexit", () => { console.log("foldpa dragexit"); }, false);  //not fired
-          item.addEventListener("dragover", () => { console.log("foldpa dragover"); }, false);  //not fired
-          item.addEventListener("dragenter", () => { console.log("foldpa dragenter"); }, false);  //not fired
-          item.addEventListener("dragleave", () => { console.log("foldpa dragleave"); }, false);  //not fired
-          item.addEventListener("mouseup", () => { console.log("foldpa mouseup"); }, false);  //not fired
-          item.addEventListener("pointerup", () => { console.log("foldpa pointerup"); }, false);  //not fired
-          item.addEventListener("mouseout", () => { console.log("foldpa mouseout"); }, false);  //not fired
-          //         item.addEventListener("dragenter", FPVSlisteners.onDragEnter, false);
+
+          //left for testing hen the new foldertree is enabled
+          // item.addEventListener("drop", () => { console.log("foldpa drop"); }, false);  //not fired
+          // item.addEventListener("dragend", () => { console.log("foldpa dragend"); }, false);  //not fired
+          // item.addEventListener("dragexit", () => { console.log("foldpa dragexit"); }, false);  //not fired
+          // item.addEventListener("dragover", () => { console.log("foldpa dragover"); }, false);  //not fired
+          // item.addEventListener("dragenter", () => { console.log("foldpa dragenter"); }, false);  //not fired
+          // item.addEventListener("dragleave", () => { console.log("foldpa dragleave"); }, false);  //not fired
+          // item.addEventListener("mouseup", () => { console.log("foldpa mouseup"); }, false);  //not fired
+          // item.addEventListener("pointerup", () => { console.log("foldpa pointerup"); }, false);  //not fired
+          // item.addEventListener("mouseout", () => { console.log("foldpa mouseout"); }, false);  //not fired
           //   item.addEventListener("dragover", FPVSlisteners.onDragOver, false);
           let folderTree = mail3Pane.document.getElementById("folderTree");
           console.log("foldertree", folderTree);
-          //folderTree.addEventListener("drop", FPVSlisteners.onDragDrop, false); //event currentl broken/not coming/bubbling   Utilities
+          //folderTree.addEventListener("drop", FPVSlisteners.onDragDrop, false); //event currentl broken/not coming/bubbling   
           folderTree.addEventListener("dragover", onDragOver, false);
           folderTree.addEventListener("drop", () => { console.log("fold drop"); }, false);  //not fired
           folderTree.addEventListener("dragend", () => { console.log("fold dragend"); }, false);  //not fired
@@ -301,16 +240,9 @@ var Utilities = class extends ExtensionCommon.ExtensionAPI {
               .getService(Components.interfaces.nsIMsgFolderNotificationService);
           ns.addListener(folderListener, ns.msgsMoveCopyCompleted |
             ns.folderMoveCopyCompleted);
-
-
-
-          //   if (item) 
-
         },
 
         unregisterListener: async function (eventType, DOMid, windowId) {
-          //      let mail3Pane = Components.classes['@mozilla.org/appshell/window-mediator;1'].getService(Components.interfaces.nsIWindowMediator).
-          //      getMostRecentWindow("mail:3pane");
           let windowObject = context.extension.windowManager.get(windowId);
           let mail3Pane = windowObject.window;
           console.log("unregisterListener", mail3Pane);
@@ -321,7 +253,7 @@ var Utilities = class extends ExtensionCommon.ExtensionAPI {
           item.removeEventListener("dragover", FPVSlisteners.onDragOver);
           let folderTree = mail3Pane.document.getElementById("folderTree");
           console.log("foldertree", folderTree);
-          //folderTree.addEventListener("drop", FPVSlisteners.onDragDrop, false); //event currentl broken/not coming/bubbling   Utilities
+          //folderTree.addEventListener("drop", FPVSlisteners.onDragDrop, false); //event currentl broken/not coming/bubbling   
           folderTree.removeEventListener("dragover", onDragOver);
 
 
@@ -338,16 +270,12 @@ var Utilities = class extends ExtensionCommon.ExtensionAPI {
                    ns.addListener(folderListener, ns.msgsMoveCopyCompleted |
                      ns.folderMoveCopyCompleted);
          */
-
-
-          //   if (item) 
-
         },
 
 
 
         showViewInMenus: async function (view, enabled) {
-          /*  */
+
           console.log("showViewInMenus");
           let mail3PaneWindow = Components.classes["@mozilla.org/appshell/window-mediator;1"]
             .getService(Components.interfaces.nsIWindowMediator)
