@@ -11,12 +11,14 @@ var lastTab = 0, lastWindow = 0;
 
 var defPrefs = {
 
-  all: { arrow: false, menu: true, pos: -1 },
+  all: { arrow: true, menu: true, pos: -1 },
   smart: { arrow: true, menu: true, pos: -1 },
-  recent: { arrow: true, menu: false, pos: -1 },
+  recent: { arrow: true, menu: true, pos: -1 },
   unread: { arrow: true, menu: true, pos: -1 },
   favorite: { arrow: true, menu: true, pos: -1 }
 };
+arrowViews = ["all", "smart", "recent", "unread", "favorite"];
+menuViews = ["all", "smart", "recent", "unread", "favorite"];
 
 var defChk = { arrows: true };
 var defDelay = { delay: 300 };
@@ -28,11 +30,13 @@ messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
   switch (reason) {
     case "install":
       {
-        browser.storage.local.set({ "prefs": defPrefs });
-        browser.storage.local.set(defChk);
-        browser.storage.local.set(defDelay);
+        await browser.storage.local.set({ "prefs": defPrefs });
+        await browser.storage.local.set(defChk);
+        await browser.storage.local.set(defDelay);
+        await browser.storage.local.set({ "arrowViews": arrowViews });
+        await browser.storage.local.set({ "menuViews": menuViews });
         const url = messenger.runtime.getURL("popup/installed.html");
-
+        await browser.tabs.create({ url });
       }
       break;
     case "update":
@@ -155,7 +159,8 @@ var FolderPaneSwitcher = {
   goForwardView: async function (event) {
 
     let activeModes = await messenger.Utilities.getActiveViewModes();
-    let selectedViews = (await messenger.storage.local.get("arrowViews")).arrowViews;
+    let arrowViews = await messenger.storage.local.get("arrowViews");
+    selectedViews = arrowViews.arrowViews;
     console.log("selectedViews", selectedViews);
 
     var currentView = activeModes[activeModes.length - 1];
@@ -167,8 +172,9 @@ var FolderPaneSwitcher = {
   goBackView: async function () {
 
     let activeModes = await messenger.Utilities.getActiveViewModes();
-    let selectedViews = (await messenger.storage.local.get("arrowViews")).arrowViews;
-    console.log("selectedViews", selectedViews);
+    let arrowViews = await messenger.storage.local.get("arrowViews");
+    selectedViews = arrowViews.arrowViews;
+     console.log("selectedViews", selectedViews);
 
     var currentView = activeModes[activeModes.length - 1];
     let currInd = selectedViews.findIndex((name) => name == currentView);
