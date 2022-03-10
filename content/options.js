@@ -48,12 +48,12 @@ var FPVSOptions = {
     onLoad: async function () {
         try {
             console.log("options");
-            FPVSOptions.prefs = await browser.storage.local.get("prefs");
-            console.log("prefs", FPVSOptions.prefs);
+           // FPVSOptions.prefs = await browser.storage.local.get("prefs");
+            //console.log("prefs", FPVSOptions.prefs);
             FPVSOptions.arrowChk = await browser.storage.local.get("arrows");
             FPVSOptions.delay = await browser.storage.local.get("delay");
 
-            console.log("arrows", FPVSOptions.arrowChk.arrows, FPVSOptions.delay);
+            //console.log("arrows", FPVSOptions.arrowChk.arrows, FPVSOptions.delay);
 
 
             document.title = browser.i18n.getMessage("appName");;
@@ -79,7 +79,7 @@ var FPVSOptions = {
 
             FPVSOptions.gviews = await messenger.Utilities.getAllViewModes();
             FPVSOptions.activeViews = await messenger.Utilities.getActiveViewModes();
-            console.log("actviews", FPVSOptions.activeViews);
+            //console.log("actviews", FPVSOptions.activeViews);
 
             var btn_ok = document.getElementById("btn_accept");
 
@@ -120,7 +120,7 @@ var FPVSOptions = {
                 box_id = view + "_arrow";
                 arrows_checkbox.setAttribute("id", box_id);
                 arrows_checkbox.setAttribute('type', 'checkbox');
-                console.log(view, "arraow", FPVSOptions.prefs.prefs[view].arrow);
+                //console.log(view, "arraow", FPVSOptions.prefs.prefs[view].arrow);
                 arrows_checkbox.checked = FPVSOptions.prefs.prefs[view].arrow;
 
                 cell2.appendChild(arrows_checkbox);
@@ -128,7 +128,7 @@ var FPVSOptions = {
                 var label = document.createElement("label");
 
                 var y = await browser.Utilities.getViewDisplayName(view);
-                console.log("name", y);
+                //console.log("name", y);
                 label.appendChild(document.createTextNode(y));
                 cell3.appendChild(label);
                 table.appendChild(row);
@@ -160,7 +160,7 @@ var FPVSOptions = {
 
     resetPrefs: async function (event) {
 
-        console.log("resetprefs", FPVSOptions.prefs);
+        //console.log("resetprefs", FPVSOptions.prefs);
         for (view of FPVSOptions.gviews) {
             let elt = document.getElementById(view + "_arrow");
             elt.checked = true;
@@ -183,7 +183,7 @@ var FPVSOptions = {
         FPVSOptions.arrowViews = [];
         FPVSOptions.menuViews = [];
 
-        console.log("prefs", FPVSOptions.prefs);
+        //console.log("prefs", FPVSOptions.prefs);
         for (view of FPVSOptions.gviews) {
             let elt = document.getElementById(view + "_arrow");
             FPVSOptions.prefs.prefs[view].arrow = elt.checked;

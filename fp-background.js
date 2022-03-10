@@ -43,10 +43,10 @@ messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
       {
         const url = messenger.runtime.getURL("popup/update.html");
         await browser.tabs.create({ url });
-        //  await messenger.NotifyTools.removeAllListeners();
-      }
-      break;
+        //await messenger.NotifyTools.removeAllListeners();
 
+        break;
+      }
   }
 });
 
@@ -74,7 +74,7 @@ async function manipulateWindow(window) {
   }
 
   let id = `${window.id}`;
-  console.log("manipulateWindow");
+  //console.log("manipulateWindow");
 
   let inited = await messenger.Utilities.isTreeInited(id);
   while (!inited) {
@@ -82,6 +82,7 @@ async function manipulateWindow(window) {
     inited = await messenger.Utilities.isTreeInited();
   };
 
+  await messenger.Utilities.unregisterListener("all", "folderPaneHeader", id);
   await messenger.Utilities.registerListener("all", "folderPaneHeader", id);
   await messenger.Utilities.initFolderPaneOptionsPopup();
 
@@ -119,13 +120,13 @@ messenger.windows.onRemoved.addListener(async (windowId) => { await messenger.Ut
 
 messenger.LegacyMenu.onCommand.addListener(async (windowsId, id) => {
   if (id == "FolderPaneSwitcher-forward-arrow-button") {
-    console.log("forward clicked");
+    //console.log("forward clicked");
     FolderPaneSwitcher.goForwardView();
     return;
   };
 
   if (id == "FolderPaneSwitcher-back-arrow-button") {
-    console.log("back clicked");
+    //console.log("back clicked");
     FolderPaneSwitcher.goBackView();
     return;
   };
@@ -161,7 +162,7 @@ var FolderPaneSwitcher = {
     let activeModes = await messenger.Utilities.getActiveViewModes();
     let arrowViews = await messenger.storage.local.get("arrowViews");
     selectedViews = arrowViews.arrowViews;
-    console.log("selectedViews", selectedViews);
+    //console.log("selectedViews", selectedViews);
 
     var currentView = activeModes[activeModes.length - 1];
     let currInd = selectedViews.findIndex((name) => name == currentView);
@@ -174,7 +175,7 @@ var FolderPaneSwitcher = {
     let activeModes = await messenger.Utilities.getActiveViewModes();
     let arrowViews = await messenger.storage.local.get("arrowViews");
     selectedViews = arrowViews.arrowViews;
-     console.log("selectedViews", selectedViews);
+    //console.log("selectedViews", selectedViews);
 
     var currentView = activeModes[activeModes.length - 1];
     let currInd = selectedViews.findIndex((name) => name == currentView);
@@ -184,7 +185,7 @@ var FolderPaneSwitcher = {
   },
 
   onDragEnter: function () {
-    console.log("bgr FPVS onDragEnter");
+    //console.log("bgr FPVS onDragEnter");
 
     if (!FolderPaneSwitcher.timer) {
       FolderPaneSwitcher.cachedView = null;
@@ -195,17 +196,17 @@ var FolderPaneSwitcher = {
       //      FolderPaneSwitcher.logger.debug("onDragEnter: switch already in progress");
     }
     else {
-      console.log("onDragEnter resettimer");
+      //console.log("onDragEnter resettimer");
       FolderPaneSwitcher.resetTimer();
     }
   },
 
   onDragLeaveFolderPane: function (aEvent) {
     FolderPaneSwitcher.logger.debug("onDragDrop(" + aEvent.type + ")");
-    console.log("leaveFolderPane", FolderPaneSwitcher.cachedView, FolderPaneSwitcher.timer, FolderPaneSwitcher.watchTimer);
+    //console.log("leaveFolderPane", FolderPaneSwitcher.cachedView, FolderPaneSwitcher.timer, FolderPaneSwitcher.watchTimer);
 
     if (FolderPaneSwitcher.cachedView && !FolderPaneSwitcher.timer) {
-      console.log("reset onDragLeaveFolderPane cached view", FolderPaneSwitcher.cachedView);
+      //console.log("reset onDragLeaveFolderPane cached view", FolderPaneSwitcher.cachedView);
       FolderPaneSwitcher.setSingleMode(FolderPaneSwitcher.cachedView);
       FolderPaneSwitcher.cachedView = null;
       FolderPaneSwitcher.currentFolder = null;
@@ -216,16 +217,16 @@ var FolderPaneSwitcher = {
 
   onDragExit: function (aEvent) {
     // FolderPaneSwitcher.logger.debug("onDragExit(" + aEvent.type + ")");
-    console.log("dragexit should never happen as the bug is wontfix");
+    //console.log("dragexit should never happen as the bug is wontfix");
     if (FolderPaneSwitcher.timer) {
       window.clearTimeout(FolderPaneSwitcher.timer);
       FolderPaneSwitcher.timer = 0;
-      console.log("kill timer");
+      //console.log("kill timer");
     };
     if (FolderPaneSwitcher.watchTimer) {
       window.clearTimeout(FolderPaneSwitcher.watchTimer);
       FolderPaneSwitcher.watchTimer = 0;
-      console.log("kill watchTimer");
+      //console.log("kill watchTimer");
     };
 
   },
@@ -235,16 +236,16 @@ var FolderPaneSwitcher = {
     if (FolderPaneSwitcher.timer) { //so we don't double call setSingleMode
       window.clearTimeout(FolderPaneSwitcher.timer);
       FolderPaneSwitcher.timer = 0;
-      console.log("kill timer");
+      //console.log("kill timer");
     };
     if (FolderPaneSwitcher.watchTimer) {
       window.clearTimeout(FolderPaneSwitcher.watchTimer);
       FolderPaneSwitcher.watchTimer = 0;
-      console.log("kill watchTimer");
+      //console.log("kill watchTimer");
     };
 
     if (FolderPaneSwitcher.cachedView) {
-      console.log("reset cached view", FolderPaneSwitcher.cachedView);
+      //console.log("reset cached view", FolderPaneSwitcher.cachedView);
       FolderPaneSwitcher.setSingleMode(FolderPaneSwitcher.cachedView);
       FolderPaneSwitcher.cachedView = null;
       FolderPaneSwitcher.currentFolder = null;
@@ -273,7 +274,7 @@ var FolderPaneSwitcher = {
       if (FolderPaneSwitcher.cachedView) {
         //    FolderPaneSwitcher.cachedView = null;
         let inDragSession = await messenger.Utilities.inDragSession();
-        console.log("watchtimer indragsession", inDragSession);
+        //console.log("watchtimer indragsession", inDragSession);
         if (!inDragSession) {
           await FolderPaneSwitcher.onDragDrop({ type: "watchTimer" });
         };
@@ -299,7 +300,7 @@ var FolderPaneSwitcher = {
       FolderPaneSwitcher.cachedView = null;
       let delay = await messenger.storage.local.get("delay");
       FolderPaneSwitcher.timer = window.setTimeout(FolderPaneSwitcher.timerCallback.notify, delay.delay, FolderPaneSwitcher);
-      console.log("delay", delay, FolderPaneSwitcher.timer);
+      //console.log("delay", delay, FolderPaneSwitcher.timer);
     };
 
 
@@ -310,11 +311,49 @@ var FolderPaneSwitcher = {
     // FolderPaneSwitcher.logger.debug("resettimer");
     //    let delay = await messenger.storage.local.get("delay");
     // FolderPaneSwitcher.timer = window.setTimeout(FolderPaneSwitcher.timerCallback.notify, delay.delay, FolderPaneSwitcher);
-    // console.log("delay", delay, FolderPaneSwitcher.timer);
+    // //console.log("delay", delay, FolderPaneSwitcher.timer);
 
   }
 
 };
+
+
+async function notifyListener(info) {
+  //   //console.log(info);
+  switch (info.command) {
+    case "onDragExit":
+      //     //console.log("bgr onDragExit");
+      FolderPaneSwitcher.onDragDrop({ type: "dragexit" });
+      break;
+    case "onDragDrop":
+      //console.log("bgr onDragDrop");
+      FolderPaneSwitcher.onDragDrop({ type: "dragdrop" });
+      break;
+    case "onDragLeave":
+      //console.log("bgr onDragLeave");
+      FolderPaneSwitcher.onDragDrop({ type: "onDragLeave" });
+      break;
+    case "onDragLeaveFolderPane":
+      FolderPaneSwitcher.onDragLeaveFolderPane({ type: "onDragLeaveFolderPane" });
+      break;
+    case "onDragEnter":
+      //console.log("bgr onDragEnter");
+      FolderPaneSwitcher.onDragEnter();
+
+      break;
+    case "onDragOver":
+      //console.log("bgr onDragOver");
+      break;
+
+    case "folderListener": //this replaces an event indicating that the message/folder drop is finished
+      //console.log("bgr folderListener", info.type);//, info.folder);
+      FolderPaneSwitcher.onDragDrop({ type: info.type });
+
+      break;
+
+  };
+};
+
 
 async function main() {
   const windows = await messenger.windows.getAll();
@@ -330,64 +369,31 @@ async function main() {
   // {
   //   let lastHoveredFolder = await messenger.Utilities.getLastHoveredFolder();
   //   let newFolder = movedMessages.messages[0].folder;
-  //   console.log("folder, ", lastHoveredFolder);
-  //   console.log("eqhul", lastHoveredFolder.toString() == newFolder.toString() , movedMessages);
+  //   //console.log("folder, ", lastHoveredFolder);
+  //   //console.log("eqhul", lastHoveredFolder.toString() == newFolder.toString() , movedMessages);
   //   FolderPaneSwitcher.onDragDrop({ type: "msgsMoveCopyCompleted" });
 
   // });
 
 
-  messenger.NotifyTools.onNotifyBackground.addListener(async (info) => {
-    //   console.log(info);
-    switch (info.command) {
-      case "onDragExit":
-        //     console.log("bgr onDragExit");
-        FolderPaneSwitcher.onDragDrop({ type: "dragexit" });
-        break;
-      case "onDragDrop":
-        console.log("bgr onDragDrop");
-        FolderPaneSwitcher.onDragDrop({ type: "dragdrop" });
-        break;
-      case "onDragLeave":
-        console.log("bgr onDragLeave");
-        FolderPaneSwitcher.onDragDrop({ type: "onDragLeave" });
-        break;
-      case "onDragLeaveFolderPane":
-        FolderPaneSwitcher.onDragLeaveFolderPane({ type: "onDragLeaveFolderPane" });
-        break;
-      case "onDragEnter":
-        console.log("bgr onDragEnter");
-        FolderPaneSwitcher.onDragEnter();
-
-        break;
-      case "onDragOver":
-        console.log("bgr onDragOver");
-        break;
-
-      case "folderListener": //this replaces an event indicating that the messge/folder drop is finished
-        console.log("bgr folderListener", info.type);//, info.folder);
-        FolderPaneSwitcher.onDragDrop({ type: info.type });
-
-        break;
-
-    }
-  });
+  await messenger.NotifyTools.onNotifyBackground.removeListener(notifyListener);
+  await messenger.NotifyTools.onNotifyBackground.addListener(notifyListener);
 
 
 
   let modes = await messenger.Utilities.getActiveViewModes();
-  console.log("bgrd modes", modes);
+  //console.log("bgrd modes", modes);
 
   modes = await messenger.Utilities.getAllViewModes();
-  console.log("bgrd allmodes", modes);
+  //console.log("bgrd allmodes", modes);
   /**/
   for (vieww of modes) {
     let name1 = await messenger.Utilities.getViewDisplayName(vieww);
-    console.log("name", name1);
+    //console.log("name", name1);
   }
   ;
   let name1 = await messenger.Utilities.getViewDisplayName("all");
-  console.log("name", name1);
+  //console.log("name", name1);
 }
 
 main();
