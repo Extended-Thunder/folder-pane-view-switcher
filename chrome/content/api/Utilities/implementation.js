@@ -72,17 +72,17 @@ var Utilities = class extends ExtensionCommon.ExtensionAPI {
 
     async function onDragOver(event) {
       // FolderPaneSwitcher.logger.trace("onDragOver"); // too verbose for debug
-     // let mail3Pane = Components.classes['@mozilla.org/appshell/window-mediator;1'].getService(Components.interfaces.nsIWindowMediator).
-     //   getMostRecentWindow("mail:3pane");
+      // let mail3Pane = Components.classes['@mozilla.org/appshell/window-mediator;1'].getService(Components.interfaces.nsIWindowMediator).
+      //   getMostRecentWindow("mail:3pane");
 
       // let  mail3Pane = event.ownerGlobal.window;
       FPVS.log("dragover, ownerglobal", event.target.ownerGlobal);
-      let mail3Pane =  event.target.ownerGlobal.window;
+      let mail3Pane = event.target.ownerGlobal.window;
       currentFolder =
         mail3Pane.gFolderTreeView.getFolderAtCoords(event.clientX, event.clientY);
-        FPVS.log("dragover, currentFolder, ownerglobal", currentFolder, event.target.ownerGlobal);
- 
-      };
+      FPVS.log("dragover, currentFolder, ownerglobal", currentFolder, event.target.ownerGlobal);
+
+    };
 
     async function onDragLeave(event) {
       FPVS.log("leg foldtree dragdleave");
@@ -197,6 +197,8 @@ var Utilities = class extends ExtensionCommon.ExtensionAPI {
         getViewDisplayName: async function (commonName) {
           let mail3Pane = Components.classes['@mozilla.org/appshell/window-mediator;1'].getService(Components.interfaces.nsIWindowMediator).
             getMostRecentWindow("mail:3pane");
+          // let windowObject = context.extension.windowManager.get(windowId);
+          // let mail3Pane = windowObject.window;
           let key = "folderPaneModeHeader_" + commonName;
           let nameString = mail3Pane.gFolderTreeView.messengerBundle.getString(key);
           FPVS.log("legname", nameString);

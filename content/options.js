@@ -48,7 +48,7 @@ var FPVSOptions = {
     onLoad: async function () {
         try {
             console.log("options");
-           // FPVSOptions.prefs = await browser.storage.local.get("prefs");
+            FPVSOptions.prefs = await browser.storage.local.get("prefs");
             //console.log("prefs", FPVSOptions.prefs);
             FPVSOptions.arrowChk = await browser.storage.local.get("arrows");
             FPVSOptions.delay = await browser.storage.local.get("delay");
