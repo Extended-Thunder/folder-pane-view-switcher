@@ -66,21 +66,6 @@
 			  "script": "chrome/content/api/NotifyTools/implementation.js",
 			  "events": ["startup"]
 			}
-		  },
-
-		"LegacyPrefs": {
-			"schema": "chrome/content/api/LegacyPrefs/schema.json",
-			"parent": {
-				"scopes": [
-					"addon_parent"
-				],
-				"paths": [
-					[
-						"LegacyPrefs"
-					]
-				],
-				"script": "chrome/content/api/LegacyPrefs/implementation.js"
-			}
-		}
+		  }
 	}
 }
