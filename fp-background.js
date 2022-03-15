@@ -22,6 +22,7 @@ menuViews = ["all", "smart", "recent", "unread", "favorite"];
 
 var defChk = { arrows: true };
 var defDelay = { delay: 300 };
+var updated = false;
 
 
 
@@ -30,6 +31,9 @@ messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
   switch (reason) {
     case "install":
       {
+        updated = true;
+        await browser.storage.local.set({ "updated": updated });
+
         await browser.storage.local.set({ "prefs": defPrefs });
         await browser.storage.local.set(defChk);
         await browser.storage.local.set(defDelay);
@@ -41,9 +45,65 @@ messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
       break;
     case "update":
       {
+        // await browser.storage.local.set({ "updated": false });
+        //await browser.storage.local.remove( "updated");
         const url = messenger.runtime.getURL("popup/update.html");
         await browser.tabs.create({ url });
-        //await messenger.NotifyTools.removeAllListeners();
+
+        //update from old prefs?
+        //      updated = await browser.storage.local.get("updated");
+        updated = await browser.storage.local.get({ "updated": false });
+        //console.log("upd", updated.updated);
+        updated.updated = false;
+        if (!updated.updated) {
+
+          await browser.storage.local.set({ "updated": true });
+
+
+          let p = await messenger.Utilities.getLegacyPrefs();
+          //console.log("p in bgrd", p);
+          if ("delay" in p) {
+            //console.log("del from exp", p.delay);
+            await browser.storage.local.set(p.delay);
+          }
+          else {
+            await browser.storage.local.set(defDelay);
+          };
+          if ("arrows" in p) {
+            await browser.storage.local.set(p.arrows);
+          }
+          else {
+            await browser.storage.local.set(defChk);
+          };
+          /**/
+          arrowViews = [];
+          menuViews = [];
+
+          for (let view in p.prefs) {
+            //console.log("view", view, p.prefs[view], p.prefs[view]["arrow"]);
+
+            defPrefs[view] = p.prefs[view];
+
+            if (p.prefs[view]["arrow"]) arrowViews.push(view);
+            if (p.prefs[view].menu) menuViews.push(view);
+
+          };
+
+          for (let view in defPrefs) {
+            messenger.Utilities.showViewInMenus(view, defPrefs[view]["menu"]);
+
+          }
+          //console.log("update: defpref", defPrefs, arrowViews, menuViews);
+          await browser.storage.local.set({ "prefs": defPrefs });
+          await browser.storage.local.set({ "arrowViews": arrowViews });
+          await browser.storage.local.set({ "menuViews": menuViews });
+          await browser.storage.local.set({ "updated": true });
+
+
+
+
+        };
+
 
         break;
       }
@@ -51,7 +111,7 @@ messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
 });
 
 const url = messenger.runtime.getURL("content/options.html");
-//messenger.windows.create({ url, type: "popup" });//, height: 780, width: 990, });
+
 
 
 
@@ -202,7 +262,7 @@ var FolderPaneSwitcher = {
   },
 
   onDragLeaveFolderPane: function (aEvent) {
-    FolderPaneSwitcher.logger.debug("onDragDrop(" + aEvent.type + ")");
+    //FolderPaneSwitcher.logger.debug("onDragDrop(" + aEvent.type + ")");
     //console.log("leaveFolderPane", FolderPaneSwitcher.cachedView, FolderPaneSwitcher.timer, FolderPaneSwitcher.watchTimer);
 
     if (FolderPaneSwitcher.cachedView && !FolderPaneSwitcher.timer) {
@@ -232,7 +292,7 @@ var FolderPaneSwitcher = {
   },
 
   onDragDrop: function (aEvent) {
-    FolderPaneSwitcher.logger.debug("onDragDrop(" + aEvent.type + ")");
+    //FolderPaneSwitcher.logger.debug("onDragDrop(" + aEvent.type + ")");
     if (FolderPaneSwitcher.timer) { //so we don't double call setSingleMode
       window.clearTimeout(FolderPaneSwitcher.timer);
       FolderPaneSwitcher.timer = 0;
@@ -255,10 +315,10 @@ var FolderPaneSwitcher = {
 
   timerCallback: {
     notify: async function () {
-      FolderPaneSwitcher.logger.debug("timerCallback.notify");
+      // FolderPaneSwitcher.logger.debug("timerCallback.notify");
       let activeViews = await messenger.Utilities.getActiveViewModes();
       FolderPaneSwitcher.cachedView = activeViews[activeViews.length - 1];
-      FolderPaneSwitcher.logger.debug("cachedmode", FolderPaneSwitcher.cachedView);
+      // FolderPaneSwitcher.logger.debug("cachedmode", FolderPaneSwitcher.cachedView);
       FolderPaneSwitcher.setSingleMode("all");
 
       //     FolderPaneSwitcher.timer = 0;
@@ -269,7 +329,7 @@ var FolderPaneSwitcher = {
 
   watchTimerCallback: {   //needed because drop/dragend is not fired on folderPaneHeader
     notify: async function () {
-      FolderPaneSwitcher.logger.debug("watchTimerCallback.notify");
+      //FolderPaneSwitcher.logger.debug("watchTimerCallback.notify");
       FolderPaneSwitcher.timer = 0;
       if (FolderPaneSwitcher.cachedView) {
         //    FolderPaneSwitcher.cachedView = null;
@@ -296,7 +356,7 @@ var FolderPaneSwitcher = {
     //debugger;
 
     if (!FolderPaneSwitcher.timer) {
-      FolderPaneSwitcher.logger.debug("resettimer");
+      //FolderPaneSwitcher.logger.debug("resettimer");
       FolderPaneSwitcher.cachedView = null;
       let delay = await messenger.storage.local.get("delay");
       FolderPaneSwitcher.timer = window.setTimeout(FolderPaneSwitcher.timerCallback.notify, delay.delay, FolderPaneSwitcher);
@@ -356,6 +416,8 @@ async function notifyListener(info) {
 
 
 async function main() {
+
+
   const windows = await messenger.windows.getAll();
   for (let window of windows) {
     await manipulateWindow(window);
@@ -364,7 +426,7 @@ async function main() {
     manipulateWindow(window);
   });
 
-  // for future use
+  // for future use, cuurently, event on tree is not firing
   // messenger.messages.onMoved.addListener( async (originalMessages, movedMessages) =>
   // {
   //   let lastHoveredFolder = await messenger.Utilities.getLastHoveredFolder();
@@ -375,25 +437,14 @@ async function main() {
 
   // });
 
-
+  //console.log("bgrd");
+  let p = await messenger.Utilities.getLegacyPrefs();
+  //console.log("p", p);
   await messenger.NotifyTools.onNotifyBackground.removeListener(notifyListener);
   await messenger.NotifyTools.onNotifyBackground.addListener(notifyListener);
 
 
 
-  let modes = await messenger.Utilities.getActiveViewModes();
-  //console.log("bgrd modes", modes);
-
-  modes = await messenger.Utilities.getAllViewModes();
-  //console.log("bgrd allmodes", modes);
-  /**/
-  for (vieww of modes) {
-    let name1 = await messenger.Utilities.getViewDisplayName(vieww);
-    //console.log("name", name1);
-  }
-  ;
-  let name1 = await messenger.Utilities.getViewDisplayName("all");
-  //console.log("name", name1);
-}
+};
 
 main();

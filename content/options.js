@@ -47,7 +47,7 @@ var FPVSOptions = {
     gviews: null,
     onLoad: async function () {
         try {
-            console.log("options");
+            //console.log("options");
             FPVSOptions.prefs = await browser.storage.local.get("prefs");
             //console.log("prefs", FPVSOptions.prefs);
             FPVSOptions.arrowChk = await browser.storage.local.get("arrows");

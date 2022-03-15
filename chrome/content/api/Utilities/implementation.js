@@ -14,15 +14,13 @@ var win = Services.wm.getMostRecentWindow("mail:3pane");
 var FPVS = {
   extension: ExtensionParent.GlobalManager.getExtension("FolderPaneSwitcher@kamens.us"),
   log: function (...a) {
-    console.log(...a);
+    //console.log(...a);
   },
 
 };
 var FPVSlisteners = {
   onDragExit: async function (event) { //now: mouseout
     FPVS.notifyTools.notifyBackground({ command: "onDragLeaveFolderPane" });
-    //    FPVS.notifyTools.notifyBackground({ command: "onDragExit" });
-
   },
   onDragDrop: async function (event) {
     if (event.target.id == "folderPaneHeader") {
@@ -153,6 +151,8 @@ var Utilities = class extends ExtensionCommon.ExtensionAPI {
         getActiveViewModes: async function () {
           let mail3Pane = Components.classes['@mozilla.org/appshell/window-mediator;1'].getService(Components.interfaces.nsIWindowMediator).
             getMostRecentWindow("mail:3pane");
+          // let windowObject = context.extension.windowManager.get(windowId);
+          // let mail3Pane = windowObject.window;
 
           let modes = mail3Pane.gFolderTreeView.activeModes;
           FPVS.log("modes", modes);
@@ -176,6 +176,52 @@ var Utilities = class extends ExtensionCommon.ExtensionAPI {
           FPVS.log("leg dragsession", dragSession, !!dragSession);
           return !!dragSession;
         },
+
+        getLegacyPrefs: async function () {
+          FPVS.log("getLegacyPrefs");
+
+          let fpvsPrefRoot = "extensions.FolderPaneSwitcher.";
+          let viewsBranch = Services.prefs.getBranch(fpvsPrefRoot + "views.");
+          let prefs = {};
+
+          let mail3Pane = Components.classes['@mozilla.org/appshell/window-mediator;1'].getService(Components.interfaces.nsIWindowMediator).
+            getMostRecentWindow("mail:3pane");
+          let allViews = mail3Pane.gFolderTreeView._modeNames;
+          FPVS.log("allviews", allViews);
+
+
+          try {
+            prefs.delay = { "delay": Services.prefs.getIntPref(fpvsPrefRoot + "delay") };
+            conFPVSsole.log("del", prefs.delay);
+          }
+          catch (e) { };
+          try { prefs.arrows = { "arrows": Services.prefs.getBoolPref(fpvsPrefRoot + "arrows") }; }
+          catch (e) { };
+
+          prefs.prefs = {};
+
+          let children = viewsBranch.getChildList("");//, obj);
+          FPVS.log("children", children);
+          let regex = /^(\d+)\./;
+          for (let child of children) {
+            let match = regex.exec(child);
+            let num = match[1];
+            let name = viewsBranch.getStringPref(num + ".name");
+            let arrow = viewsBranch.getBoolPref(num + ".arrows_enabled");
+            let menu = viewsBranch.getBoolPref(num + ".menu_enabled");
+
+            //       if (["all", "smart", "recent", "favorite", "unread"].includes (name) )  prefs.prefs[name] = {"arrow": arrow, "menu": menu, "pos": -1};
+            if (allViews.includes(name)) prefs.prefs[name] = { "arrow": arrow, "menu": menu, "pos": -1 };
+
+          };
+
+          FPVS.log("prefs", prefs);
+
+          return prefs;
+          /*        */
+          //       return "prefs";        
+        },
+
 
         isTreeInited: async function (id) {
           FPVS.log("isTreeInited");
@@ -217,7 +263,7 @@ var Utilities = class extends ExtensionCommon.ExtensionAPI {
           item.addEventListener("dragend", FPVSlisteners.onDragDrop, false);
           item.addEventListener("dragenter", FPVSlisteners.onDragEnter, false);
 
-          //left for testing hen the new foldertree is enabled
+          //left for testing when the new foldertree is enabled
           // item.addEventListener("drop", () => { console.log("foldpa drop"); }, false);  //not fired
           // item.addEventListener("dragend", () => { console.log("foldpa dragend"); }, false);  //not fired
           // item.addEventListener("dragexit", () => { console.log("foldpa dragexit"); }, false);  //not fired
