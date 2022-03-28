@@ -59,14 +59,7 @@ var Utilities = class extends ExtensionCommon.ExtensionAPI {
   getAPI(context) {
 
 
-    const PrefTypes = {
-      [Services.prefs.PREF_STRING]: "string",
-      [Services.prefs.PREF_INT]: "number",
-      [Services.prefs.PREF_BOOL]: "boolean",
-      [Services.prefs.PREF_INVALID]: "invalid"
-    };
-
-    let currentFolder;
+     let currentFolder;
 
     async function onDragOver(event) {
       // FolderPaneSwitcher.logger.trace("onDragOver"); // too verbose for debug
@@ -135,7 +128,6 @@ var Utilities = class extends ExtensionCommon.ExtensionAPI {
 
         isMailTab: async function (isMailTab) {
           //    console.log("isMailTab",isMailTab, win);
-          let i = 0;
           if (Utilities.firstCall == 1) {
             await new Promise(resolve => setTimeout(resolve, 1500));
             Utilities.firstCall = 0;

@@ -54,7 +54,7 @@ messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
         //      updated = await browser.storage.local.get("updated");
         updated = await browser.storage.local.get({ "updated": false });
         //console.log("upd", updated.updated);
-        updated.updated = false;
+        //updated.updated = false;
         if (!updated.updated) {
 
           await browser.storage.local.set({ "updated": true });
@@ -110,7 +110,6 @@ messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
   }
 });
 
-const url = messenger.runtime.getURL("content/options.html");
 
 
 
@@ -438,7 +437,7 @@ async function main() {
   // });
 
   //console.log("bgrd");
-  let p = await messenger.Utilities.getLegacyPrefs();
+
   //console.log("p", p);
   await messenger.NotifyTools.onNotifyBackground.removeListener(notifyListener);
   await messenger.NotifyTools.onNotifyBackground.addListener(notifyListener);
