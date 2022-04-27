@@ -7,13 +7,13 @@
         "message": "Umschalten der Ordneransicht per Pfeiltaste. Beim Verschieben von emails mit der Maus schaltet die Ansicht dafür auf 'alle Ordner' um",
         "description": "A short description of the add-on."
     },
-    "lblckbx_showFPA":{
+    "lblckbx_showFPA": {
         "message": "Pfeile für die Ordneransichten anzeigen"
     },
-    "lblnmbr_delayBFVS":{
+    "lblnmbr_delayBFVS": {
         "message": "Verzögerung (Millisekunden), bevor die Ordneransicht umschaltet"
     },
-    "lbl_EnblDsbl":{
+    "lbl_EnblDsbl": {
         "message": "Ordneransichten wählen"
     }
 }
