@@ -1,71 +1,64 @@
 {
-	"name": "__MSG_appName__",
-	"version": "5.1.2",
-	"description": "__MSG_appDesc__",
-	"author": "Jonathan Kamens, Klaus Buecher",
-	"default_locale": "en-US",
-	"homepage_url": "https://addons.thunderbird.net/thunderbird/addon/folder-pane-view-switcher/",
-	"applications": {
-		"gecko": {
-			"id": "FolderPaneSwitcher@kamens.us",
-			"strict_min_version": "91.0",
-			"strict_max_version": "99.0"
-		}
-	},
-	"background": {
-		"scripts": [
-			"fp-background.js"
-		]
-	},
+    "name": "__MSG_appName__",
+    "version": "5.1.2",
+    "description": "__MSG_appDesc__",
+    "author": "Jonathan Kamens, Klaus Buecher",
+    "default_locale": "en-US",
+    "homepage_url": "https://addons.thunderbird.net/thunderbird/addon/folder-pane-view-switcher/",
+    "applications": {
+        "gecko": {
+            "id": "FolderPaneSwitcher@kamens.us",
+            "strict_min_version": "91.0",
+            "strict_max_version": "99.0"
+        }
+    },
+    "background": {
+        "scripts": ["fp-background.js"]
+    },
 
-	"permissions": ["storage", "accountsRead", "accountsFolders", "messagesRead"],
+    "permissions": [
+        "storage",
+        "accountsRead",
+        "accountsFolders",
+        "messagesRead"
+    ],
 
-	"options_ui": {
-		"page": "./content/options.html",
-		"open_in_tab": true,
-		"browser_style": true
-	
-	  },
+    "options_ui": {
+        "page": "./content/options.html",
+        "open_in_tab": true,
+        "browser_style": true
+    },
 
+    "icons": {
+        "48": "icon.png"
+    },
+    "manifest_version": 2,
+    "experiment_apis": {
+        "Utilities": {
+            "schema": "chrome/content/api/Utilities/schema.json",
+            "parent": {
+                "scopes": ["addon_parent"],
+                "paths": [["Utilities"]],
+                "script": "chrome/content/api/Utilities/implementation.js"
+            }
+        },
+        "LegacyMenu": {
+            "schema": "chrome/content/api/LegacyMenu/schema.json",
+            "parent": {
+                "scopes": ["addon_parent"],
+                "paths": [["LegacyMenu"]],
+                "script": "chrome/content/api/LegacyMenu/implementation.js"
+            }
+        },
 
-
-	"icons": {
-		"48": "icon.png"
-	},
-	"manifest_version": 2,
-	"experiment_apis": {
-		"Utilities": {
-			"schema": "chrome/content/api/Utilities/schema.json",
-			"parent": {
-				"scopes": [
-					"addon_parent"
-				],
-				"paths": [
-					[
-						"Utilities"
-					]
-				],
-				"script": "chrome/content/api/Utilities/implementation.js"
-			}
-		},
-		"LegacyMenu": {
-			"schema": "chrome/content/api/LegacyMenu/schema.json",
-			"parent": {
-			  "scopes": [ "addon_parent" ],
-			  "paths": [ [ "LegacyMenu" ] ],
-			  "script": "chrome/content/api/LegacyMenu/implementation.js"
-			}
-		  
-		},
-		
-		"NotifyTools": {
-			"schema": "chrome/content/api/NotifyTools/schema.json",
-			"parent": {
-			  "scopes": ["addon_parent"],
-			  "paths": [["NotifyTools"]],
-			  "script": "chrome/content/api/NotifyTools/implementation.js",
-			  "events": ["startup"]
-			}
-		  }
-	}
+        "NotifyTools": {
+            "schema": "chrome/content/api/NotifyTools/schema.json",
+            "parent": {
+                "scopes": ["addon_parent"],
+                "paths": [["NotifyTools"]],
+                "script": "chrome/content/api/NotifyTools/implementation.js",
+                "events": ["startup"]
+            }
+        }
+    }
 }
