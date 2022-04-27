@@ -5,7 +5,7 @@ Use this API to add menu items to the Thunderbird UI, as long as it is not yet p
 ## Usage
 
 In order to add a menu item to a window, you first need to get the handle to that window. The most simple way is to request all currently open windows
-and listen for newly opened windows and pass the received window handles to a method, which adds the menu items (if needed). 
+and listen for newly opened windows and pass the received window handles to a method, which adds the menu items (if needed).
 
 A background script could look like the following:
 
@@ -32,7 +32,7 @@ function manipulateWindow(window) {
     // * addressBook
     // * messageCompose
     // * messageDisplay
-   
+
     if (`${window.type}` !== "normal") {
       return;
     }
@@ -46,24 +46,26 @@ function manipulateWindow(window) {
       "label": "My Custom Menu Item",
       "accesskey": "C"
     };
-    messenger.LegacyMenu.add(id, description);   
+    messenger.LegacyMenu.add(id, description);
 }
 
 ```
 
 The `position` property of the description object passed to `LegacyMenu.add()` supports the following values:
-* `before`
-* `after`
-* `child`
+
+-   `before`
+-   `after`
+-   `child`
 
 Depending on its value, the new menu item will be inserted `before` or `after` the element identified by the id specified in the `reference` property.
-If the position is set to `child`, the new menu entry will be appended to the reference element. 
+If the position is set to `child`, the new menu entry will be appended to the reference element.
 
 The `type` property of the description object passed to `LegacyMenu.add()` supports the following values:
-* `menu-label` 
-* `menu-separator` 
-* `appmenu-label` 
-* `appmenu-separator`
+
+-   `menu-label`
+-   `menu-separator`
+-   `appmenu-label`
+-   `appmenu-separator`
 
 The `menu-*` types will add an item to the standard window menu, the `appmenu-*` types will add an item to the app menu a.k.a. the hamburger menu.
 
@@ -79,7 +81,7 @@ To attach a command action to any of the added menu items, register the onComman
         });
       }
     }
-  ); 
+  );
 
 ```
 

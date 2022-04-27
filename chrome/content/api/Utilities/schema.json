@@ -1,176 +1,176 @@
-[  
-  {
-    "namespace": "Utilities",
-    "functions": [
-      {
-        "name": "initFolderPaneOptionsPopup",
-        "type": "function",
-        "async": true,
-        "parameters": []
-      },
+[
     {
-        "name": "isMailTab",
-        "type": "function",
-        "async": true,
-        "parameters": [
-          {
-            "name": "isMailTab",
-            "type": "boolean",
-            "description": "is activated Tab a mailTab?"
-          }
+        "namespace": "Utilities",
+        "functions": [
+            {
+                "name": "initFolderPaneOptionsPopup",
+                "type": "function",
+                "async": true,
+                "parameters": []
+            },
+            {
+                "name": "isMailTab",
+                "type": "function",
+                "async": true,
+                "parameters": [
+                    {
+                        "name": "isMailTab",
+                        "type": "boolean",
+                        "description": "is activated Tab a mailTab?"
+                    }
+                ]
+            },
+            {
+                "name": "getLastHoveredFolder",
+                "type": "function",
+                "async": true,
+                "parameters": []
+            },
+            {
+                "name": "getActiveViewModes",
+                "type": "function",
+                "async": true,
+                "parameters": []
+            },
+            {
+                "name": "getAllViewModes",
+                "type": "function",
+                "async": true,
+                "parameters": []
+            },
+            {
+                "name": "getLegacyPrefs",
+                "type": "function",
+                "async": true,
+                "parameters": []
+            },
+            {
+                "name": "inDragSession",
+                "type": "function",
+                "async": true,
+                "parameters": []
+            },
+            {
+                "name": "isTreeInited",
+                "type": "function",
+                "async": true,
+                "parameters": [
+                    {
+                        "name": "id",
+                        "type": "string",
+                        "description": "window id"
+                    }
+                ]
+            },
+            {
+                "name": "getViewDisplayName",
+                "type": "function",
+                "async": true,
+                "parameters": [
+                    {
+                        "name": "commonName",
+                        "type": "string",
+                        "description": "viewName"
+                    }
+                ]
+            },
+            {
+                "name": "registerListener",
+                "type": "function",
+                "async": true,
+                "parameters": [
+                    {
+                        "name": "eventType",
+                        "type": "string",
+                        "description": "event"
+                    },
+                    {
+                        "name": "DOMid",
+                        "type": "string",
+                        "description": "DOMid"
+                    },
+                    {
+                        "name": "windowId",
+                        "type": "string",
+                        "description": "windowId"
+                    }
+                ]
+            },
+            {
+                "name": "unregisterListener",
+                "type": "function",
+                "async": true,
+                "parameters": [
+                    {
+                        "name": "eventType",
+                        "type": "string",
+                        "description": "event"
+                    },
+                    {
+                        "name": "DOMid",
+                        "type": "string",
+                        "description": "DOMid"
+                    },
+                    {
+                        "name": "windowId",
+                        "type": "string",
+                        "description": "windowId"
+                    }
+                ]
+            },
+            {
+                "name": "showViewInMenus",
+                "type": "function",
+                "async": true,
+                "parameters": [
+                    {
+                        "name": "view",
+                        "type": "string",
+                        "description": "view"
+                    },
+                    {
+                        "name": "enabled",
+                        "type": "boolean",
+                        "description": "show in menu"
+                    }
+                ]
+            },
+            {
+                "name": "toggleElementHidden",
+                "type": "function",
+                "async": true,
+                "parameters": [
+                    {
+                        "name": "should_be_hidden",
+                        "type": "boolean",
+                        "description": "view"
+                    }
+                ]
+            },
+            {
+                "name": "toggleActiveViewMode",
+                "type": "function",
+                "async": true,
+                "parameters": [
+                    {
+                        "name": "view",
+                        "type": "string",
+                        "description": "view"
+                    }
+                ]
+            },
+            {
+                "name": "setAllActiveViews",
+                "type": "function",
+                "async": true,
+                "parameters": [
+                    {
+                        "name": "views",
+                        "type": "string",
+                        "description": "view"
+                    }
+                ]
+            }
         ]
-      },
-      {
-        "name": "getLastHoveredFolder",
-        "type": "function",
-        "async": true,
-        "parameters": []
-      },
-      {
-        "name": "getActiveViewModes",
-        "type": "function",
-        "async": true,
-        "parameters": []
-      },
-      {
-        "name": "getAllViewModes",
-        "type": "function",
-        "async": true,
-        "parameters": []
-      },
-      {
-        "name": "getLegacyPrefs",
-        "type": "function",
-        "async": true,
-        "parameters": []
-      },
-     {
-        "name": "inDragSession",
-        "type": "function",
-        "async": true,
-        "parameters": []
-      },
-      {
-        "name": "isTreeInited",
-        "type": "function",
-        "async": true,
-        "parameters": [
-          {
-            "name": "id",
-            "type": "string",
-            "description": "window id"
-          }
-        ]
-      },
-      {
-        "name": "getViewDisplayName",
-        "type": "function",
-        "async": true,
-        "parameters": [
-          {
-            "name": "commonName",
-            "type": "string",
-            "description": "viewName"
-          }
-        ]
-      },
-      {
-        "name": "registerListener",
-        "type": "function",
-        "async": true,
-        "parameters": [
-          {
-            "name": "eventType",
-            "type": "string",
-            "description": "event"
-          },
-          {
-            "name": "DOMid",
-            "type": "string",
-            "description": "DOMid"
-          },
-          {
-            "name": "windowId",
-            "type": "string",
-            "description": "windowId"
-          }
-        ]
-      },
-      {
-        "name": "unregisterListener",
-        "type": "function",
-        "async": true,
-        "parameters": [
-          {
-            "name": "eventType",
-            "type": "string",
-            "description": "event"
-          },
-          {
-            "name": "DOMid",
-            "type": "string",
-            "description": "DOMid"
-          },
-          {
-            "name": "windowId",
-            "type": "string",
-            "description": "windowId"
-          }
-        ]
-      },
-     {
-        "name": "showViewInMenus",
-        "type": "function",
-        "async": true,
-        "parameters": [
-          {
-            "name": "view",
-            "type": "string",
-            "description": "view"
-          },
-          {
-            "name": "enabled",
-            "type": "boolean",
-            "description": "show in menu"
-          }
-        ]
-      },
-      {
-        "name": "toggleElementHidden",
-        "type": "function",
-        "async": true,
-        "parameters": [
-          {
-            "name": "should_be_hidden",
-            "type": "boolean",
-            "description": "view"
-          }
-        ]
-      },
-      {
-        "name": "toggleActiveViewMode",
-        "type": "function",
-        "async": true,
-        "parameters": [
-          {
-            "name": "view",
-            "type": "string",
-            "description": "view"
-          }
-        ]
-      },
-      {
-        "name": "setAllActiveViews",
-        "type": "function",
-        "async": true,
-        "parameters": [
-          {
-            "name": "views",
-            "type": "string",
-            "description": "view"
-          }
-        ]
-      }
-    ]
-  }
+    }
 ]
