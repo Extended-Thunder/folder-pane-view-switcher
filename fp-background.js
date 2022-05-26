@@ -118,7 +118,9 @@ async function manipulateWindow(window) {
 
     let inited = await messenger.Utilities.isTreeInited(id);
     while (!inited) {
-        await new Promise((resolve) => window.setTimeout(resolve, 100));
+        if (window.setTimeout) {
+            await new Promise((resolve) => window.setTimeout(resolve, 100));
+        }
         inited = await messenger.Utilities.isTreeInited();
     }
 
