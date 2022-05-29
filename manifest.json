@@ -35,19 +35,19 @@
     "manifest_version": 2,
     "experiment_apis": {
         "FPVS": {
-            "schema": "chrome/content/api/FPVS/schema.json",
+            "schema": "api/FPVS/schema.json",
             "parent": {
                 "scopes": ["addon_parent"],
                 "paths": [["FPVS"]],
-                "script": "chrome/content/api/FPVS/implementation.js"
+                "script": "api/FPVS/implementation.js"
             }
         },
         "LegacyMenu": {
-            "schema": "chrome/content/api/LegacyMenu/schema.json",
+            "schema": "api/LegacyMenu/schema.json",
             "parent": {
                 "scopes": ["addon_parent"],
                 "paths": [["LegacyMenu"]],
-                "script": "chrome/content/api/LegacyMenu/implementation.js"
+                "script": "api/LegacyMenu/implementation.js"
             }
         }
     }
