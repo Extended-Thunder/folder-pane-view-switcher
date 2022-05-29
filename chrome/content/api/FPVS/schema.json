@@ -1,22 +1,16 @@
 [
     {
-        "namespace": "Utilities",
+        "namespace": "FPVS",
         "functions": [
             {
                 "name": "initFolderPaneOptionsPopup",
                 "type": "function",
                 "async": true,
-                "parameters": []
-            },
-            {
-                "name": "isMailTab",
-                "type": "function",
-                "async": true,
                 "parameters": [
                     {
-                        "name": "isMailTab",
-                        "type": "boolean",
-                        "description": "is activated Tab a mailTab?"
+                        "name": "windowId",
+                        "type": "string",
+                        "description": "window id"
                     }
                 ]
             },
@@ -24,19 +18,37 @@
                 "name": "getLastHoveredFolder",
                 "type": "function",
                 "async": true,
-                "parameters": []
+                "parameters": [
+                    {
+                        "name": "windowId",
+                        "type": "string",
+                        "description": "window id"
+                    }
+                ]
             },
             {
                 "name": "getActiveViewModes",
                 "type": "function",
                 "async": true,
-                "parameters": []
+                "parameters": [
+                    {
+                        "name": "windowId",
+                        "type": "string",
+                        "description": "window id"
+                    }
+                ]
             },
             {
                 "name": "getAllViewModes",
                 "type": "function",
                 "async": true,
-                "parameters": []
+                "parameters": [
+                    {
+                        "name": "windowIid",
+                        "type": "string",
+                        "description": "window id"
+                    }
+                ]
             },
             {
                 "name": "getLegacyPrefs",
@@ -48,15 +60,21 @@
                 "name": "inDragSession",
                 "type": "function",
                 "async": true,
-                "parameters": []
+                "parameters": [
+                    {
+                        "name": "windowId",
+                        "type": "string",
+                        "description": "window id"
+                    }
+                ]
             },
             {
-                "name": "isTreeInited",
+                "name": "treeIsReady",
                 "type": "function",
                 "async": true,
                 "parameters": [
                     {
-                        "name": "id",
+                        "name": "windowId",
                         "type": "string",
                         "description": "window id"
                     }
@@ -68,53 +86,14 @@
                 "async": true,
                 "parameters": [
                     {
+                        "name": "windowId",
+                        "type": "string",
+                        "description": "window id"
+                    },
+                    {
                         "name": "commonName",
                         "type": "string",
                         "description": "viewName"
-                    }
-                ]
-            },
-            {
-                "name": "registerListener",
-                "type": "function",
-                "async": true,
-                "parameters": [
-                    {
-                        "name": "eventType",
-                        "type": "string",
-                        "description": "event"
-                    },
-                    {
-                        "name": "DOMid",
-                        "type": "string",
-                        "description": "DOMid"
-                    },
-                    {
-                        "name": "windowId",
-                        "type": "string",
-                        "description": "windowId"
-                    }
-                ]
-            },
-            {
-                "name": "unregisterListener",
-                "type": "function",
-                "async": true,
-                "parameters": [
-                    {
-                        "name": "eventType",
-                        "type": "string",
-                        "description": "event"
-                    },
-                    {
-                        "name": "DOMid",
-                        "type": "string",
-                        "description": "DOMid"
-                    },
-                    {
-                        "name": "windowId",
-                        "type": "string",
-                        "description": "windowId"
                     }
                 ]
             },
@@ -123,6 +102,11 @@
                 "type": "function",
                 "async": true,
                 "parameters": [
+                    {
+                        "name": "windowId",
+                        "type": "string",
+                        "description": "window id"
+                    },
                     {
                         "name": "view",
                         "type": "string",
@@ -141,6 +125,11 @@
                 "async": true,
                 "parameters": [
                     {
+                        "name": "windowId",
+                        "type": "string",
+                        "description": "window id"
+                    },
+                    {
                         "name": "should_be_hidden",
                         "type": "boolean",
                         "description": "view"
@@ -152,6 +141,11 @@
                 "type": "function",
                 "async": true,
                 "parameters": [
+                    {
+                        "name": "windowId",
+                        "type": "string",
+                        "description": "window id"
+                    },
                     {
                         "name": "view",
                         "type": "string",
@@ -165,9 +159,38 @@
                 "async": true,
                 "parameters": [
                     {
+                        "name": "windowId",
+                        "type": "string",
+                        "description": "window id"
+                    },
+                    {
                         "name": "views",
                         "type": "string",
                         "description": "view"
+                    }
+                ]
+            }
+        ],
+        "events": [
+            {
+                "name": "onDragDrop",
+                "type": "function",
+                "description": "A general event for drag-n-drop related window events",
+                "parameters": [
+                    {
+                        "name": "windowId",
+                        "type": "string",
+                        "description": "window id"
+                    },
+                    {
+                        "name": "eventName",
+                        "type": "string",
+                        "description": "The actual event"
+                    },
+                    {
+                        "name": "data",
+                        "type": "string",
+                        "description": "Some additional data"
                     }
                 ]
             }

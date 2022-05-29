@@ -7,6 +7,11 @@ var FPVSOptions = {
 
     menuViews: [],
 
+    getMail3paneId: async function () {
+        let [window] = await messenger.windows.getAll({ windowTypes: ["normal"] });
+        return `${window.id}`;
+    },
+
     menuChangeHandler: async function (event) {
         // var menu_checkbox = event.target;
         // menu_id = menu_checkbox.getAttribute("id");
@@ -75,10 +80,10 @@ var FPVSOptions = {
                 "FolderPaneSwitcher-delay-textbox"
             );
             lblckbx_shFPA.value = FPVSOptions.delay.delay;
-
-            FPVSOptions.gviews = await messenger.Utilities.getAllViewModes();
+            let mail3paneId = await FPVSOptions.getMail3paneId();
+            FPVSOptions.gviews = await messenger.FPVS.getAllViewModes(mail3paneId);
             FPVSOptions.activeViews =
-                await messenger.Utilities.getActiveViewModes();
+                await messenger.FPVS.getActiveViewModes(mail3paneId);
             //console.log("actviews", FPVSOptions.activeViews);
 
             var btn_ok = document.getElementById("btn_accept");
@@ -127,7 +132,7 @@ var FPVSOptions = {
 
                 var label = document.createElement("label");
 
-                var y = await browser.Utilities.getViewDisplayName(view);
+                var y = await messenger.FPVS.getViewDisplayName(mail3paneId, view);
                 //console.log("name", y);
                 label.appendChild(document.createTextNode(y));
                 cell3.appendChild(label);
@@ -182,6 +187,7 @@ var FPVSOptions = {
         FPVSOptions.menuViews = [];
 
         //console.log("prefs", FPVSOptions.prefs);
+        let mail3paneId = await FPVSOptions.getMail3paneId();
         for (view of FPVSOptions.gviews) {
             let elt = document.getElementById(view + "_arrow");
             FPVSOptions.prefs.prefs[view].arrow = elt.checked;
@@ -189,7 +195,7 @@ var FPVSOptions = {
             elt = document.getElementById(view + "_menu");
             FPVSOptions.prefs.prefs[view].menu = elt.checked;
             if (elt.checked) FPVSOptions.menuViews.push(view);
-            messenger.Utilities.showViewInMenus(view, elt.checked);
+            messenger.FPVS.showViewInMenus(mail3paneId, view, elt.checked);
         }
         await browser.storage.local.set(FPVSOptions.prefs);
         await browser.storage.local.set({ arrowViews: FPVSOptions.arrowViews });
@@ -199,7 +205,7 @@ var FPVSOptions = {
             "FolderPaneSwitcher-arrows-checkbox"
         );
         FPVSOptions.arrowChk.arrows = lblckbx_shFPA.checked;
-        messenger.Utilities.toggleElementHidden(!lblckbx_shFPA.checked);
+        messenger.FPVS.toggleElementHidden(mail3paneId, !lblckbx_shFPA.checked);
 
         lblckbx_shFPA = document.getElementById(
             "FolderPaneSwitcher-delay-textbox"

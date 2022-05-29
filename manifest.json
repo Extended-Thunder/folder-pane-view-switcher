@@ -34,12 +34,12 @@
     },
     "manifest_version": 2,
     "experiment_apis": {
-        "Utilities": {
-            "schema": "chrome/content/api/Utilities/schema.json",
+        "FPVS": {
+            "schema": "chrome/content/api/FPVS/schema.json",
             "parent": {
                 "scopes": ["addon_parent"],
-                "paths": [["Utilities"]],
-                "script": "chrome/content/api/Utilities/implementation.js"
+                "paths": [["FPVS"]],
+                "script": "chrome/content/api/FPVS/implementation.js"
             }
         },
         "LegacyMenu": {
@@ -48,16 +48,6 @@
                 "scopes": ["addon_parent"],
                 "paths": [["LegacyMenu"]],
                 "script": "chrome/content/api/LegacyMenu/implementation.js"
-            }
-        },
-
-        "NotifyTools": {
-            "schema": "chrome/content/api/NotifyTools/schema.json",
-            "parent": {
-                "scopes": ["addon_parent"],
-                "paths": [["NotifyTools"]],
-                "script": "chrome/content/api/NotifyTools/implementation.js",
-                "events": ["startup"]
             }
         }
     }

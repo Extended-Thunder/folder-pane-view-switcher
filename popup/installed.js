@@ -7,7 +7,6 @@ addEventListener("click", async (event) => {
 });
 
 addEventListener("load", async (event) => {
-    //	debugger;
     let text = document.body.innerHTML,
         htmltext = text.replace(
             /{addon}/g,
