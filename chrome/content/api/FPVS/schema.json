@@ -69,18 +69,6 @@
                 ]
             },
             {
-                "name": "treeIsReady",
-                "type": "function",
-                "async": true,
-                "parameters": [
-                    {
-                        "name": "windowId",
-                        "type": "string",
-                        "description": "window id"
-                    }
-                ]
-            },
-            {
                 "name": "getViewDisplayName",
                 "type": "function",
                 "async": true,
