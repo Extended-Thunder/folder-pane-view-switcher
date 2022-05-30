@@ -16,7 +16,7 @@ const defArrowViews = ["all", "smart", "recent", "unread", "favorite"];
 const defMenuViews = ["all", "smart", "recent", "unread", "favorite"];
 const defChk = { arrows: true };
 const defDelay = { delay: 300 };
-const logEnabled = true;
+const logEnabled = false;
 
 function log(...a) {
     if (logEnabled) {
