@@ -29,7 +29,7 @@
       super();
       this.extension = extension;
       this.callbackCount = 0;
-      this.currentFolder = new Map();
+      this.currentFolder = new WeakMap();
     }
 
     get listenerId() {
@@ -54,6 +54,7 @@
         windowListener.emit("dragdrop", mail3Pane, "folderListener", "msgsMoveCopyCompleted");
       }
     }
+
     folderMoveCopyCompleted(aMove, aSrcFolder, aDestFolder) {
       if (aDestFolder == this.currentFolder.get(mail3Pane)) {
         // Still remotely possible that someone else could be copying
@@ -94,6 +95,8 @@
         case "dragleave":
           windowListener.emit("dragdrop", win, "onDragLeave");
           break;
+        default:
+          throw new Error(`Encountered unknown event <${event.type}>`);
       }
     }
 
@@ -151,9 +154,10 @@
       if (this.callbackCount == 0) {
         log("Remove listener");
         for (let window of ExtensionSupport.openWindows) {
+          let location = new window.URL(window.location.href);
           if ([
             "chrome://messenger/content/messenger.xhtml"
-          ].includes(window.location.href)) {
+          ].includes(location.origin)) {
             let folderPaneHeader = window.document.getElementById("folderPaneHeader");
             folderPaneHeader.removeEventListener("mouseout", windowListener);
             folderPaneHeader.removeEventListener("dragend", windowListener);
@@ -193,18 +197,18 @@
         FPVS: {
           initFolderPaneOptionsPopup: async function (windowId) {
             let mail3Pane = context.extension.windowManager.get(windowId).window;
-            for (; ;) {
+            let ready = false;
+            do {
               try {
-                if (mail3Pane.gFolderTreeView.isInited) {
-                  log("treeIsReady", true);
-                  break;
-                }
+                ready = mail3Pane.gFolderTreeView.isInited;
               } catch (e) {
                 log("treeIsReady Err", e.message);
               }
-              await new Promise((resolve) => mail3Pane.setTimeout(resolve, 100));
-              log("treeIsReady", false);
-            }
+              log("treeIsReady", ready);
+              if (!ready) {
+                await new Promise((resolve) => mail3Pane.setTimeout(resolve, 100));
+              }
+            } while (!ready);
             mail3Pane.gFolderTreeView.initFolderPaneOptionsPopup();
           },
 
@@ -297,8 +301,6 @@
             log("prefs", prefs);
 
             return prefs;
-            /*        */
-            //       return "prefs";
           },
 
           getViewDisplayName: async function (windowId, commonName) {
@@ -337,30 +339,29 @@
 
           toggleElementHidden: async function (windowId, should_be_hidden) {
             let mail3Pane = context.extension.windowManager.get(windowId).window;
-            let is_hidden = !!mail3Pane.document.getElementById(
+            let backButton = mail3Pane.document.getElementById(
               "FolderPaneSwitcher-back-arrow-button"
-            ).hidden;
+            );
+            let forwardButton = mail3Pane.document.getElementById(
+              "FolderPaneSwitcher-forward-arrow-button"
+            );
+
+            let is_hidden = !!backButton.hidden;
             if (should_be_hidden != is_hidden) {
-              mail3Pane.document.getElementById(
-                "FolderPaneSwitcher-back-arrow-button"
-              ).hidden = should_be_hidden;
-              mail3Pane.document.getElementById(
-                "FolderPaneSwitcher-forward-arrow-button"
-              ).hidden = should_be_hidden;
+              backButton.hidden = should_be_hidden;
+              forwardButton.hidden = should_be_hidden;
             }
           },
 
           toggleActiveViewMode: async function (windowId, view) {
             let mail3Pane = context.extension.windowManager.get(windowId).window;
             mail3Pane.gFolderTreeView.activeModes = view;
-            return;
           },
 
           setAllActiveViews: async function (windowId, views) {
             let mail3Pane = context.extension.windowManager.get(windowId).window;
             log("views", views, views.split(","));
             mail3Pane.gFolderTreeView._activeModes = views.split(",");
-            return;
           },
 
           // Instead of having individual WebExtension Events, we have a single
