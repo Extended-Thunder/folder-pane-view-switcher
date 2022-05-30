@@ -16,7 +16,7 @@
   var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
   let windowListener;
-  const logEnabled = true;
+  const logEnabled = false;
 
   function log(...a) {
     if (logEnabled) {
