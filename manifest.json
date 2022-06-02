@@ -1,6 +1,6 @@
 {
     "name": "__MSG_appName__",
-    "version": "5.1.2",
+    "version": "5.2",
     "description": "__MSG_appDesc__",
     "author": "Jonathan Kamens, Klaus Buecher",
     "default_locale": "en-US",
@@ -13,22 +13,18 @@
         }
     },
     "background": {
-        "scripts": ["fp-background.js"]
+        "scripts": [
+            "fp-background.js"
+        ]
     },
-
     "permissions": [
-        "storage",
-        "accountsRead",
-        "accountsFolders",
-        "messagesRead"
+        "storage"
     ],
-
     "options_ui": {
         "page": "./content/options.html",
         "open_in_tab": true,
         "browser_style": true
     },
-
     "icons": {
         "48": "icon.png"
     },
@@ -37,16 +33,28 @@
         "FPVS": {
             "schema": "api/FPVS/schema.json",
             "parent": {
-                "scopes": ["addon_parent"],
-                "paths": [["FPVS"]],
+                "scopes": [
+                    "addon_parent"
+                ],
+                "paths": [
+                    [
+                        "FPVS"
+                    ]
+                ],
                 "script": "api/FPVS/implementation.js"
             }
         },
         "LegacyMenu": {
             "schema": "api/LegacyMenu/schema.json",
             "parent": {
-                "scopes": ["addon_parent"],
-                "paths": [["LegacyMenu"]],
+                "scopes": [
+                    "addon_parent"
+                ],
+                "paths": [
+                    [
+                        "LegacyMenu"
+                    ]
+                ],
                 "script": "api/LegacyMenu/implementation.js"
             }
         }

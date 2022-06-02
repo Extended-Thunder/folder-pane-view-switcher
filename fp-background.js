@@ -2,9 +2,6 @@
  * License:  MPL2
  */
 
-/*
- */
-
 const defPrefs = {
     all: { arrow: true, menu: true, pos: -1 },
     smart: { arrow: true, menu: true, pos: -1 },
