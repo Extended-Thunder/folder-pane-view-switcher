@@ -41,7 +41,9 @@ messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
             await browser.tabs.create({ url: "popup/update.html" });
 
             //update from old prefs?
-            let { updated } = await browser.storage.local.get({ updated: false });
+            let { updated } = await browser.storage.local.get({
+                updated: false
+            });
             if (!updated) {
                 await browser.storage.local.set({ updated: true });
 
@@ -80,8 +82,12 @@ messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
                 }
                 //log("update: defpref", defPrefs, arrowViews, menuViews);
                 await browser.storage.local.set({ prefs: migratedPrefs });
-                await browser.storage.local.set({ arrowViews: migratedArrowViews });
-                await browser.storage.local.set({ menuViews: migratedMenuViews });
+                await browser.storage.local.set({
+                    arrowViews: migratedArrowViews
+                });
+                await browser.storage.local.set({
+                    menuViews: migratedMenuViews
+                });
                 await browser.storage.local.set({ updated: true });
             }
 
@@ -111,8 +117,8 @@ async function manipulateWindow(window) {
     FolderPaneSwitcher.windowData.set(windowId, {
         cachedView: null,
         timer: 0,
-        watchTimer: 0,
-    })
+        watchTimer: 0
+    });
 
     await messenger.FPVS.initFolderPaneOptionsPopup(windowId);
 
@@ -170,7 +176,9 @@ var FolderPaneSwitcher = {
 
     goForwardView: async function (windowId) {
         let activeModes = await messenger.FPVS.getActiveViewModes(windowId);
-        let { arrowViews: selectedViews } = await messenger.storage.local.get("arrowViews"); // per window ?
+        let { arrowViews: selectedViews } = await messenger.storage.local.get(
+            "arrowViews"
+        ); // per window ?
 
         var currentView = activeModes[activeModes.length - 1];
         let currInd = selectedViews.findIndex((name) => name == currentView);
@@ -180,7 +188,9 @@ var FolderPaneSwitcher = {
 
     goBackView: async function (windowId) {
         let activeModes = await messenger.FPVS.getActiveViewModes(windowId);
-        let { arrowViews: selectedViews } = await messenger.storage.local.get("arrowViews"); // per window ?
+        let { arrowViews: selectedViews } = await messenger.storage.local.get(
+            "arrowViews"
+        ); // per window ?
 
         var currentView = activeModes[activeModes.length - 1];
         let currInd = selectedViews.findIndex((name) => name == currentView);
@@ -207,9 +217,15 @@ var FolderPaneSwitcher = {
         log(`onDragLeaveFolderPane(${windowId}, ${aEvent?.type})`);
         //log("leaveFolderPane", FolderPaneSwitcher.windowData.get(windowId).cachedView, FolderPaneSwitcher.windowData.get(windowId).timer, FolderPaneSwitcher.windowData.get(windowId).watchTimer);
 
-        if (FolderPaneSwitcher.windowData.get(windowId).cachedView && !FolderPaneSwitcher.windowData.get(windowId).timer) {
+        if (
+            FolderPaneSwitcher.windowData.get(windowId).cachedView &&
+            !FolderPaneSwitcher.windowData.get(windowId).timer
+        ) {
             //log("reset onDragLeaveFolderPane cached view", FolderPaneSwitcher.windowData.get(windowId).cachedView);
-            FolderPaneSwitcher.setSingleMode(windowId, FolderPaneSwitcher.windowData.get(windowId).cachedView);
+            FolderPaneSwitcher.setSingleMode(
+                windowId,
+                FolderPaneSwitcher.windowData.get(windowId).cachedView
+            );
             FolderPaneSwitcher.windowData.get(windowId).cachedView = null;
             FolderPaneSwitcher.windowData.get(windowId).watchTimer = 0;
         }
@@ -219,12 +235,16 @@ var FolderPaneSwitcher = {
         log(`onDragExit(${windowId}, ${aEvent?.type})`);
         //log("dragexit should never happen as the bug is wontfix");
         if (FolderPaneSwitcher.windowData.get(windowId).timer) {
-            window.clearTimeout(FolderPaneSwitcher.windowData.get(windowId).timer);
+            window.clearTimeout(
+                FolderPaneSwitcher.windowData.get(windowId).timer
+            );
             FolderPaneSwitcher.windowData.get(windowId).timer = 0;
             log("kill timer");
         }
         if (FolderPaneSwitcher.windowData.get(windowId).watchTimer) {
-            window.clearTimeout(FolderPaneSwitcher.windowData.get(windowId).watchTimer);
+            window.clearTimeout(
+                FolderPaneSwitcher.windowData.get(windowId).watchTimer
+            );
             FolderPaneSwitcher.windowData.get(windowId).watchTimer = 0;
             log("kill watchTimer");
         }
@@ -234,19 +254,26 @@ var FolderPaneSwitcher = {
         log(`onDragDrop(${windowId}, ${aEvent?.type})`);
         if (FolderPaneSwitcher.windowData.get(windowId).timer) {
             //so we don't double call setSingleMode
-            window.clearTimeout(FolderPaneSwitcher.windowData.get(windowId).timer);
+            window.clearTimeout(
+                FolderPaneSwitcher.windowData.get(windowId).timer
+            );
             FolderPaneSwitcher.windowData.get(windowId).timer = 0;
             log("kill timer");
         }
         if (FolderPaneSwitcher.windowData.get(windowId).watchTimer) {
-            window.clearTimeout(FolderPaneSwitcher.windowData.get(windowId).watchTimer);
+            window.clearTimeout(
+                FolderPaneSwitcher.windowData.get(windowId).watchTimer
+            );
             FolderPaneSwitcher.windowData.get(windowId).watchTimer = 0;
             log("kill watchTimer");
         }
 
         if (FolderPaneSwitcher.windowData.get(windowId).cachedView) {
             //log("reset cached view", FolderPaneSwitcher.windowData.get(windowId).cachedView);
-            FolderPaneSwitcher.setSingleMode(windowId, FolderPaneSwitcher.windowData.get(windowId).cachedView);
+            FolderPaneSwitcher.setSingleMode(
+                windowId,
+                FolderPaneSwitcher.windowData.get(windowId).cachedView
+            );
             FolderPaneSwitcher.windowData.get(windowId).cachedView = null;
         }
     },
@@ -255,16 +282,18 @@ var FolderPaneSwitcher = {
         notify: async function (windowId) {
             //log("timerCallback.notify");
             let activeViews = await messenger.FPVS.getActiveViewModes(windowId);
-            FolderPaneSwitcher.windowData.get(windowId).cachedView = activeViews[activeViews.length - 1];
+            FolderPaneSwitcher.windowData.get(windowId).cachedView =
+                activeViews[activeViews.length - 1];
             //log("cachedmode", FolderPaneSwitcher.windowData.get(windowId).cachedView);
             FolderPaneSwitcher.setSingleMode(windowId, "all");
 
             //     FolderPaneSwitcher.windowData.get(windowId).timer = 0;
-            FolderPaneSwitcher.windowData.get(windowId).watchTimer = window.setTimeout(
-                FolderPaneSwitcher.watchTimerCallback.notify,
-                1500,
-                windowId
-            );
+            FolderPaneSwitcher.windowData.get(windowId).watchTimer =
+                window.setTimeout(
+                    FolderPaneSwitcher.watchTimerCallback.notify,
+                    1500,
+                    windowId
+                );
         }
     },
 
@@ -275,10 +304,14 @@ var FolderPaneSwitcher = {
             FolderPaneSwitcher.windowData.get(windowId).timer = 0;
             if (FolderPaneSwitcher.windowData.get(windowId).cachedView) {
                 //    FolderPaneSwitcher.windowData.get(windowId).cachedView = null;
-                let inDragSession = await messenger.FPVS.inDragSession(windowId);
+                let inDragSession = await messenger.FPVS.inDragSession(
+                    windowId
+                );
                 //log("watchtimer indragsession", inDragSession);
                 if (!inDragSession) {
-                    FolderPaneSwitcher.onDragDrop(windowId, { type: "watchTimer" });
+                    FolderPaneSwitcher.onDragDrop(windowId, {
+                        type: "watchTimer"
+                    });
                 }
             }
             if (!FolderPaneSwitcher.windowData.get(windowId).cachedView) {
@@ -299,11 +332,12 @@ var FolderPaneSwitcher = {
             //log("resettimer");
             FolderPaneSwitcher.windowData.get(windowId).cachedView = null;
             let delay = await messenger.storage.local.get("delay");
-            FolderPaneSwitcher.windowData.get(windowId).timer = window.setTimeout(
-                FolderPaneSwitcher.timerCallback.notify,
-                delay.delay,
-                windowId
-            );
+            FolderPaneSwitcher.windowData.get(windowId).timer =
+                window.setTimeout(
+                    FolderPaneSwitcher.timerCallback.notify,
+                    delay.delay,
+                    windowId
+                );
             //log("delay", delay, FolderPaneSwitcher.windowData.get(windowId).timer);
         }
 
