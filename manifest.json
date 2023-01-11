@@ -9,17 +9,13 @@
         "gecko": {
             "id": "FolderPaneSwitcher@kamens.us",
             "strict_min_version": "91.0",
-            "strict_max_version": "102.*"
+            "strict_max_version": "106.*"
         }
     },
     "background": {
-        "scripts": [
-            "fp-background.js"
-        ]
+        "scripts": ["fp-background.js"]
     },
-    "permissions": [
-        "storage"
-    ],
+    "permissions": ["storage"],
     "options_ui": {
         "page": "./content/options.html",
         "open_in_tab": true,
@@ -33,28 +29,16 @@
         "FPVS": {
             "schema": "api/FPVS/schema.json",
             "parent": {
-                "scopes": [
-                    "addon_parent"
-                ],
-                "paths": [
-                    [
-                        "FPVS"
-                    ]
-                ],
+                "scopes": ["addon_parent"],
+                "paths": [["FPVS"]],
                 "script": "api/FPVS/implementation.js"
             }
         },
         "LegacyMenu": {
             "schema": "api/LegacyMenu/schema.json",
             "parent": {
-                "scopes": [
-                    "addon_parent"
-                ],
-                "paths": [
-                    [
-                        "LegacyMenu"
-                    ]
-                ],
+                "scopes": ["addon_parent"],
+                "paths": [["LegacyMenu"]],
                 "script": "api/LegacyMenu/implementation.js"
             }
         }

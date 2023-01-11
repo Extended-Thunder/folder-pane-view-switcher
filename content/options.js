@@ -8,8 +8,10 @@ var FPVSOptions = {
     menuViews: [],
 
     getMail3paneIds: async function () {
-        let windows = await messenger.windows.getAll({ windowTypes: ["normal"] });
-        return windows.map(window => `${window.id}`);
+        let windows = await messenger.windows.getAll({
+            windowTypes: ["normal"]
+        });
+        return windows.map((window) => `${window.id}`);
     },
 
     menuChangeHandler: async function (event) {
@@ -83,9 +85,12 @@ var FPVSOptions = {
             // Assuming the available views are the same in all windows, just read
             // the first window.
             let [mail3paneId] = await FPVSOptions.getMail3paneIds();
-            FPVSOptions.gviews = await messenger.FPVS.getAllViewModes(mail3paneId);
-            FPVSOptions.activeViews =
-                await messenger.FPVS.getActiveViewModes(mail3paneId);
+            FPVSOptions.gviews = await messenger.FPVS.getAllViewModes(
+                mail3paneId
+            );
+            FPVSOptions.activeViews = await messenger.FPVS.getActiveViewModes(
+                mail3paneId
+            );
             //console.log("actviews", FPVSOptions.activeViews);
 
             var btn_ok = document.getElementById("btn_accept");
@@ -134,7 +139,10 @@ var FPVSOptions = {
 
                 var label = document.createElement("label");
 
-                var y = await messenger.FPVS.getViewDisplayName(mail3paneId, view);
+                var y = await messenger.FPVS.getViewDisplayName(
+                    mail3paneId,
+                    view
+                );
                 //console.log("name", y);
                 label.appendChild(document.createTextNode(y));
                 cell3.appendChild(label);
@@ -197,8 +205,8 @@ var FPVSOptions = {
             elt = document.getElementById(view + "_menu");
             FPVSOptions.prefs.prefs[view].menu = elt.checked;
             if (elt.checked) FPVSOptions.menuViews.push(view);
-            mail3paneIds.forEach(mail3paneId => {
-                messenger.FPVS.showViewInMenus(mail3paneId, view, elt.checked)
+            mail3paneIds.forEach((mail3paneId) => {
+                messenger.FPVS.showViewInMenus(mail3paneId, view, elt.checked);
             });
         }
         await browser.storage.local.set(FPVSOptions.prefs);
@@ -209,8 +217,11 @@ var FPVSOptions = {
             "FolderPaneSwitcher-arrows-checkbox"
         );
         FPVSOptions.arrowChk.arrows = lblckbx_shFPA.checked;
-        mail3paneIds.forEach(mail3paneId => {
-            messenger.FPVS.toggleElementHidden(mail3paneId, !lblckbx_shFPA.checked)
+        mail3paneIds.forEach((mail3paneId) => {
+            messenger.FPVS.toggleElementHidden(
+                mail3paneId,
+                !lblckbx_shFPA.checked
+            );
         });
         lblckbx_shFPA = document.getElementById(
             "FolderPaneSwitcher-delay-textbox"
