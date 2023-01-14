@@ -281,6 +281,14 @@
                         );
                     },
 
+                    toggleCompactMode: async function (windowId, toggle) {
+                        let mail3Pane =
+                            context.extension.windowManager.get(
+                                windowId
+                            ).window;
+                        mail3Pane.gFolderTreeView.toggleCompactMode(toggle);
+                    },
+
                     getActiveViewModes: async function (windowId) {
                         let mail3Pane =
                             context.extension.windowManager.get(
@@ -289,6 +297,38 @@
                         let modes = mail3Pane.gFolderTreeView.activeModes;
                         log("modes", modes);
                         return modes;
+                    },
+
+                    getActiveViewModesEx: async function (windowId) {
+                        let isCompactView = false;
+                        let modes = await this.getActiveViewModes(windowId);
+                        let mayHasCompactView = modes.find(
+                            (mode) => mode == "favorites" || mode == "unread"
+                        );
+
+                        if (mayHasCompactView) {
+                            let mail3Pane =
+                                context.extension.windowManager.get(
+                                    windowId
+                                ).window;
+                            let popup = mail3Pane.document.getElementById(
+                                "folderPaneOptionsPopup"
+                            );
+                            // Interrupt if the popup has never been initialized.
+                            if (popup.childNodes.length) {
+                                isCompactView =
+                                    popup
+                                        .querySelector(`[value="compact"]`)
+                                        .getAttribute("checked") === "true";
+                            }
+                        }
+
+                        console.log("FPVS[getActiveViewModesEx] ", {
+                            isCompactView,
+                            modes
+                        });
+
+                        return { modes, isCompactView };
                     },
 
                     getAllViewModes: async function (windowId) {
@@ -480,6 +520,7 @@
                                     extraData
                                 );
                             }
+
                             windowListener.add(callback);
                             return function () {
                                 windowListener.remove(callback);
