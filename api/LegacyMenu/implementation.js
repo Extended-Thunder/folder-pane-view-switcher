@@ -340,13 +340,24 @@ if (!ExtensionParent)
          * @param {string} [tooltip]
          *   the optional access key.
          */
-        constructor(id, label, accesskey, image, tooltip) {
+        constructor(
+            id,
+            label,
+            accesskey,
+            image,
+            tooltip,
+            className = "",
+            tabIndex = null
+        ) {
             super(id);
             this.label = label;
             this.accesskey = accesskey;
 
             this.image = contextHelp.extension.rootURI.resolve(image); //image;
             this.tooltip = tooltip;
+
+            this.className = className;
+            this.tabIndex = tabIndex;
         }
 
         createNode(document) {
@@ -361,6 +372,14 @@ if (!ExtensionParent)
                 item.setAttribute("image", this.image);
             // if (typeof (this.tooltip) !== "undefined" || this.tooltip !== null)
             item.setAttribute("tooltiptext", this.tooltip);
+
+            if (this.className) {
+                item.setAttribute("class", this.className);
+            }
+
+            if (typeof this.tabIndex === "number") {
+                item.setAttribute("tabindex", this.tabIndex);
+            }
 
             return item;
         }
@@ -572,7 +591,9 @@ if (!ExtensionParent)
                 widget.label,
                 widget.accesskey,
                 widget.image,
-                widget.tooltip
+                widget.tooltip,
+                widget.className,
+                widget.tabIndex
             );
 
         if (widget.type === "toolbarMenuButton")
