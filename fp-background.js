@@ -399,4 +399,6 @@ async function main() {
     messenger.FPVS.onDragDrop.addListener(dragDropListener);
 }
 
-main();
+main()
+    .then(() => log(`FolderPaneViewSwitcher is initialized`))
+    .catch((err) => console.error("FPVS", err));
