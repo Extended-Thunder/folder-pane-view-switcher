@@ -1,3 +1,4 @@
+// @ts-check
 /*
  * License:  MPL2
  */
@@ -44,6 +45,7 @@ messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
             let { updated } = await browser.storage.local.get({
                 updated: false
             });
+
             if (!updated) {
                 await browser.storage.local.set({ updated: true });
 
@@ -63,7 +65,7 @@ messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
 
                 let migratedArrowViews = [];
                 let migratedMenuViews = [];
-                let migratedPrefs = {};
+                let migratedPrefs = { compacted: [] };
 
                 for (let view in p.prefs) {
                     //log("view", view, p.prefs[view], p.prefs[view]["arrow"]);
@@ -146,18 +148,44 @@ async function manipulateWindow(window) {
 }
 
 messenger.LegacyMenu.onCommand.addListener(async (windowId, id) => {
-    if (id == "FolderPaneSwitcher-forward-arrow-button") {
-        log("forward clicked");
-        FolderPaneSwitcher.goForwardView(windowId);
-        return;
-    }
-
-    if (id == "FolderPaneSwitcher-back-arrow-button") {
-        log("back clicked");
-        FolderPaneSwitcher.goBackView(windowId);
-        return;
+    switch (id) {
+        case "FolderPaneSwitcher-forward-arrow-button":
+            log("forward clicked");
+            await FolderPaneSwitcher.goForwardView(windowId);
+            break;
+        case "FolderPaneSwitcher-back-arrow-button":
+            log("back clicked");
+            await FolderPaneSwitcher.goBackView(windowId);
+            break;
     }
 });
+
+const getCompactedViews = async () => {
+    const { compacted } = await messenger.storage.local.get({ compacted: [] });
+    return compacted;
+};
+
+const isViewCompacted = async (viewName) => {
+    const compactedViews = await getCompactedViews();
+    return compactedViews.indexOf(viewName) > -1;
+};
+
+const setCompactedView = async (viewName, isCompacted) => {
+    const isCurrentViewCompacted = await isViewCompacted(viewName);
+    if (isCompacted && !isCurrentViewCompacted) {
+        // the view is Compacted but not listed, so we need to add the view name
+        const compactedViews = await getCompactedViews();
+        await messenger.storage.local.set({
+            compacted: [...compactedViews, viewName]
+        });
+    } else if (!isCompacted && isCurrentViewCompacted) {
+        // the view is Compacted but not listed, so we need to add the view name
+        const compactedViews = await getCompactedViews();
+        await messenger.storage.local.set({
+            compacted: compactedViews.filter((view) => viewName !== view)
+        });
+    }
+};
 
 var FolderPaneSwitcher = {
     windowData: new Map(),
@@ -165,38 +193,63 @@ var FolderPaneSwitcher = {
     setSingleMode: async function (windowId, modeName) {
         let activeModes = await messenger.FPVS.getActiveViewModes(windowId);
         let currModes = activeModes.slice();
-        if (!activeModes.includes(modeName))
-            await messenger.FPVS.toggleActiveViewMode(windowId, modeName);
 
-        for (viewName of currModes) {
-            if (viewName != modeName)
-                await messenger.FPVS.toggleActiveViewMode(windowId, viewName);
+        log({ currModes, modeName, activeModes });
+
+        if (!activeModes.includes(modeName)) {
+            await messenger.FPVS.toggleActiveViewMode(windowId, modeName);
         }
+
+        for (let viewName of currModes) {
+            if (viewName != modeName) {
+                await messenger.FPVS.toggleActiveViewMode(windowId, viewName);
+            }
+        }
+
+        const compact = await isViewCompacted(modeName);
+        await messenger.FPVS.toggleCompactMode(windowId, compact);
+
+        log(`toggle compact view ${modeName}: `, compact);
+    },
+
+    getCurrentViewSelections: async function (windowId) {
+        let { modes: activeModes, isCompactView } =
+            await messenger.FPVS.getActiveViewModesEx(windowId);
+        let { arrowViews: selectedViews } = await messenger.storage.local.get(
+            "arrowViews"
+        );
+
+        let currentView = activeModes[activeModes.length - 1];
+
+        return { selectedViews, currentView, isCompactView };
     },
 
     goForwardView: async function (windowId) {
-        let activeModes = await messenger.FPVS.getActiveViewModes(windowId);
-        let { arrowViews: selectedViews } = await messenger.storage.local.get(
-            "arrowViews"
-        ); // per window ?
+        let { currentView, selectedViews, isCompactView } =
+            await this.getCurrentViewSelections(windowId);
 
-        var currentView = activeModes[activeModes.length - 1];
+        await setCompactedView(currentView, isCompactView);
+
         let currInd = selectedViews.findIndex((name) => name == currentView);
+
         currInd = (currInd + 1) % selectedViews.length;
-        FolderPaneSwitcher.setSingleMode(windowId, selectedViews[currInd]);
+
+        let nextMode = selectedViews[currInd];
+        FolderPaneSwitcher.setSingleMode(windowId, nextMode);
     },
 
     goBackView: async function (windowId) {
-        let activeModes = await messenger.FPVS.getActiveViewModes(windowId);
-        let { arrowViews: selectedViews } = await messenger.storage.local.get(
-            "arrowViews"
-        ); // per window ?
+        let { currentView, selectedViews, isCompactView } =
+            await this.getCurrentViewSelections(windowId);
 
-        var currentView = activeModes[activeModes.length - 1];
+        await setCompactedView(currentView, isCompactView);
+
         let currInd = selectedViews.findIndex((name) => name == currentView);
-
         currInd = (currInd + selectedViews.length - 1) % selectedViews.length;
-        FolderPaneSwitcher.setSingleMode(windowId, selectedViews[currInd]);
+
+        let nextMode = selectedViews[currInd];
+
+        FolderPaneSwitcher.setSingleMode(windowId, nextMode);
     },
 
     onDragEnter: function (windowId, aEvent) {
@@ -381,8 +434,9 @@ async function main() {
     for (let window of windows) {
         await manipulateWindow(window);
     }
-    messenger.windows.onCreated.addListener((window) => {
-        manipulateWindow(window);
+
+    messenger.windows.onCreated.addListener(async (window) => {
+        await manipulateWindow(window);
     });
 
     // for future use, currently, event on tree is not firing

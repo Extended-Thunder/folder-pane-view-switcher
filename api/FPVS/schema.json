@@ -27,7 +27,36 @@
                 ]
             },
             {
+                "name": "toggleCompactMode",
+                "type": "function",
+                "async": true,
+                "parameters": [
+                    {
+                        "name": "windowId",
+                        "type": "string",
+                        "description": "window id"
+                    },
+                    {
+                        "name": "toggle",
+                        "type": "boolean",
+                        "description": "Toggle compact view - `true` if the compact mode needs to be activated."
+                    }
+                ]
+            },
+            {
                 "name": "getActiveViewModes",
+                "type": "function",
+                "async": true,
+                "parameters": [
+                    {
+                        "name": "windowId",
+                        "type": "string",
+                        "description": "window id"
+                    }
+                ]
+            },
+            {
+                "name": "getActiveViewModesEx",
                 "type": "function",
                 "async": true,
                 "parameters": [
