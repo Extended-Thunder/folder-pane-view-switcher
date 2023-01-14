@@ -132,7 +132,9 @@ async function manipulateWindow(window) {
         label: "",
         //  "accesskey" : "B",
         image: "content/right-arrow.png",
-        tooltip: "Next View"
+        tooltip: "Next View",
+        className: "button-flat",
+        tabIndex: 0
     });
 
     await messenger.LegacyMenu.add(windowId, {
@@ -143,7 +145,9 @@ async function manipulateWindow(window) {
         label: "",
         //  "accesskey" : "B",
         image: "content/left-arrow.png",
-        tooltip: "Previous View"
+        tooltip: "Previous View",
+        className: "button-flat",
+        tabIndex: 0
     });
 }
 
