@@ -15,10 +15,10 @@ var FPVSOptions = {
     },
 
     menuChangeHandler: async function (event) {
-        // var menu_checkbox = event.target;
+        // let menu_checkbox = event.target;
         // menu_id = menu_checkbox.getAttribute("id");
         // arrows_id = menu_id.replace('menu', 'arrows');
-        // var arrows_checkbox = document.getElementById(arrows_id);
+        // let arrows_checkbox = document.getElementById(arrows_id);
         // let status = document.getElementById(menu_id).checked;
         // //arrows_checkbox.disabled=true;
         // document.getElementById(arrows_id).disabled = true;
@@ -30,13 +30,12 @@ var FPVSOptions = {
     prefs: {},
 
     loadPrefs: async function () {
-        var i = 0;
         FPVSOptions.prefs = await browser.storage.local.get("prefs");
         FPVSOptions.arrowChk = await browser.storage.local.get("arrows");
         FPVSOptions.Delay = await browser.storage.local.get("delay");
 
         for (view of FPVSOptions.gviews) {
-            var elt = document.getElementById(view + "_arrow");
+            let elt = document.getElementById(view + "_arrow");
             elt.checked = FPVSOptions.prefs.prefs[view].arrow;
 
             elt = document.getElementById(view + "_menu");
@@ -57,15 +56,14 @@ var FPVSOptions = {
             //console.log("arrows", FPVSOptions.arrowChk.arrows, FPVSOptions.delay);
 
             document.title = browser.i18n.getMessage("appName");
-            var heading = document.getElementById("heading");
+            let heading = document.getElementById("heading");
             heading.textContent = browser.i18n.getMessage("appName");
 
-            var lblckbx_shFPA = document.getElementById("lblckbx_showFPA");
-            var lblFPV_dlytxtbx = document.getElementById(
+            let lblckbx_shFPA = document.getElementById("lblckbx_showFPA");
+            let lblFPV_dlytxtbx = document.getElementById(
                 "lbl_FPV-delay-textbox"
             );
-            var lbl_EnblDsbl = document.getElementById("lbl_EnblDsbl");
-            var table = document.getElementById("tbl_enbldsblViews");
+            let lbl_EnblDsbl = document.getElementById("lbl_EnblDsbl");
 
             lblckbx_shFPA.textContent =
                 browser.i18n.getMessage("lblckbx_showFPA");
@@ -73,15 +71,15 @@ var FPVSOptions = {
                 browser.i18n.getMessage("lblnmbr_delayBFVS");
             lbl_EnblDsbl.textContent = browser.i18n.getMessage("lbl_EnblDsbl");
 
-            var lblckbx_shFPA = document.getElementById(
+            let showArrowsCheckbox = document.getElementById(
                 "FolderPaneSwitcher-arrows-checkbox"
             );
-            lblckbx_shFPA.checked = FPVSOptions.arrowChk.arrows;
+            showArrowsCheckbox.checked = FPVSOptions.arrowChk.arrows;
 
-            var lblckbx_shFPA = document.getElementById(
+            let delayInputBox = document.getElementById(
                 "FolderPaneSwitcher-delay-textbox"
             );
-            lblckbx_shFPA.value = FPVSOptions.delay.delay;
+            delayInputBox.value = FPVSOptions.delay.delay;
             // Assuming the available views are the same in all windows, just read
             // the first window.
             let [mail3paneId] = await FPVSOptions.getMail3paneIds();
@@ -93,11 +91,10 @@ var FPVSOptions = {
             );
             //console.log("actviews", FPVSOptions.activeViews);
 
-            var btn_ok = document.getElementById("btn_accept");
-
-            var btn_cancel = document.getElementById("btn_extra1");
-
+            let btn_ok = document.getElementById("btn_accept");
+            let btn_cancel = document.getElementById("btn_extra1");
             let btn_reset = document.getElementById("btn_reset");
+
             btn_cancel.addEventListener("click", async function (event) {
                 let wnd = await browser.tabs.getCurrent();
                 browser.tabs.remove(wnd.id); //window.close();
@@ -110,25 +107,29 @@ var FPVSOptions = {
                 FPVSOptions.resetPrefs();
             });
 
-            var row_position = 0;
-            for (view of FPVSOptions.gviews) {
-                var row = table.insertRow(row_position);
-                var cell1 = row.insertCell(0);
-                var cell2 = row.insertCell(1);
-                var cell3 = row.insertCell(2);
+            let table = document.getElementById("tbl_enbldsblViews");
+            let row_position = 0;
 
-                var menu_checkbox = document.createElement("input");
+            for (view of FPVSOptions.gviews) {
+                let row = table.insertRow(row_position);
+                let cell1 = row.insertCell(0);
+                let cell2 = row.insertCell(1);
+                let cell3 = row.insertCell(2);
+
+                let menu_checkbox = document.createElement("input");
                 menu_checkbox.setAttribute("type", "checkbox");
 
-                if (FPVSOptions.prefs.prefs[view].menu)
+                if (FPVSOptions.prefs.prefs[view].menu) {
                     menu_checkbox.setAttribute("checked", true);
-                else menu_checkbox.removeAttribute("checked");
+                } else {
+                    menu_checkbox.removeAttribute("checked");
+                }
                 menu_checkbox.checked = FPVSOptions.prefs.prefs[view].menu;
 
-                var box_id = view + "_menu";
+                let box_id = view + "_menu";
                 menu_checkbox.setAttribute("id", box_id);
                 cell1.appendChild(menu_checkbox);
-                var arrows_checkbox = document.createElement("input");
+                let arrows_checkbox = document.createElement("input");
                 box_id = view + "_arrow";
                 arrows_checkbox.setAttribute("id", box_id);
                 arrows_checkbox.setAttribute("type", "checkbox");
@@ -137,9 +138,9 @@ var FPVSOptions = {
 
                 cell2.appendChild(arrows_checkbox);
 
-                var label = document.createElement("label");
+                let label = document.createElement("label");
 
-                var y = await messenger.FPVS.getViewDisplayName(
+                let y = await messenger.FPVS.getViewDisplayName(
                     mail3paneId,
                     view
                 );
@@ -156,8 +157,9 @@ var FPVSOptions = {
 
     setViewForArrows: function (viewname, enabled) {
         if (enabled) {
-            if (!FPVSOptions.arrowViews.includes(viewname))
+            if (!FPVSOptions.arrowViews.includes(viewname)) {
                 FPVSOptions.arrowViews.push(viewname);
+            }
         } else {
             FPVSOptions.arrowViews = FPVSOptions.arrowViews.filter(
                 (value) => value != viewname
