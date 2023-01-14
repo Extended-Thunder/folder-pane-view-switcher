@@ -42,5 +42,23 @@
                 "script": "api/LegacyMenu/implementation.js"
             }
         }
+    },
+    "commands": {
+        "fpvs_folder_next": {
+            "suggested_key": {
+                "windows": "Alt+Shift+9",
+                "mac": "Command+Shift+9",
+                "chromeos": "Ctrl+Shift+9",
+                "linux": "Ctrl+Shift+9"
+            }
+        },
+        "fpvs_folder_back": {
+            "suggested_key": {
+                "windows": "Alt+Shift+8",
+                "mac": "Command+Shift+8",
+                "chromeos": "Ctrl+Shift+8",
+                "linux": "Ctrl+Shift+8"
+            }
+        }
     }
 }

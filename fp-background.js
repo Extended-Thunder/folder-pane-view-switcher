@@ -433,6 +433,37 @@ async function dragDropListener(windowId, event, type) {
     }
 }
 
+messenger.commands.onCommand.addListener(async (command, tab) => {
+    const findWindowId = async () => {
+        if (tab) {
+            const { windowId } = tab;
+            return windowId;
+        } else {
+            const { id } = await messenger.windows.getLastFocused();
+            if (typeof id === "number") {
+                return id;
+            }
+        }
+
+        return null;
+    };
+
+    const windowId = await findWindowId();
+
+    log(`Command? `, { windowId });
+
+    if (windowId !== null) {
+        switch (command) {
+            case "fpvs_folder_next":
+                await FolderPaneSwitcher.goForwardView(`${windowId}`);
+                break;
+            case "fpvs_folder_back":
+                await FolderPaneSwitcher.goBackView(`${windowId}`);
+                break;
+        }
+    }
+});
+
 async function main() {
     const windows = await messenger.windows.getAll();
     for (let window of windows) {
