@@ -303,7 +303,7 @@
                         let isCompactView = false;
                         let modes = await this.getActiveViewModes(windowId);
                         let mayHasCompactView = modes.find(
-                            (mode) => mode == "favorites" || mode == "unread"
+                            (mode) => mode == "favorite" || mode == "unread"
                         );
 
                         if (mayHasCompactView) {
@@ -311,15 +311,14 @@
                                 context.extension.windowManager.get(
                                     windowId
                                 ).window;
-                            let popup = mail3Pane.document.getElementById(
-                                "folderPaneOptionsPopup"
-                            );
+                            let tree =
+                                mail3Pane.document.getElementById("folderTree");
                             // Interrupt if the popup has never been initialized.
-                            if (popup.childNodes.length) {
+                            if (tree) {
                                 isCompactView =
-                                    popup
-                                        .querySelector(`[value="compact"]`)
-                                        .getAttribute("checked") === "true";
+                                    mail3Pane.document
+                                        .getElementById("folderTree")
+                                        .getAttribute("compact") === "true";
                             }
                         }
 
