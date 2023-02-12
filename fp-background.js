@@ -98,7 +98,7 @@ messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
     }
 });
 
-async function manipulateWindow(window) {
+async function manipulateWindow(window, i18n) {
     // Skip in case it is not the window we want to manipulate.
     // https://thunderbird-webextensions.readthedocs.io/en/latest/windows.html#windowtype
     // * normal
@@ -130,9 +130,8 @@ async function manipulateWindow(window) {
         reference: "folderPaneOptionsButton",
         position: "before",
         label: "",
-        //  "accesskey" : "B",
         image: "content/right-arrow.png",
-        tooltip: "Next View",
+        tooltip: i18n.nextButtonLabel || "Next View",
         className: "button-flat",
         tabIndex: 0
     });
@@ -143,9 +142,8 @@ async function manipulateWindow(window) {
         reference: "FolderPaneSwitcher-forward-arrow-button",
         position: "before",
         label: "",
-        //  "accesskey" : "B",
         image: "content/left-arrow.png",
-        tooltip: "Previous View",
+        tooltip: i18n.backButtonLabel || "Previous View",
         className: "button-flat",
         tabIndex: 0
     });
@@ -470,13 +468,20 @@ messenger.commands.onCommand.addListener(async (command, tab) => {
 });
 
 async function main() {
+    const i18n = {
+        nextButtonLabel: messenger.i18n.getMessage("button_next_pane"),
+        backButtonLabel: messenger.i18n.getMessage("button_back_pane")
+    };
+
+    console.log(i18n);
+
     const windows = await messenger.windows.getAll();
     for (let window of windows) {
-        await manipulateWindow(window);
+        await manipulateWindow(window, i18n);
     }
 
     messenger.windows.onCreated.addListener(async (window) => {
-        await manipulateWindow(window);
+        await manipulateWindow(window, i18n);
     });
 
     // for future use, currently, event on tree is not firing
