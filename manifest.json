@@ -50,7 +50,8 @@
                 "mac": "Command+Shift+9",
                 "chromeos": "Ctrl+Shift+9",
                 "linux": "Ctrl+Shift+9"
-            }
+            },
+            "description": "__MSG_fpvs_folder_next__"
         },
         "fpvs_folder_back": {
             "suggested_key": {
@@ -58,7 +59,8 @@
                 "mac": "Command+Shift+8",
                 "chromeos": "Ctrl+Shift+8",
                 "linux": "Ctrl+Shift+8"
-            }
+            },
+            "description": "__MSG_fpvs_folder_back__"
         }
     }
 }

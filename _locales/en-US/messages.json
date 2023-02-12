@@ -7,6 +7,18 @@
         "message": "Folder pane switcher arrows and automatic switch to All Folders during drag & drop",
         "description": "A short description of the add-on."
     },
+    "fpvs_folder_back": {
+        "message": "Previous folder pane view"
+    },
+    "fpvs_folder_next": {
+        "message": "Next folder pane view"
+    },
+    "button_next_pane": {
+        "message": "Next folder pane"
+    },
+    "button_back_pane": {
+        "message": "Previous folder pane"
+    },
     "lblckbx_showFPA": {
         "message": "Show Folder Pane Arrows"
     },
