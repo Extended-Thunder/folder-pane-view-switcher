@@ -228,12 +228,18 @@ var FolderPaneSwitcher = {
         return { selectedViews, currentView, isCompactView };
     },
 
-    goForwardView: async function (windowId) {
+    storeCurrentCompactViewState: async function (windowId) {
         let { currentView, selectedViews, isCompactView } =
             await this.getCurrentViewSelections(windowId);
 
         await setCompactedView(currentView, isCompactView);
 
+        return { currentView, selectedViews };
+    },
+
+    goForwardView: async function (windowId) {
+        let { currentView, selectedViews } =
+            await this.storeCurrentCompactViewState(windowId);
         let currInd = selectedViews.findIndex((name) => name == currentView);
 
         currInd = (currInd + 1) % selectedViews.length;
@@ -243,10 +249,8 @@ var FolderPaneSwitcher = {
     },
 
     goBackView: async function (windowId) {
-        let { currentView, selectedViews, isCompactView } =
-            await this.getCurrentViewSelections(windowId);
-
-        await setCompactedView(currentView, isCompactView);
+        let { currentView, selectedViews } =
+            await this.storeCurrentCompactViewState(windowId);
 
         let currInd = selectedViews.findIndex((name) => name == currentView);
         currInd = (currInd + selectedViews.length - 1) % selectedViews.length;
@@ -256,7 +260,7 @@ var FolderPaneSwitcher = {
         FolderPaneSwitcher.setSingleMode(windowId, nextMode);
     },
 
-    onDragEnter: function (windowId, aEvent) {
+    onDragEnter: async function (windowId, aEvent) {
         log(`onDragEnter(${windowId}, ${aEvent?.type})`);
         if (!FolderPaneSwitcher.windowData.get(windowId).timer) {
             FolderPaneSwitcher.windowData.get(windowId).cachedView = null;
@@ -267,6 +271,7 @@ var FolderPaneSwitcher = {
         } else {
             log("onDragEnter resettimer");
             FolderPaneSwitcher.resetTimer(windowId);
+            await this.storeCurrentCompactViewState(windowId);
         }
     },
 
