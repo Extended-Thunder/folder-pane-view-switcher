@@ -4,8 +4,21 @@
         "description": "The name of the add-on, displayed in various places."
     },
     "appDesc": {
-        "message": "Umschalten der Ordneransicht per Pfeiltaste. Beim Verschieben von emails mit der Maus schaltet die Ansicht dafür auf 'alle Ordner' um",
+        "message": "Umschalten der Ordneransicht per Pfeiltaste. Beim Verschieben von E-Mails mit der Maus schaltet die Ansicht dafür auf 'alle Ordner' um",
         "description": "A short description of the add-on."
+    },
+
+    "fpvs_folder_back": {
+        "message": "Previous folder pane view"
+    },
+    "fpvs_folder_next": {
+        "message": "Next folder pane view"
+    },
+    "button_next_pane": {
+        "message": "Nachste Order-Ansicht"
+    },
+    "button_back_pane": {
+        "message": "Vorherige Ordner-Ansicht"
     },
     "lblckbx_showFPA": {
         "message": "Pfeile für die Ordneransichten anzeigen"
