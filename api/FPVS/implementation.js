@@ -16,8 +16,34 @@
         "resource://gre/modules/Services.jsm"
     );
 
+    /**
+     * Finds the currently running Thunderbird version
+     * @returns
+     */
+    const findThunderbirdVersion = (window) => {
+        // ...or maybe head over to await browser.runtime.getBrowserInfo()
+        const agent = window.navigator.userAgent;
+        const version = (agent || "").split("/").pop().split(".").shift();
+        return Number.parseInt(version) || 0;
+    };
+
+    const get_about_3pane = (wnd, searchAllTabs = false) => {
+        let tabmail = wnd.document.getElementById("tabmail");
+        if (tabmail?.currentTabInfo.mode.name == "mail3PaneTab") {
+            console.log('tabmail.currentTabInfo', tabmail);
+            return tabmail.currentAbout3Pane;
+        } else if (searchAllTabs && tabmail) {
+            console.warn(`>> find the 3 pane tab `, tabmail, '>');
+            const folderMode = tabmail.tabModes.mail3PaneTab;
+            if (folderMode) {
+                return folderMode;
+            }
+        }
+        throw new Error("The current tab is not a mail3PaneTab.");
+    };
+
     let windowListener;
-    const logEnabled = false;
+    const logEnabled = true;
 
     function log(...a) {
         if (logEnabled) {
@@ -256,12 +282,31 @@
                             ).window;
                         let ready = false;
                         do {
+                            const version = findThunderbirdVersion(mail3Pane);
+                            log(
+                                `version found: ${version}, source: ${mail3Pane.navigator.userAgent}`
+                            );
+
+                            if (version < 115) {
                             try {
                                 ready = mail3Pane.gFolderTreeView.isInited;
                             } catch (e) {
                                 log("treeIsReady Err", e.message);
                             }
                             log("treeIsReady", ready);
+                            } else {
+                                // const tabmail =
+                                //     mail3Pane.document.getElementById(
+                                //         "tabmail"
+                                //     );
+                                // console.warn(`[x] ->`, tabmail);
+                                const the3pane = get_about_3pane(mail3Pane);
+                                console.warn(`[found] `, the3pane);
+                                return;
+                                throw new Error(
+                                    `Folder Pane View Switcher couldn't start`
+                                );
+                            }
                             if (!ready) {
                                 await new Promise((resolve) =>
                                     mail3Pane.setTimeout(resolve, 100)
@@ -269,6 +314,25 @@
                             }
                         } while (!ready);
                         mail3Pane.gFolderTreeView.initFolderPaneOptionsPopup();
+                    },
+
+                    getAny3Pane: async function() {
+                        console.log('getAny3Pane');
+                        let windows = await context.extension.windowManager.getAll();
+                        console.log(`++`, windows);
+                        for (let wnd of windows) {
+                            console.log('@@', wnd, wnd.tabs);
+                            if (wnd.window && wnd.window.document) {
+                                console.warn('do we have a 3pane?');
+                                let tab = get_about_3pane(wnd.window, true);
+                                if (tab) {
+                                    return tab;
+                                }
+                                console.log(`uhm`, tab);
+                            }
+                        }
+
+                        return null;
                     },
 
                     getLastHoveredFolder: async function (windowId) {
@@ -290,13 +354,28 @@
                     },
 
                     getActiveViewModes: async function (windowId) {
-                        let mail3Pane =
+                        const mail3Pane =
                             context.extension.windowManager.get(
                                 windowId
                             ).window;
-                        let modes = mail3Pane.gFolderTreeView.activeModes;
+                        const version = findThunderbirdVersion(mail3Pane);
+                        if (version < 115) {
+                            const modes = mail3Pane.gFolderTreeView.activeModes;
                         log("modes", modes);
                         return modes;
+                        } else {
+                            const the3pane = await this.getAny3Pane();
+                            if (!the3pane.folderPane) {
+                                console.error('Do we have a 3pane and folderPane?', mail3Pane, the3pane);
+                            }
+                            const activeModes = the3pane.folderPane.activeModes;
+                            console.warn(
+                                `the active modes: `,
+                                activeModes,
+                                the3pane.folderPane
+                            );
+                            return activeModes;
+                        }
                     },
 
                     getActiveViewModesEx: async function (windowId) {
@@ -335,9 +414,19 @@
                             context.extension.windowManager.get(
                                 windowId
                             ).window;
+
+                        const version = findThunderbirdVersion(mail3Pane);
+                        if (version < 115) {
                         let allViews = mail3Pane.gFolderTreeView._modeNames;
                         log("allModes", allViews);
                         return allViews;
+                        } else {
+                            const the3Pane = this.getAny3Pane();
+                            const viewModes = Object.keys(
+                                the3Pane.folderPane._modes
+                            );
+                            return viewModes;
+                        }
                     },
 
                     inDragSession: async function (windowId) {
@@ -482,7 +571,13 @@
                             context.extension.windowManager.get(
                                 windowId
                             ).window;
+                        const version = findThunderbirdVersion(mail3Pane);
+                        if (version < 115) {
                         mail3Pane.gFolderTreeView.activeModes = view;
+                        } else {
+                            const the3pane = get_about_3pane(mail3Pane);
+                            the3pane.folderPane.activeModes = view;
+                        }
                     },
 
                     setAllActiveViews: async function (windowId, views) {
