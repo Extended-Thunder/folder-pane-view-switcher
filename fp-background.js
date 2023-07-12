@@ -14,13 +14,24 @@ const defArrowViews = ["all", "smart", "recent", "unread", "favorite"];
 const defMenuViews = ["all", "smart", "recent", "unread", "favorite"];
 const defChk = { arrows: true };
 const defDelay = { delay: 300 };
-const logEnabled = false;
+const logEnabled = true;
 
-function log(...a) {
+const log = (...a) => {
     if (logEnabled) {
         console.log("FPVS Background", ...a);
     }
-}
+};
+
+/**
+ * Finds the currently running Thunderbird version
+ * @returns
+ */
+const findThunderbirdVersion = (wnd = window) => {
+    // ...or maybe head over to await browser.runtime.getBrowserInfo()
+    const agent = wnd.navigator.userAgent;
+    const version = (agent || "").split("/").pop().split(".").shift();
+    return Number.parseInt(version) || 0;
+};
 
 messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
     // if (temporary) return; // skip during development
@@ -98,7 +109,7 @@ messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
     }
 });
 
-async function manipulateWindow(window, i18n) {
+async function manipulateWindow(wnd, i18n) {
     // Skip in case it is not the window we want to manipulate.
     // https://thunderbird-webextensions.readthedocs.io/en/latest/windows.html#windowtype
     // * normal
@@ -110,11 +121,11 @@ async function manipulateWindow(window, i18n) {
     // * messageCompose
     // * messageDisplay
 
-    if (`${window.type}` !== "normal") {
+    if (`${wnd.type}` !== "normal") {
         return;
     }
 
-    let windowId = `${window.id}`;
+    let windowId = `${wnd.id}`;
 
     FolderPaneSwitcher.windowData.set(windowId, {
         cachedView: null,
@@ -122,6 +133,8 @@ async function manipulateWindow(window, i18n) {
         watchTimer: 0
     });
 
+    const version = findThunderbirdVersion(window);
+    if (version < 115) {
     await messenger.FPVS.initFolderPaneOptionsPopup(windowId);
 
     await messenger.LegacyMenu.add(windowId, {
@@ -147,6 +160,8 @@ async function manipulateWindow(window, i18n) {
         className: "button-flat",
         tabIndex: 0
     });
+    } else {
+    }
 }
 
 messenger.LegacyMenu.onCommand.addListener(async (windowId, id) => {
@@ -236,6 +251,8 @@ var FolderPaneSwitcher = {
     },
 
     goForwardView: async function (windowId) {
+        const version = findThunderbirdVersion()
+        if (version < 115) {
         let { currentView, selectedViews } =
             await this.storeCurrentCompactViewState(windowId);
         let currInd = selectedViews.findIndex((name) => name == currentView);
@@ -244,6 +261,9 @@ var FolderPaneSwitcher = {
 
         let nextMode = selectedViews[currInd];
         FolderPaneSwitcher.setSingleMode(windowId, nextMode);
+        } else {
+            FolderPaneSwitcher.setSingleMode(windowId, '');
+        }
     },
 
     goBackView: async function (windowId) {
@@ -294,6 +314,7 @@ var FolderPaneSwitcher = {
     onDragExit: function (windowId, aEvent) {
         log(`onDragExit(${windowId}, ${aEvent?.type})`);
         //log("dragexit should never happen as the bug is wontfix");
+
         if (FolderPaneSwitcher.windowData.get(windowId).timer) {
             window.clearTimeout(
                 FolderPaneSwitcher.windowData.get(windowId).timer
@@ -301,6 +322,7 @@ var FolderPaneSwitcher = {
             FolderPaneSwitcher.windowData.get(windowId).timer = 0;
             log("kill timer");
         }
+
         if (FolderPaneSwitcher.windowData.get(windowId).watchTimer) {
             window.clearTimeout(
                 FolderPaneSwitcher.windowData.get(windowId).watchTimer
@@ -312,6 +334,7 @@ var FolderPaneSwitcher = {
 
     onDragDrop: function (windowId, aEvent) {
         log(`onDragDrop(${windowId}, ${aEvent?.type})`);
+
         if (FolderPaneSwitcher.windowData.get(windowId).timer) {
             //so we don't double call setSingleMode
             window.clearTimeout(
@@ -320,6 +343,7 @@ var FolderPaneSwitcher = {
             FolderPaneSwitcher.windowData.get(windowId).timer = 0;
             log("kill timer");
         }
+
         if (FolderPaneSwitcher.windowData.get(windowId).watchTimer) {
             window.clearTimeout(
                 FolderPaneSwitcher.windowData.get(windowId).watchTimer
@@ -473,15 +497,15 @@ async function main() {
         backButtonLabel: messenger.i18n.getMessage("button_back_pane")
     };
 
-    console.log(i18n);
-
+    const version = findThunderbirdVersion(window);
     const windows = await messenger.windows.getAll();
-    for (let window of windows) {
-        await manipulateWindow(window, i18n);
+
+    for (let wnd of windows) {
+        await manipulateWindow(wnd, i18n);
     }
 
-    messenger.windows.onCreated.addListener(async (window) => {
-        await manipulateWindow(window, i18n);
+    messenger.windows.onCreated.addListener(async (wnd) => {
+        await manipulateWindow(wnd, i18n);
     });
 
     // for future use, currently, event on tree is not firing
@@ -495,7 +519,9 @@ async function main() {
 
     // });
 
+    if (version < 115) {
     messenger.FPVS.onDragDrop.addListener(dragDropListener);
+    }
 }
 
 main()
