@@ -3,24 +3,7 @@
  * License:  MPL2
  */
 
-const defPrefs = {
-    all: { arrow: true, menu: true, pos: -1 },
-    smart: { arrow: true, menu: true, pos: -1 },
-    recent: { arrow: true, menu: true, pos: -1 },
-    unread: { arrow: true, menu: true, pos: -1 },
-    favorite: { arrow: true, menu: true, pos: -1 }
-};
-const defArrowViews = ["all", "smart", "recent", "unread", "favorite"];
-const defMenuViews = ["all", "smart", "recent", "unread", "favorite"];
-const defChk = { arrows: true };
-const defDelay = { delay: 300 };
-const logEnabled = true;
-
-const log = (...a) => {
-    if (logEnabled) {
-        console.log("FPVS Background", ...a);
-    }
-};
+import { createLogger } from "./utils/index.js";
 
 /**
  * Finds the currently running Thunderbird version
@@ -33,8 +16,42 @@ const findThunderbirdVersion = (wnd = window) => {
     return Number.parseInt(version) || 0;
 };
 
+const initializeSettings = () => {
+    const defPrefs = {
+        all: { arrow: true, menu: true, pos: -1 },
+        smart: { arrow: true, menu: true, pos: -1 },
+        recent: { arrow: true, menu: true, pos: -1 },
+        unread: { arrow: true, menu: true, pos: -1 },
+        favorite: { arrow: true, menu: true, pos: -1 }
+    };
+    const defArrowViews = ["all", "smart", "recent", "unread", "favorite"];
+    const defMenuViews = ["all", "smart", "recent", "unread", "favorite"];
+
+    const version = findThunderbirdVersion(window);
+    if (version >= 115) {
+        defPrefs.tags = {
+            arrow: true,
+            menu: true,
+            pos: -1
+        };
+        defArrowViews.push("tags");
+        defMenuViews.push("tags");
+    }
+
+    return { defPrefs, defArrowViews, defMenuViews };
+};
+
+const { defPrefs, defArrowViews, defMenuViews } = initializeSettings();
+
+const defChk = { arrows: true };
+const defDelay = { delay: 300 };
+const logEnabled = true;
+
+const log = createLogger("background", logEnabled);
+
 messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
     // if (temporary) return; // skip during development
+    log("reason", reason);
     switch (reason) {
         case "install":
             {
@@ -60,16 +77,18 @@ messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
             if (!updated) {
                 await browser.storage.local.set({ updated: true });
 
-                let p = await messenger.FPVS.getLegacyPrefs();
-                //log("p in bgrd", p);
-                if ("delay" in p) {
+                const storedLegacyPrefs = await messenger.FPVS.getLegacyPrefs();
+                log("legacyPreferences from localStorage", storedLegacyPrefs);
+
+                if ("delay" in storedLegacyPrefs) {
                     //log("del from exp", p.delay);
-                    await browser.storage.local.set(p.delay);
+                    await browser.storage.local.set(storedLegacyPrefs.delay);
                 } else {
                     await browser.storage.local.set(defDelay);
                 }
-                if ("arrows" in p) {
-                    await browser.storage.local.set(p.arrows);
+
+                if ("arrows" in storedLegacyPrefs) {
+                    await browser.storage.local.set(storedLegacyPrefs.arrows);
                 } else {
                     await browser.storage.local.set(defChk);
                 }
@@ -78,13 +97,15 @@ messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
                 let migratedMenuViews = [];
                 let migratedPrefs = { compacted: [] };
 
-                for (let view in p.prefs) {
+                for (let view in storedLegacyPrefs.prefs) {
                     //log("view", view, p.prefs[view], p.prefs[view]["arrow"]);
 
-                    migratedPrefs[view] = p.prefs[view];
+                    migratedPrefs[view] = storedLegacyPrefs.prefs[view];
 
-                    if (p.prefs[view]["arrow"]) migratedArrowViews.push(view);
-                    if (p.prefs[view].menu) migratedMenuViews.push(view);
+                    if (storedLegacyPrefs.prefs[view]["arrow"])
+                        migratedArrowViews.push(view);
+                    if (storedLegacyPrefs.prefs[view].menu)
+                        migratedMenuViews.push(view);
                 }
 
                 for (let view in migratedPrefs) {
@@ -102,6 +123,8 @@ messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
                     menuViews: migratedMenuViews
                 });
                 await browser.storage.local.set({ updated: true });
+            } else {
+                log("updated without loading the legacy preferences");
             }
 
             break;
@@ -135,31 +158,31 @@ async function manipulateWindow(wnd, i18n) {
 
     const version = findThunderbirdVersion(window);
     if (version < 115) {
-    await messenger.FPVS.initFolderPaneOptionsPopup(windowId);
+        await messenger.FPVS.initFolderPaneOptionsPopup(windowId);
 
-    await messenger.LegacyMenu.add(windowId, {
-        id: "FolderPaneSwitcher-forward-arrow-button",
-        type: "toolbarButton",
-        reference: "folderPaneOptionsButton",
-        position: "before",
-        label: "",
-        image: "content/right-arrow.png",
-        tooltip: i18n.nextButtonLabel || "Next View",
-        className: "button-flat",
-        tabIndex: 0
-    });
+        await messenger.LegacyMenu.add(windowId, {
+            id: "FolderPaneSwitcher-forward-arrow-button",
+            type: "toolbarButton",
+            reference: "folderPaneOptionsButton",
+            position: "before",
+            label: "",
+            image: "content/right-arrow.png",
+            tooltip: i18n.nextButtonLabel || "Next View",
+            className: "button-flat",
+            tabIndex: 0
+        });
 
-    await messenger.LegacyMenu.add(windowId, {
-        id: "FolderPaneSwitcher-back-arrow-button",
-        type: "toolbarButton",
-        reference: "FolderPaneSwitcher-forward-arrow-button",
-        position: "before",
-        label: "",
-        image: "content/left-arrow.png",
-        tooltip: i18n.backButtonLabel || "Previous View",
-        className: "button-flat",
-        tabIndex: 0
-    });
+        await messenger.LegacyMenu.add(windowId, {
+            id: "FolderPaneSwitcher-back-arrow-button",
+            type: "toolbarButton",
+            reference: "FolderPaneSwitcher-forward-arrow-button",
+            position: "before",
+            label: "",
+            image: "content/left-arrow.png",
+            tooltip: i18n.backButtonLabel || "Previous View",
+            className: "button-flat",
+            tabIndex: 0
+        });
     } else {
     }
 }
@@ -213,14 +236,22 @@ var FolderPaneSwitcher = {
 
         log({ currModes, modeName, activeModes });
 
-        if (!activeModes.includes(modeName)) {
-            await messenger.FPVS.toggleActiveViewMode(windowId, modeName);
-        }
-
-        for (let viewName of currModes) {
-            if (viewName != modeName) {
-                await messenger.FPVS.toggleActiveViewMode(windowId, viewName);
+        const version = findThunderbirdVersion(window);
+        if (version < 115) {
+            if (!activeModes.includes(modeName)) {
+                await messenger.FPVS.toggleActiveViewMode(windowId, modeName);
             }
+
+            for (let viewName of currModes) {
+                if (viewName != modeName) {
+                    await messenger.FPVS.toggleActiveViewMode(
+                        windowId,
+                        viewName
+                    );
+                }
+            }
+        } else {
+            await messenger.FPVS.toggleActiveViewMode(windowId, modeName);
         }
 
         const compact = await isViewCompacted(modeName);
@@ -251,8 +282,6 @@ var FolderPaneSwitcher = {
     },
 
     goForwardView: async function (windowId) {
-        const version = findThunderbirdVersion()
-        if (version < 115) {
         let { currentView, selectedViews } =
             await this.storeCurrentCompactViewState(windowId);
         let currInd = selectedViews.findIndex((name) => name == currentView);
@@ -260,10 +289,10 @@ var FolderPaneSwitcher = {
         currInd = (currInd + 1) % selectedViews.length;
 
         let nextMode = selectedViews[currInd];
-        FolderPaneSwitcher.setSingleMode(windowId, nextMode);
-        } else {
-            FolderPaneSwitcher.setSingleMode(windowId, '');
-        }
+        console.log(
+            `${this.goForwardView.name} current view ${currentView}, NEXT view: ${nextMode}`
+        );
+        await FolderPaneSwitcher.setSingleMode(windowId, nextMode);
     },
 
     goBackView: async function (windowId) {
@@ -275,7 +304,7 @@ var FolderPaneSwitcher = {
 
         let nextMode = selectedViews[currInd];
 
-        FolderPaneSwitcher.setSingleMode(windowId, nextMode);
+        await FolderPaneSwitcher.setSingleMode(windowId, nextMode);
     },
 
     onDragEnter: async function (windowId, aEvent) {
@@ -520,7 +549,7 @@ async function main() {
     // });
 
     if (version < 115) {
-    messenger.FPVS.onDragDrop.addListener(dragDropListener);
+        messenger.FPVS.onDragDrop.addListener(dragDropListener);
     }
 }
 

@@ -9,11 +9,11 @@
         "gecko": {
             "id": "FolderPaneSwitcher@kamens.us",
             "strict_min_version": "91.0",
-            "strict_max_version": "115.*"
+            "strict_max_version": "117.*"
         }
     },
     "background": {
-        "scripts": ["fp-background.js"]
+        "page": "background.html"
     },
     "permissions": ["storage"],
     "options_ui": {
