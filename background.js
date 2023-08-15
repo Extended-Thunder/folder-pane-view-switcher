@@ -10,7 +10,7 @@ import { createLogger } from "./utils/index.js";
  * @returns
  */
 const findThunderbirdVersion = (wnd = window) => {
-    // ...or maybe head over to await browser.runtime.getBrowserInfo()
+    // ...or maybe head over to await messenger.runtime.getBrowserInfo()
     const agent = wnd.navigator.userAgent;
     const version = (agent || "").split("/").pop().split(".").shift();
     return Number.parseInt(version) || 0;
@@ -55,42 +55,44 @@ messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
     switch (reason) {
         case "install":
             {
-                await browser.storage.local.set({ updated: true });
-                await browser.storage.local.set({ prefs: defPrefs });
-                await browser.storage.local.set(defChk);
-                await browser.storage.local.set(defDelay);
-                await browser.storage.local.set({ arrowViews: defArrowViews });
-                await browser.storage.local.set({ menuViews: defMenuViews });
-                await browser.tabs.create({ url: "popup/installed.html" });
+                await messenger.storage.local.set({ updated: true });
+                await messenger.storage.local.set({ prefs: defPrefs });
+                await messenger.storage.local.set(defChk);
+                await messenger.storage.local.set(defDelay);
+                await messenger.storage.local.set({
+                    arrowViews: defArrowViews
+                });
+                await messenger.storage.local.set({ menuViews: defMenuViews });
+                await messenger.tabs.create({ url: "popup/installed.html" });
             }
             break;
         case "update": {
-            //await browser.storage.local.set({ "updated": false });
-            //await browser.storage.local.remove( "updated");
-            await browser.tabs.create({ url: "popup/update.html" });
+            //await messenger.storage.local.set({ "updated": false });
+            //await messenger.storage.local.remove( "updated");
+            await messenger.tabs.create({ url: "popup/update.html" });
 
             //update from old prefs?
-            let { updated } = await browser.storage.local.get({
+            let { updated } = await messenger.storage.local.get({
                 updated: false
             });
 
             if (!updated) {
-                await browser.storage.local.set({ updated: true });
+                await messenger.storage.local.set({ updated: true });
 
                 const storedLegacyPrefs = await messenger.FPVS.getLegacyPrefs();
                 log("legacyPreferences from localStorage", storedLegacyPrefs);
 
                 if ("delay" in storedLegacyPrefs) {
                     //log("del from exp", p.delay);
-                    await browser.storage.local.set(storedLegacyPrefs.delay);
+                    await messenger.storage.local.set(storedLegacyPrefs.delay);
                 } else {
-                    await browser.storage.local.set(defDelay);
+                    await messenger.storage.local.set(defDelay);
                 }
 
                 if ("arrows" in storedLegacyPrefs) {
-                    await browser.storage.local.set(storedLegacyPrefs.arrows);
+                    await messenger.storage.local.set(storedLegacyPrefs.arrows);
                 } else {
-                    await browser.storage.local.set(defChk);
+                    await messenger.storage.local.set(defChk);
                 }
 
                 let migratedArrowViews = [];
@@ -115,14 +117,14 @@ messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
                     );
                 }
                 //log("update: defpref", defPrefs, arrowViews, menuViews);
-                await browser.storage.local.set({ prefs: migratedPrefs });
-                await browser.storage.local.set({
+                await messenger.storage.local.set({ prefs: migratedPrefs });
+                await messenger.storage.local.set({
                     arrowViews: migratedArrowViews
                 });
-                await browser.storage.local.set({
+                await messenger.storage.local.set({
                     menuViews: migratedMenuViews
                 });
-                await browser.storage.local.set({ updated: true });
+                await messenger.storage.local.set({ updated: true });
             } else {
                 log("updated without loading the legacy preferences");
             }

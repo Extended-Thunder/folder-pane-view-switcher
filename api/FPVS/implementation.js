@@ -21,7 +21,7 @@
      * @returns
      */
     const findThunderbirdVersion = (window) => {
-        // ...or maybe head over to await browser.runtime.getBrowserInfo()
+        // ...or maybe head over to await messenger.runtime.getBrowserInfo()
         const agent = window.navigator.userAgent;
         const version = (agent || "").split("/").pop().split(".").shift();
         return Number.parseInt(version) || 0;

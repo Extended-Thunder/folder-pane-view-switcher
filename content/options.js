@@ -30,9 +30,9 @@ const setViewForArrows = (viewname, enabled) => {
 };
 
 const loadPrefs = async () => {
-    FPVSOptions.prefs = await browser.storage.local.get("prefs");
-    FPVSOptions.arrowChk = await browser.storage.local.get("arrows");
-    FPVSOptions.Delay = await browser.storage.local.get("delay");
+    FPVSOptions.prefs = await messenger.storage.local.get("prefs");
+    FPVSOptions.arrowChk = await messenger.storage.local.get("arrows");
+    FPVSOptions.Delay = await messenger.storage.local.get("delay");
 
     for (view of FPVSOptions.gviews) {
         let elt = document.getElementById(view + "_arrow");
@@ -81,9 +81,9 @@ const validatePrefs = async () => {
             messenger.FPVS.showViewInMenus(mail3paneId, view, elt.checked);
         });
     }
-    await browser.storage.local.set(FPVSOptions.prefs);
-    await browser.storage.local.set({ arrowViews: FPVSOptions.arrowViews });
-    await browser.storage.local.set({ menuViews: FPVSOptions.menuViews });
+    await messenger.storage.local.set(FPVSOptions.prefs);
+    await messenger.storage.local.set({ arrowViews: FPVSOptions.arrowViews });
+    await messenger.storage.local.set({ menuViews: FPVSOptions.menuViews });
 
     lblckbx_shFPA = document.getElementById(
         "FolderPaneSwitcher-arrows-checkbox"
@@ -95,19 +95,19 @@ const validatePrefs = async () => {
     lblckbx_shFPA = document.getElementById("FolderPaneSwitcher-delay-textbox");
     FPVSOptions.delay.delay = lblckbx_shFPA.value;
 
-    await browser.storage.local.set(FPVSOptions.arrowChk);
-    await browser.storage.local.set(FPVSOptions.delay);
-    let wnd = await browser.tabs.getCurrent();
+    await messenger.storage.local.set(FPVSOptions.arrowChk);
+    await messenger.storage.local.set(FPVSOptions.delay);
+    let wnd = await messenger.tabs.getCurrent();
     browser.tabs.remove(wnd.id); //window.close();
 };
 
 const onLoad = async () => {
     try {
         //console.log("options");
-        FPVSOptions.prefs = await browser.storage.local.get("prefs");
+        FPVSOptions.prefs = await messenger.storage.local.get("prefs");
         //console.log("prefs", FPVSOptions.prefs);
-        FPVSOptions.arrowChk = await browser.storage.local.get("arrows");
-        FPVSOptions.delay = await browser.storage.local.get("delay");
+        FPVSOptions.arrowChk = await messenger.storage.local.get("arrows");
+        FPVSOptions.delay = await messenger.storage.local.get("delay");
 
         //console.log("arrows", FPVSOptions.arrowChk.arrows, FPVSOptions.delay);
 
@@ -157,7 +157,7 @@ const onLoad = async () => {
         const btn_cancel = document.getElementById("btn_extra1");
 
         btn_cancel.addEventListener("click", async function (event) {
-            let wnd = await browser.tabs.getCurrent();
+            let wnd = await messenger.tabs.getCurrent();
             browser.tabs.remove(wnd.id); //window.close();
         });
 
