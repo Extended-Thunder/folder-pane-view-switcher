@@ -291,7 +291,7 @@ var FolderPaneSwitcher = {
         currInd = (currInd + 1) % selectedViews.length;
 
         let nextMode = selectedViews[currInd];
-        console.log(
+        log(
             `${this.goForwardView.name} current view ${currentView}, NEXT view: ${nextMode}`
         );
         await FolderPaneSwitcher.setSingleMode(windowId, nextMode);
