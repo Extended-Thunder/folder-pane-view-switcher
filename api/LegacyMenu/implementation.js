@@ -47,7 +47,9 @@ if (!ExtensionParent)
         hasNode(id) {
             const node = this.document.getElementById(id);
 
-            if (!node) return false;
+            if (!node) {
+                return false;
+            }
 
             return true;
         }
@@ -63,7 +65,9 @@ if (!ExtensionParent)
          */
         getNode(id) {
             const node = this.document.getElementById(id);
-            if (!node) throw new Error(`Unknown element ${id}`);
+            if (!node) {
+                throw new Error(`Unknown element ${id}`);
+            }
 
             return node;
         }
@@ -76,7 +80,9 @@ if (!ExtensionParent)
          */
         removeNode(id) {
             const elm = this.document.getElementById(id);
-            if (elm) elm.parentNode.removeChild(elm);
+            if (elm) {
+                elm.parentNode.removeChild(elm);
+            }
         }
 
         /**
