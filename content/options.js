@@ -176,8 +176,6 @@ const onLoad = async () => {
         log(`everything loaded`, FPVSOptions);
 
         for (let view of FPVSOptions.gviews) {
-            console.log("checking view name", view);
-
             const currentView = FPVSOptions.prefs.prefs[view];
             if (!currentView) {
                 error(`Unsupported view found: `, {
