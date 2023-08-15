@@ -73,10 +73,14 @@ const validatePrefs = async () => {
     for (view of FPVSOptions.gviews) {
         let elt = document.getElementById(view + "_arrow");
         FPVSOptions.prefs.prefs[view].arrow = elt.checked;
-        if (elt.checked) FPVSOptions.arrowViews.push(view);
+        if (elt.checked) {
+            FPVSOptions.arrowViews.push(view);
+        }
         elt = document.getElementById(view + "_menu");
         FPVSOptions.prefs.prefs[view].menu = elt.checked;
-        if (elt.checked) FPVSOptions.menuViews.push(view);
+        if (elt.checked) {
+            FPVSOptions.menuViews.push(view);
+        }
         mail3paneIds.forEach((mail3paneId) => {
             messenger.FPVS.showViewInMenus(mail3paneId, view, elt.checked);
         });
