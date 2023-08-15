@@ -12,9 +12,9 @@
     var { MailServices } = ChromeUtils.import(
         "resource:///modules/MailServices.jsm"
     );
-    var { Services } = ChromeUtils.import(
-        "resource://gre/modules/Services.jsm"
-    );
+    var { Services } =
+        globalThis.Services ||
+        ChromeUtils.import("resource://gre/modules/Services.jsm");
 
     /**
      * Finds the currently running Thunderbird version
@@ -27,17 +27,77 @@
         return Number.parseInt(version) || 0;
     };
 
-    const get_about_3pane = (wnd, searchAllTabs = false) => {
-        let tabmail = wnd.document.getElementById("tabmail");
+    function getActiveTab(tabmail) {
+        let { tabManager } = context.extension;
+        let selectedTab = tabmail.selectedTab;
+        if (selectedTab) {
+            return tabManager.getWrapper(selectedTab);
+        }
+        return null;
+    }
+
+    function getMessageWindow(wnd, tabId = 0) {
+        // Get about:message from the tabId.
+        let { nativeTab } = wnd.extension.tabManager.get(tabId);
+        if (nativeTab instanceof Ci.nsIDOMWindow) {
+            return nativeTab.messageBrowser.contentWindow;
+        } else if (nativeTab.mode && nativeTab.mode.name == "mail3PaneTab") {
+            return nativeTab.chromeBrowser.contentWindow.messageBrowser
+                .contentWindow;
+        } else if (nativeTab.mode && nativeTab.mode.name == "mailMessageTab") {
+            return nativeTab.chromeBrowser.contentWindow;
+        }
+        return null;
+    }
+
+    const get_about_3pane = (window, searchAllTabs = false, wnd = null) => {
+        let tabmail = window.document.getElementById("tabmail");
         if (tabmail?.currentTabInfo.mode.name == "mail3PaneTab") {
-            console.log('tabmail.currentTabInfo', tabmail);
+            console.log("tabmail.currentTabInfo", tabmail);
             return tabmail.currentAbout3Pane;
-        } else if (searchAllTabs && tabmail) {
-            console.warn(`>> find the 3 pane tab `, tabmail, '>');
-            const folderMode = tabmail.tabModes.mail3PaneTab;
-            if (folderMode) {
-                return folderMode;
+        } else if (searchAllTabs) {
+            const maybe3Pane =
+                window.gTabmail?.tabInfo?.[0]?.chromeBrowser?.contentWindow;
+            if (maybe3Pane) {
+                return maybe3Pane;
             }
+
+            console.warn("get_about_3pane is 3pane", {
+                gTabmail: window.gTabmail,
+                tabmail,
+                tab: tabmail.tabInfo[0].chromeBrowser.contentWindow
+            });
+
+            // if (tabmail) {
+            //     console.warn(`>> we have a tabmail element, find the 3 pane tab `, tabmail, ">");
+            //     const folderMode = tabmail.tabModes.mail3PaneTab;
+            //     if (folderMode) {
+            //         return folderMode;
+            //     }
+            // } else {
+            console.warn("** get_about_3pane / Try to get message window **");
+            const { windowManager, tabManager } = wnd.extension;
+            const { length: tabCount } = window;
+            console.warn(
+                "** get_about_3pane / window before wrap:" + tabCount,
+                window
+            );
+            for (let tabIndex = 0; tabIndex < tabCount; tabIndex++) {
+                const anyTab = window[tabIndex];
+
+                console.log(`get_about_3pane / Checking tabIndex ${tabIndex}`);
+                console.warn("get_about_3pane / **>", anyTab);
+                if (anyTab && anyTab.name.startsWith("mail3PaneTabBrowser")) {
+                    return anyTab;
+                }
+            }
+            const windowWrapped = windowManager.getWrapper(window);
+            console.warn("** window after wrap", windowWrapped);
+            // const activeTab = getActiveTab(tabmail);
+            // console.warn("** get active tab: ", activeTab);
+            const msgWindow = getMessageWindow(wnd);
+            console.warn("** END **");
+            // }
         }
         throw new Error("The current tab is not a mail3PaneTab.");
     };
@@ -288,12 +348,12 @@
                             );
 
                             if (version < 115) {
-                            try {
-                                ready = mail3Pane.gFolderTreeView.isInited;
-                            } catch (e) {
-                                log("treeIsReady Err", e.message);
-                            }
-                            log("treeIsReady", ready);
+                                try {
+                                    ready = mail3Pane.gFolderTreeView.isInited;
+                                } catch (e) {
+                                    log("treeIsReady Err", e.message);
+                                }
+                                log("treeIsReady", ready);
                             } else {
                                 // const tabmail =
                                 //     mail3Pane.document.getElementById(
@@ -316,19 +376,25 @@
                         mail3Pane.gFolderTreeView.initFolderPaneOptionsPopup();
                     },
 
-                    getAny3Pane: async function() {
-                        console.log('getAny3Pane');
-                        let windows = await context.extension.windowManager.getAll();
-                        console.log(`++`, windows);
+                    getAny3Pane: async function () {
+                        console.log("getAny3Pane");
+                        let windows =
+                            await context.extension.windowManager.getAll();
+                        // console.log(`++`, windows);
                         for (let wnd of windows) {
-                            console.log('@@', wnd, wnd.tabs);
+                            // console.log("@@", wnd, wnd.tabs);
                             if (wnd.window && wnd.window.document) {
-                                console.warn('do we have a 3pane?');
-                                let tab = get_about_3pane(wnd.window, true);
+                                // console.warn("do we have a 3pane?");
+                                let tab = get_about_3pane(
+                                    wnd.window,
+                                    true,
+                                    wnd
+                                );
                                 if (tab) {
+                                    console.log("getAny3Pane reported:", tab);
                                     return tab;
                                 }
-                                console.log(`uhm`, tab);
+                                console.log(`--- --- --- uhm`, tab);
                             }
                         }
 
@@ -350,7 +416,13 @@
                             context.extension.windowManager.get(
                                 windowId
                             ).window;
-                        mail3Pane.gFolderTreeView.toggleCompactMode(toggle);
+                        const version = findThunderbirdVersion(mail3Pane);
+                        if (version < 115) {
+                            mail3Pane.gFolderTreeView.toggleCompactMode(toggle);
+                        } else {
+                            const the3pane = await this.getAny3Pane();
+                            the3pane.folderPane.isCompact = toggle;
+                        }
                     },
 
                     getActiveViewModes: async function (windowId) {
@@ -361,12 +433,16 @@
                         const version = findThunderbirdVersion(mail3Pane);
                         if (version < 115) {
                             const modes = mail3Pane.gFolderTreeView.activeModes;
-                        log("modes", modes);
-                        return modes;
+                            log("modes", modes);
+                            return modes;
                         } else {
                             const the3pane = await this.getAny3Pane();
                             if (!the3pane.folderPane) {
-                                console.error('Do we have a 3pane and folderPane?', mail3Pane, the3pane);
+                                console.error(
+                                    "Do we have a 3pane and folderPane?",
+                                    mail3Pane,
+                                    the3pane
+                                );
                             }
                             const activeModes = the3pane.folderPane.activeModes;
                             console.warn(
@@ -390,14 +466,24 @@
                                 context.extension.windowManager.get(
                                     windowId
                                 ).window;
-                            let tree =
-                                mail3Pane.document.getElementById("folderTree");
-                            // Interrupt if the popup has never been initialized.
-                            if (tree) {
-                                isCompactView =
-                                    mail3Pane.document
-                                        .getElementById("folderTree")
-                                        .getAttribute("compact") === "true";
+
+                            let tree;
+                            const version = findThunderbirdVersion(mail3Pane);
+                            if (version < 115) {
+                                tree =
+                                    mail3Pane.document.getElementById(
+                                        "folderTree"
+                                    );
+                                // Interrupt if the popup has never been initialized.
+                                if (tree) {
+                                    isCompactView =
+                                        mail3Pane.document
+                                            .getElementById("folderTree")
+                                            .getAttribute("compact") === "true";
+                                }
+                            } else {
+                                const the3pane = await this.getAny3Pane();
+                                isCompactView = the3pane.folderPane.isCompact;
                             }
                         }
 
@@ -417,11 +503,12 @@
 
                         const version = findThunderbirdVersion(mail3Pane);
                         if (version < 115) {
-                        let allViews = mail3Pane.gFolderTreeView._modeNames;
-                        log("allModes", allViews);
-                        return allViews;
+                            let allViews = mail3Pane.gFolderTreeView._modeNames;
+                            log("allModes", allViews);
+                            return allViews;
                         } else {
-                            const the3Pane = this.getAny3Pane();
+                            const the3Pane = await this.getAny3Pane();
+                            console.log("getAllViewModes", the3Pane);
                             const viewModes = Object.keys(
                                 the3Pane.folderPane._modes
                             );
@@ -509,13 +596,18 @@
                             context.extension.windowManager.get(
                                 windowId
                             ).window;
-                        let key = "folderPaneModeHeader_" + commonName;
-                        let nameString =
-                            mail3Pane.gFolderTreeView.messengerBundle.getString(
-                                key
-                            );
-                        log("legname", nameString);
-                        return nameString;
+                        const version = findThunderbirdVersion(mail3Pane);
+                        if (version < 115) {
+                            let key = "folderPaneModeHeader_" + commonName;
+                            let nameString =
+                                mail3Pane.gFolderTreeView.messengerBundle.getString(
+                                    key
+                                );
+                            log("legname", nameString);
+                            return nameString;
+                        } else {
+                            console.log(mail3Pane);
+                        }
                     },
 
                     showViewInMenus: async function (windowId, view, enabled) {
@@ -573,10 +665,16 @@
                             ).window;
                         const version = findThunderbirdVersion(mail3Pane);
                         if (version < 115) {
-                        mail3Pane.gFolderTreeView.activeModes = view;
+                            mail3Pane.gFolderTreeView.activeModes = view;
                         } else {
-                            const the3pane = get_about_3pane(mail3Pane);
-                            the3pane.folderPane.activeModes = view;
+                            // const the3pane = get_about_3pane(mail3Pane);
+                            const the3pane = await this.getAny3Pane();
+                            console.log(this.toggleActiveViewMode.name, {
+                                the3pane,
+                                folderPane: the3pane?.folderPane,
+                                view
+                            });
+                            the3pane.folderPane.activeModes = [view];
                         }
                     },
 

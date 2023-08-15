@@ -27,5 +27,26 @@
     },
     "lbl_EnblDsbl": {
         "message": "Enable / Disable Views"
+    },
+
+    "folderPaneModeHeader_all": {
+        "message": "All Folders",
+        "description": "The name of the view, as in the folderPaneHeaderMode_* keys in https://searchfox.org/comm-central/source/mail/locales/en-US/chrome/messenger/messenger.properties"
+    },
+    "folderPaneModeHeader_unread": {
+        "message": "Unread Folders",
+        "description": "The name of the view, as in the folderPaneHeaderMode_* keys in https://searchfox.org/comm-central/source/mail/locales/en-US/chrome/messenger/messenger.properties"
+    },
+    "folderPaneModeHeader_favorite": {
+        "message": "Favorite Folders",
+        "description": "The name of the view, as in the folderPaneHeaderMode_* keys in https://searchfox.org/comm-central/source/mail/locales/en-US/chrome/messenger/messenger.properties"
+    },
+    "folderPaneModeHeader_recent": {
+        "message": "Recent Folders",
+        "description": "The name of the view, as in the folderPaneHeaderMode_* keys in https://searchfox.org/comm-central/source/mail/locales/en-US/chrome/messenger/messenger.properties"
+    },
+    "folderPaneModeHeader_smart": {
+        "message": "Unified Folders",
+        "description": "The name of the view, as in the folderPaneHeaderMode_* keys in https://searchfox.org/comm-central/source/mail/locales/en-US/chrome/messenger/messenger.properties"
     }
 }
