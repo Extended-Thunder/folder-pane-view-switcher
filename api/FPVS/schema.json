@@ -186,6 +186,32 @@
                         "description": "view"
                     }
                 ]
+            },
+            {
+                "name": "initUI",
+                "type": "function",
+                "async": true,
+                "parameters": [
+                    {
+                        "name": "windowId",
+                        "type": "string",
+                        "description": "window id"
+                    },
+                    {
+                        "name": "i18n",
+                        "type": "object",
+                        "properties": {
+                            "nextButtonLabel": {
+                                "type": "string",
+                                "optional": false
+                            },
+                            "backButtonLabel": {
+                                "type": "string",
+                                "optional": false
+                            }
+                        }
+                    }
+                ]
             }
         ],
         "events": [
@@ -208,6 +234,18 @@
                         "name": "data",
                         "type": "string",
                         "description": "Some additional data"
+                    }
+                ]
+            },
+            {
+                "name": "onChangePaneClick",
+                "type": "function",
+                "description": "Event fired when one of the arrow buttons in folderPane header is triggered",
+                "parameters": [
+                    {
+                        "name": "changeDirection",
+                        "type": "string",
+                        "description": "'next-pane' when the _next_ button is clicked, 'previous-pane' when the _back_ button is clicked."
                     }
                 ]
             }

@@ -186,8 +186,34 @@ async function manipulateWindow(wnd, i18n) {
             tabIndex: 0
         });
     } else {
+        /* TODO: implement menu manipulaton for v115 */
+        await messenger.FPVS.initUI(windowId, i18n);
     }
 }
+
+const onChangePaneClickHandler = async (changeDirection) => {
+    const findWindowId = async () => {
+        const { id } = await messenger.windows.getLastFocused();
+        if (typeof id === "number") {
+            return id;
+        }
+        return null;
+    };
+    const windowId = await findWindowId();
+
+    if (windowId !== null) {
+        switch (changeDirection) {
+            case "next-pane":
+                await FolderPaneSwitcher.goForwardView(`${windowId}`);
+                break;
+            case "previous-pane":
+                await FolderPaneSwitcher.goBackView(`${windowId}`);
+                break;
+        }
+    }
+};
+
+messenger.FPVS.onChangePaneClick.addListener(onChangePaneClickHandler);
 
 messenger.LegacyMenu.onCommand.addListener(async (windowId, id) => {
     switch (id) {

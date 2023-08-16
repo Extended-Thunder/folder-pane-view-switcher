@@ -6,6 +6,9 @@
     var { ExtensionCommon } = ChromeUtils.import(
         "resource://gre/modules/ExtensionCommon.jsm"
     );
+    const { ExtensionUtils } = ChromeUtils.import(
+        "resource://gre/modules/ExtensionUtils.jsm"
+    );
     var { ExtensionSupport } = ChromeUtils.import(
         "resource:///modules/ExtensionSupport.jsm"
     );
@@ -15,6 +18,7 @@
     var { Services } =
         globalThis.Services ||
         ChromeUtils.import("resource://gre/modules/Services.jsm");
+    var { ExtensionError } = ExtensionUtils;
 
     /**
      * Finds the currently running Thunderbird version
@@ -332,6 +336,16 @@
             windowListener = new WindowListener(extension);
         }
 
+        onChangePaneClick({ context, fire }) {
+            const { extension } = this;
+            const listener = async (_event, changeDirection) => {
+                fire.async(changeDirection);
+            };
+
+            extension.on("changePaneClick", listener);
+            return () => extension.off("changePaneClick", listener);
+        }
+
         getAPI(context) {
             return {
                 FPVS: {
@@ -355,11 +369,6 @@
                                 }
                                 log("treeIsReady", ready);
                             } else {
-                                // const tabmail =
-                                //     mail3Pane.document.getElementById(
-                                //         "tabmail"
-                                //     );
-                                // console.warn(`[x] ->`, tabmail);
                                 const the3pane = get_about_3pane(mail3Pane);
                                 console.warn(`[found] `, the3pane);
                                 return;
@@ -688,6 +697,95 @@
                             views.split(",");
                     },
 
+                    initUI: async function (windowId, i18n) {
+                        try {
+                            const mail3Pane =
+                                context.extension.windowManager.get(
+                                    windowId
+                                ).window;
+                            const contentWindow =
+                                mail3Pane?.gTabmail?.tabInfo?.[0]?.chromeBrowser
+                                    ?.contentWindow;
+                            if (contentWindow) {
+                                const folderPaneHeaderBar =
+                                    contentWindow.document.getElementById(
+                                        "folderPaneHeaderBar"
+                                    );
+
+                                const preExistingContainer =
+                                    contentWindow.document.getElementById(
+                                        "fpvs-container"
+                                    );
+                                if (preExistingContainer) {
+                                    preExistingContainer.remove();
+                                }
+
+                                const fpvsContainer =
+                                    contentWindow.document.createElement("div");
+                                fpvsContainer.id = "fpvs-container";
+
+                                const buttonBackPane =
+                                    contentWindow.document.createElement(
+                                        "button"
+                                    );
+                                buttonBackPane.title = i18n.backButtonLabel;
+                                buttonBackPane.classList.add(
+                                    "button",
+                                    "button-flat",
+                                    "icon-button",
+                                    "icon-only"
+                                );
+                                buttonBackPane.style.backgroundImage =
+                                    "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAOCAYAAAAbvf3sAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4QUQFgILNHreoAAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAA/ElEQVQoz42RsUrDYBCAT0dDOogEsnUUAn0VIVNx8gUCQhDpXik4uWfzCRw6Zsnq8Gf6IUggUbeQySHY0D+fW4k1sT04uOH77rg7kZEA+vXFdrt9MMa8HwPfNk1ThGFIURT1KNx1nQcU6/Ua27YREbTW9VDHKfCotWY+nyMiu9Ra1/vwPfAZBAGTyeQXvBOMMSfAZdu2b3EcY1nWH3B/wlOSJPi+Pwr2hVMRmTqOI0opOTqAG+BjuVziuu5/E9q+dA7c5XneLhaLQSFN083QWc+Al7Ismc1mw8LIh6+A1yiK8DwPEUEptTm0mwVcV1X1vVqtyLLsoNCvn4GvHw/h9W3z85x3AAAAAElFTkSuQmCC)";
+                                buttonBackPane.addEventListener(
+                                    "click",
+                                    async () => {
+                                        context.extension.emit(
+                                            "changePaneClick",
+                                            "previous-pane"
+                                        );
+                                    }
+                                );
+                                const buttonNextPane =
+                                    contentWindow.document.createElement(
+                                        "button"
+                                    );
+                                buttonNextPane.title = i18n.nextButtonLabel;
+                                buttonNextPane.classList.add(
+                                    "button",
+                                    "button-flat",
+                                    "icon-button",
+                                    "icon-only"
+                                );
+                                buttonNextPane.style.backgroundImage =
+                                    "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAOCAYAAAAbvf3sAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4QUQFgE6TomNWQAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAABCElEQVQoz42Sv0rDcBSFj46GdBAJZOsoBPIqQqfg5AsUhCDSPVJwcu/mEzh07NLVIZl+ECSQqFvo5FBMaPq5GKF/UnvgbPe7B869aprmfbVaPQAX+hWgTuV5vgjDkOVymQO3/0LGmIUkbNtmOp0C5Ov12uuEWqB1EAQYYwAegf5O4jYgiV6vx3A4BPgE7jegfUBry7KYzWbUdf0GXDZNc3IQaD0YDJjP5wBPpzpCcRzLcRxJ6ssYU3dtdl2XKIoAPoAbSVKSJNW+4dFoRJZlNXAHnP/FbQO+71MUBcALcLZTaxzHlSQ8z2MymQC8AledF0/TtBqPx5Rl+Q1cA9bBBoAv4Pmox5P0A+Ui9W110fJbAAAAAElFTkSuQmCC)";
+                                buttonNextPane.addEventListener(
+                                    "click",
+                                    async () => {
+                                        context.extension.emit(
+                                            "changePaneClick",
+                                            "next-pane"
+                                        );
+                                    }
+                                );
+
+                                fpvsContainer.appendChild(buttonBackPane);
+                                fpvsContainer.appendChild(buttonNextPane);
+
+                                folderPaneHeaderBar.insertBefore(
+                                    fpvsContainer,
+                                    contentWindow.document.getElementById(
+                                        "folderPaneMoreButton"
+                                    )
+                                );
+                            }
+                        } catch (experimentError) {
+                            throw new ExtensionError(
+                                `${experimentError.message}, file: '${experimentError.fileName}', line: ${experimentError.lineNumber}`
+                            );
+                        }
+                    },
+
                     // Instead of having individual WebExtension Events, we have a single
                     // "onDragDrop" event, which handles all drag-drop related events and has
                     // the specific event as a parameter.
@@ -718,6 +816,14 @@
                                 windowListener.remove(callback);
                             };
                         }
+                    }).api(),
+
+                    onChangePaneClick: new ExtensionCommon.EventManager({
+                        context,
+                        module: "FPVS",
+                        event: "onChangePaneClick",
+                        register: (fire) =>
+                            this.onChangePaneClick({ context, fire })
                     }).api()
                 }
             };
