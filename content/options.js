@@ -70,17 +70,19 @@ const validatePrefs = async () => {
 
     //console.log("prefs", FPVSOptions.prefs);
     let mail3paneIds = await getMail3paneIds();
-    for (view of FPVSOptions.gviews) {
+    for (let view of FPVSOptions.gviews) {
         let elt = document.getElementById(view + "_arrow");
         FPVSOptions.prefs.prefs[view].arrow = elt.checked;
         if (elt.checked) {
             FPVSOptions.arrowViews.push(view);
         }
+
         elt = document.getElementById(view + "_menu");
         FPVSOptions.prefs.prefs[view].menu = elt.checked;
         if (elt.checked) {
             FPVSOptions.menuViews.push(view);
         }
+
         mail3paneIds.forEach((mail3paneId) => {
             messenger.FPVS.showViewInMenus(mail3paneId, view, elt.checked);
         });
@@ -89,7 +91,7 @@ const validatePrefs = async () => {
     await messenger.storage.local.set({ arrowViews: FPVSOptions.arrowViews });
     await messenger.storage.local.set({ menuViews: FPVSOptions.menuViews });
 
-    lblckbx_shFPA = document.getElementById(
+    let lblckbx_shFPA = document.getElementById(
         "FolderPaneSwitcher-arrows-checkbox"
     );
     FPVSOptions.arrowChk.arrows = lblckbx_shFPA.checked;
