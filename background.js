@@ -186,29 +186,39 @@ async function manipulateWindow(wnd, i18n) {
             tabIndex: 0
         });
     } else {
-        /* TODO: implement menu manipulaton for v115 */
-        await messenger.FPVS.initUI(windowId, i18n);
     }
 }
 
-const onChangePaneClickHandler = async (changeDirection) => {
-    const findWindowId = async () => {
-        const { id } = await messenger.windows.getLastFocused();
-        if (typeof id === "number") {
-            return id;
-        }
-        return null;
-    };
-    const windowId = await findWindowId();
+const manipulateTab = async (tabId, i18n) => {
+    /* TODO: implement menu manipulaton for v115 */
+    log(`manipulate tabId: ${tabId}`);
+    await messenger.FPVS.initUI(`${tabId}`, i18n);
+};
 
-    if (windowId !== null) {
-        switch (changeDirection) {
-            case "next-pane":
-                await FolderPaneSwitcher.goForwardView(`${windowId}`);
-                break;
-            case "previous-pane":
-                await FolderPaneSwitcher.goBackView(`${windowId}`);
-                break;
+const onChangePaneClickHandler = async (changeDirection) => {
+    const tabs = await messenger.tabs.query({
+        active: true,
+        currentWindow: true
+    });
+    log(tabs);
+    if (tabs && tabs.length) {
+        const { type, windowId, id: tabId } = tabs[0];
+
+        if (windowId !== null && tabId != null) {
+            switch (changeDirection) {
+                case "next-pane":
+                    await FolderPaneSwitcher.goForwardView(
+                        `${windowId}`,
+                        `${tabId}`
+                    );
+                    break;
+                case "previous-pane":
+                    await FolderPaneSwitcher.goBackView(
+                        `${windowId}`,
+                        `${tabId}`
+                    );
+                    break;
+            }
         }
     }
 };
@@ -309,7 +319,14 @@ var FolderPaneSwitcher = {
         return { currentView, selectedViews };
     },
 
-    goForwardView: async function (windowId) {
+    goForwardView: async function (windowId, tabId = null) {
+        const version = findThunderbirdVersion(window);
+        if (version >= 115 && (tabId == null || tabId == undefined)) {
+            // in supernova we need a tab focused where the folder tree is visible
+            log("cannot switch views, we need a visible folder tree");
+            return;
+        }
+
         let { currentView, selectedViews } =
             await this.storeCurrentCompactViewState(windowId);
         let currInd = selectedViews.findIndex((name) => name == currentView);
@@ -318,10 +335,23 @@ var FolderPaneSwitcher = {
 
         let nextMode = selectedViews[currInd];
 
-        await FolderPaneSwitcher.setSingleMode(windowId, nextMode);
+        if (version < 115) {
+            // once we have set the folder pane view for one tree, all trees are in sync
+            await FolderPaneSwitcher.setSingleMode(windowId, nextMode);
+        } else {
+            // in supernova we have to iterate over all views
+            await FolderPaneSwitcher.setSingleMode(windowId, nextMode);
+        }
     },
 
-    goBackView: async function (windowId) {
+    goBackView: async function (windowId, tabId = null) {
+        const version = findThunderbirdVersion(window);
+        if (version >= 115 && (tabId == null || tabId == undefined)) {
+            // in supernova we need a tab focused where the folder tree is visible
+            log("cannot switch views, we need a visible folder tree");
+            return;
+        }
+
         let { currentView, selectedViews } =
             await this.storeCurrentCompactViewState(windowId);
 
@@ -330,7 +360,13 @@ var FolderPaneSwitcher = {
 
         let nextMode = selectedViews[currInd];
 
-        await FolderPaneSwitcher.setSingleMode(windowId, nextMode);
+        if (version < 115) {
+            // once we have set the folder pane view for one tree, all trees are in sync
+            await FolderPaneSwitcher.setSingleMode(windowId, nextMode);
+        } else {
+            // in supernova we have to iterate over all views
+            await FolderPaneSwitcher.setSingleMode(windowId, nextMode);
+        }
     },
 
     onDragEnter: async function (windowId, aEvent) {
@@ -553,29 +589,54 @@ async function main() {
     };
 
     const version = findThunderbirdVersion(window);
-    const windows = await messenger.windows.getAll();
-
-    for (let wnd of windows) {
-        await manipulateWindow(wnd, i18n);
-    }
-
-    messenger.windows.onCreated.addListener(async (wnd) => {
-        await manipulateWindow(wnd, i18n);
-    });
-
-    // for future use, currently, event on tree is not firing
-    // messenger.messages.onMoved.addListener( async (originalMessages, movedMessages) =>
-    // {
-    //   let lastHoveredFolder = await messenger.FPVS.getLastHoveredFolder();
-    //   let newFolder = movedMessages.messages[0].folder;
-    //   //log("folder, ", lastHoveredFolder);
-    //   //log("eqhul", lastHoveredFolder.toString() == newFolder.toString() , movedMessages);
-    //   FolderPaneSwitcher.onDragDrop({ type: "msgsMoveCopyCompleted" });
-
-    // });
-
     if (version < 115) {
+        const windows = await messenger.windows.getAll();
+
+        for (let wnd of windows) {
+            await manipulateWindow(wnd, i18n);
+        }
+
+        messenger.windows.onCreated.addListener(async (wnd) => {
+            await manipulateWindow(wnd, i18n);
+        });
+
+        // for future use, currently, event on tree is not firing
+        // messenger.messages.onMoved.addListener( async (originalMessages, movedMessages) =>
+        // {
+        //   let lastHoveredFolder = await messenger.FPVS.getLastHoveredFolder();
+        //   let newFolder = movedMessages.messages[0].folder;
+        //   //log("folder, ", lastHoveredFolder);
+        //   //log("eqhul", lastHoveredFolder.toString() == newFolder.toString() , movedMessages);
+        //   FolderPaneSwitcher.onDragDrop({ type: "msgsMoveCopyCompleted" });
+
+        // });
+
         messenger.FPVS.onDragDrop.addListener(dragDropListener);
+    } else {
+        // in supernova we need to inject the UI into every single tab
+        // messenger.tabs.onCreated.addListener(async ({ mailTab, id: tabId }) => {
+        //     log(`tab craeted: ${mailTab}, id: ${tabId}`);
+        //     await manipulateTab(tabId, i18n);
+        // });
+
+        messenger.tabs.onActivated.addListener(async ({ tabId }) => {
+            const { mailTab } = await messenger.tabs.get(tabId);
+            if (mailTab) {
+                log(`re-init tabId ${tabId}`);
+                await manipulateTab(tabId, i18n);
+            }
+        });
+
+        // messenger.tabs.onUpdated.addListener(async (tabId, { status }) => {
+        //     console.log(`the tabId ${tabId} was updated to status ${status}`);
+        // });
+
+        const mailTabs = await messenger.tabs.query({ mailTab: true });
+        if (mailTabs && mailTabs.length) {
+            for (let tab of mailTabs) {
+                await manipulateTab(tab.id, i18n);
+            }
+        }
     }
 }
 
