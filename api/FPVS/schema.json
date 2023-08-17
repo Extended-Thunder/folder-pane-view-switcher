@@ -171,6 +171,28 @@
                 ]
             },
             {
+                "name": "toggleActiveViewModeForTab",
+                "type": "function",
+                "async": true,
+                "parameters": [
+                    {
+                        "name": "windowId",
+                        "type": "string",
+                        "description": "window id"
+                    },
+                    {
+                        "name": "tabId",
+                        "type": "string",
+                        "description": "tab id"
+                    },
+                    {
+                        "name": "view",
+                        "type": "string",
+                        "description": "view"
+                    }
+                ]
+            },
+            {
                 "name": "setAllActiveViews",
                 "type": "function",
                 "async": true,

@@ -15,7 +15,7 @@
     "background": {
         "page": "background.html"
     },
-    "permissions": ["storage"],
+    "permissions": ["storage", "tabs"],
     "options_ui": {
         "page": "./content/options.html",
         "open_in_tab": true,
