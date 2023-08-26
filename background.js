@@ -3,7 +3,15 @@
  * License:  MPL2
  */
 
-import { createLogger } from "./utils/index.js";
+import {
+    createLogger,
+    getArrowChksOrDefault,
+    getArrowViewsOrDefault,
+    getDelayOrDefault,
+    getMenuViewsOrDefault,
+    getPrefsOrDefault,
+    initializeSettings
+} from "./utils/index.js";
 
 /**
  * Finds the currently running Thunderbird version
@@ -16,35 +24,9 @@ const findThunderbirdVersion = (wnd = window) => {
     return Number.parseInt(version) || 0;
 };
 
-const initializeSettings = () => {
-    const defPrefs = {
-        all: { arrow: true, menu: true, pos: -1 },
-        smart: { arrow: true, menu: true, pos: -1 },
-        recent: { arrow: true, menu: true, pos: -1 },
-        unread: { arrow: true, menu: true, pos: -1 },
-        favorite: { arrow: true, menu: true, pos: -1 }
-    };
-    const defArrowViews = ["all", "smart", "recent", "unread", "favorite"];
-    const defMenuViews = ["all", "smart", "recent", "unread", "favorite"];
+const { defDelay, defPrefs, defArrowViews, defMenuViews, defChk } =
+    initializeSettings();
 
-    const version = findThunderbirdVersion(window);
-    if (version >= 115) {
-        defPrefs.tags = {
-            arrow: true,
-            menu: true,
-            pos: -1
-        };
-        defArrowViews.push("tags");
-        defMenuViews.push("tags");
-    }
-
-    return { defPrefs, defArrowViews, defMenuViews };
-};
-
-const { defPrefs, defArrowViews, defMenuViews } = initializeSettings();
-
-const defChk = { arrows: true };
-const defDelay = { delay: 300 };
 const logEnabled = true;
 
 const log = createLogger("background", logEnabled);
@@ -127,6 +109,22 @@ messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
                 await messenger.storage.local.set({ updated: true });
             } else {
                 log("updated without loading the legacy preferences");
+
+                /* ensure that preferences are set */
+                const prefs = await getPrefsOrDefault();
+                const arrows = await getArrowChksOrDefault();
+                const delay = await getDelayOrDefault();
+
+                const menuViews = await getMenuViewsOrDefault();
+                const arrowViews = await getArrowViewsOrDefault();
+
+                console.log("stored prefs: ", {
+                    prefs,
+                    arrows,
+                    delay,
+                    menuViews,
+                    arrowViews
+                });
             }
 
             break;
@@ -185,14 +183,13 @@ async function manipulateWindow(wnd, i18n) {
             className: "button-flat",
             tabIndex: 0
         });
-    } else {
     }
 }
 
 const manipulateTab = async (tabId, i18n) => {
     /* TODO: implement menu manipulaton for v115 */
     log(`manipulate tabId: ${tabId}`);
-    await messenger.FPVS.initUI(`${tabId}`, i18n);
+    return await messenger.FPVS.initUI(`${tabId}`, i18n);
 };
 
 const onChangePaneClickHandler = async (changeDirection) => {

@@ -32,3 +32,81 @@ export const createLogger =
             }
         }
     };
+
+export const initializeSettings = () => {
+    const defPrefs = {
+        all: { arrow: true, menu: true, pos: -1 },
+        smart: { arrow: true, menu: true, pos: -1 },
+        recent: { arrow: true, menu: true, pos: -1 },
+        unread: { arrow: true, menu: true, pos: -1 },
+        favorite: { arrow: true, menu: true, pos: -1 }
+    };
+    const defArrowViews = ["all", "smart", "recent", "unread", "favorite"];
+    const defMenuViews = ["all", "smart", "recent", "unread", "favorite"];
+
+    const defDelay = { delay: 300 };
+    const defChk = { arrows: true };
+
+    const version = findThunderbirdVersion(window);
+    if (version >= 115) {
+        defPrefs.tags = {
+            arrow: true,
+            menu: true,
+            pos: -1
+        };
+        defArrowViews.push("tags");
+        defMenuViews.push("tags");
+    }
+
+    return { defPrefs, defArrowViews, defMenuViews, defDelay, defChk };
+};
+
+export const getPrefsOrDefault = async () => {
+    const prefs = await messenger.storage.local.get("prefs");
+    if (Object.keys(prefs).length == 0) {
+        const { defPrefs } = initializeSettings();
+        await messenger.storage.local.set({ prefs: defPrefs });
+        return defPrefs;
+    }
+    return prefs;
+};
+
+export const getArrowChksOrDefault = async () => {
+    const prefs = await messenger.storage.local.get("arrows");
+    if (Object.keys(prefs).length == 0) {
+        const { defPrefs } = initializeSettings();
+        await messenger.storage.local.set({ arrows: true });
+        return defPrefs;
+    }
+    return prefs;
+};
+
+export const getMenuViewsOrDefault = async () => {
+    const menuViews = await messenger.storage.local.get("menuViews");
+    if (Object.keys(menuViews).length == 0) {
+        const { defMenuViews } = initializeSettings();
+        await messenger.storage.local.set({ menuViews: defMenuViews });
+        return defMenuViews;
+    }
+    return menuViews;
+};
+
+export const getArrowViewsOrDefault = async () => {
+    const arrowViews = await messenger.storage.local.get("arrowViews");
+    if (Object.keys(arrowViews).length == 0) {
+        const { defArrowViews } = initializeSettings();
+        await messenger.storage.local.set({ arrowViews: defArrowViews });
+        return defArrowViews;
+    }
+    return arrowViews;
+};
+
+export const getDelayOrDefault = async () => {
+    const delay = await messenger.storage.local.get("delay");
+    if (Object.keys(delay) == 0) {
+        const { defDelay } = initializeSettings();
+        await messenger.storage.local.set(defDelay);
+        return defDelay;
+    }
+    return delay;
+};

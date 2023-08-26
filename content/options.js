@@ -45,7 +45,7 @@ const loadPrefs = async () => {
 
 const resetPrefs = async () => {
     //console.log("resetprefs", FPVSOptions.prefs);
-    for (view of FPVSOptions.gviews) {
+    for (let view of FPVSOptions.gviews) {
         let elt = document.getElementById(view + "_arrow");
         elt.checked = true;
         FPVSOptions.prefs.prefs[view].arrow = true;
@@ -54,7 +54,7 @@ const resetPrefs = async () => {
         FPVSOptions.prefs.prefs[view].menu = true;
     }
 
-    lblckbx_shFPA = document.getElementById(
+    let lblckbx_shFPA = document.getElementById(
         "FolderPaneSwitcher-arrows-checkbox"
     );
     FPVSOptions.arrowChk.arrows = true;
@@ -178,7 +178,7 @@ const onLoad = async () => {
         log(`everything loaded`, FPVSOptions);
 
         for (let view of FPVSOptions.gviews) {
-            const currentView = FPVSOptions.prefs.prefs[view];
+            const currentView = FPVSOptions?.prefs?.prefs?.[view];
             if (!currentView) {
                 error(`Unsupported view found: `, {
                     version: window.navigator.userAgent,
