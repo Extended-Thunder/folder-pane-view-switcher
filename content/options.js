@@ -95,14 +95,25 @@ const validatePrefs = async () => {
         "FolderPaneSwitcher-arrows-checkbox"
     );
     FPVSOptions.arrowChk.arrows = lblckbx_shFPA.checked;
-    mail3paneIds.forEach((mail3paneId) => {
-        messenger.FPVS.toggleElementHidden(mail3paneId, !lblckbx_shFPA.checked);
-    });
+
+    const version = findThunderbirdVersion(window);
+    if (version < 115) {
+        mail3paneIds.forEach((mail3paneId) => {
+            messenger.FPVS.toggleElementHidden(
+                mail3paneId,
+                !lblckbx_shFPA.checked
+            );
+        });
+    } else {
+        await messenger.runtime.sendMessage({ topic: "options-refresh" });
+    }
+
     lblckbx_shFPA = document.getElementById("FolderPaneSwitcher-delay-textbox");
     FPVSOptions.delay.delay = lblckbx_shFPA.value;
 
     await messenger.storage.local.set(FPVSOptions.arrowChk);
     await messenger.storage.local.set(FPVSOptions.delay);
+
     let wnd = await messenger.tabs.getCurrent();
     browser.tabs.remove(wnd.id); //window.close();
 };
@@ -156,8 +167,8 @@ const onLoad = async () => {
         //console.log("actviews", FPVSOptions.activeViews);
 
         const btn_ok = document.getElementById("btn_accept");
-        btn_ok.addEventListener("click", (_event) => {
-            validatePrefs();
+        btn_ok.addEventListener("click", async (_event) => {
+            await validatePrefs();
         });
 
         const btn_cancel = document.getElementById("btn_extra1");

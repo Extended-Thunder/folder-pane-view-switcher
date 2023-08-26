@@ -232,6 +232,26 @@
                                 "optional": false
                             }
                         }
+                    },
+                    {
+                        "name": "props",
+                        "type": "object",
+                        "properties": {
+                            "showArrows": {
+                                "type": "boolean",
+                                "optional": false
+                            }
+                        }
+                    },
+                    {
+                        "type": "function",
+                        "name": "callback",
+                        "optional": true,
+                        "parameters": [
+                            {
+                                "type": "boolean"
+                            }
+                        ]
                     }
                 ]
             }
