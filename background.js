@@ -189,7 +189,8 @@ async function manipulateWindow(wnd, i18n) {
 const manipulateTab = async (tabId, i18n) => {
     /* TODO: implement menu manipulaton for v115 */
     log(`manipulate tabId: ${tabId}`);
-    return await messenger.FPVS.initUI(`${tabId}`, i18n);
+    const { arrows: showArrows } = await getArrowChksOrDefault();
+    return await messenger.FPVS.initUI(`${tabId}`, i18n, { showArrows });
 };
 
 const onChangePaneClickHandler = async (changeDirection) => {
@@ -579,14 +580,58 @@ messenger.commands.onCommand.addListener(async (command, tab) => {
     }
 });
 
-async function main() {
+const setupUI = async () => {
     const i18n = {
         nextButtonLabel: messenger.i18n.getMessage("button_next_pane"),
         backButtonLabel: messenger.i18n.getMessage("button_back_pane")
     };
 
+    // in supernova we need to inject the UI into every single tab
+    const ensureTabIsManipulated = async (tabId, i18n) => {
+        let success = await manipulateTab(tabId, i18n);
+
+        return success;
+    };
+
+    const manipulateAllTabs = async (mailTabs) => {
+        console.log(`iterating over ${mailTabs?.length} tabs`);
+        if (mailTabs && mailTabs.length) {
+            for (let tab of mailTabs) {
+                console.log(tab);
+                await ensureTabIsManipulated(tab.id, i18n);
+            }
+        }
+    };
+
+    messenger.windows.onCreated.addListener(async ({ id }) => {
+        console.log("new window created");
+        const mailTabs = await messenger.tabs.query({
+            mailTab: true,
+            windowId: id
+        });
+        console.log("init all tabs in new window", mailTabs);
+        await manipulateAllTabs(mailTabs);
+    });
+
+    messenger.tabs.onActivated.addListener(async ({ tabId }) => {
+        const { mailTab } = await messenger.tabs.get(tabId);
+        if (mailTab) {
+            log(`re-init tabId ${tabId}`);
+            await manipulateTab(tabId, i18n);
+        }
+    });
+
+    const mailTabs = await messenger.tabs.query({ mailTab: true });
+    await manipulateAllTabs(mailTabs);
+};
+
+async function main() {
     const version = findThunderbirdVersion(window);
     if (version < 115) {
+        const i18n = {
+            nextButtonLabel: messenger.i18n.getMessage("button_next_pane"),
+            backButtonLabel: messenger.i18n.getMessage("button_back_pane")
+        };
         const windows = await messenger.windows.getAll();
 
         for (let wnd of windows) {
@@ -610,32 +655,18 @@ async function main() {
 
         messenger.FPVS.onDragDrop.addListener(dragDropListener);
     } else {
-        // in supernova we need to inject the UI into every single tab
-        // messenger.tabs.onCreated.addListener(async ({ mailTab, id: tabId }) => {
-        //     log(`tab craeted: ${mailTab}, id: ${tabId}`);
-        //     await manipulateTab(tabId, i18n);
-        // });
-
-        messenger.tabs.onActivated.addListener(async ({ tabId }) => {
-            const { mailTab } = await messenger.tabs.get(tabId);
-            if (mailTab) {
-                log(`re-init tabId ${tabId}`);
-                await manipulateTab(tabId, i18n);
-            }
-        });
-
-        // messenger.tabs.onUpdated.addListener(async (tabId, { status }) => {
-        //     console.log(`the tabId ${tabId} was updated to status ${status}`);
-        // });
-
-        const mailTabs = await messenger.tabs.query({ mailTab: true });
-        if (mailTabs && mailTabs.length) {
-            for (let tab of mailTabs) {
-                await manipulateTab(tab.id, i18n);
-            }
-        }
+        await setupUI();
     }
 }
+
+messenger.runtime.onMessage.addListener(async (msg) => {
+    const { topic, payload } = msg;
+    switch (topic) {
+        case "options-refresh":
+            await setupUI();
+            break;
+    }
+});
 
 main()
     .then(() => log(`FolderPaneViewSwitcher is initialized`))

@@ -695,9 +695,10 @@
                             views.split(",");
                     },
 
-                    initUI: async function (windowId, i18n) {
+                    initUI: async function (windowId, i18n, props) {
                         try {
                             const contentWindow = get3PaneTab(windowId);
+                            const { showArrows } = props;
                             if (contentWindow) {
                                 const document = contentWindow.document;
                                 const initializeUI = () => {
@@ -719,63 +720,71 @@
                                         preExistingContainer.remove();
                                     }
 
-                                    const fpvsContainer =
-                                        document.createElement("div");
-                                    fpvsContainer.id = "fpvs-container";
-                                    fpvsContainer.style.minWidth = "50px";
+                                    if (showArrows) {
+                                        const fpvsContainer =
+                                            document.createElement("div");
+                                        fpvsContainer.id = "fpvs-container";
+                                        fpvsContainer.style.minWidth = "50px";
 
-                                    const buttonBackPane =
-                                        document.createElement("button");
-                                    buttonBackPane.title = i18n.backButtonLabel;
-                                    buttonBackPane.classList.add(
-                                        "button",
-                                        "button-flat",
-                                        "icon-button",
-                                        "icon-only"
-                                    );
-                                    buttonBackPane.style.backgroundImage =
-                                        "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAOCAYAAAAbvf3sAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4QUQFgILNHreoAAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAA/ElEQVQoz42RsUrDYBCAT0dDOogEsnUUAn0VIVNx8gUCQhDpXik4uWfzCRw6Zsnq8Gf6IUggUbeQySHY0D+fW4k1sT04uOH77rg7kZEA+vXFdrt9MMa8HwPfNk1ThGFIURT1KNx1nQcU6/Ua27YREbTW9VDHKfCotWY+nyMiu9Ra1/vwPfAZBAGTyeQXvBOMMSfAZdu2b3EcY1nWH3B/wlOSJPi+Pwr2hVMRmTqOI0opOTqAG+BjuVziuu5/E9q+dA7c5XneLhaLQSFN083QWc+Al7Ismc1mw8LIh6+A1yiK8DwPEUEptTm0mwVcV1X1vVqtyLLsoNCvn4GvHw/h9W3z85x3AAAAAElFTkSuQmCC)";
-                                    buttonBackPane.addEventListener(
-                                        "click",
-                                        async () => {
-                                            context.extension.emit(
-                                                "changePaneClick",
-                                                "previous-pane"
-                                            );
-                                        }
-                                    );
-                                    const buttonNextPane =
-                                        contentWindow.document.createElement(
-                                            "button"
+                                        const buttonBackPane =
+                                            document.createElement("button");
+                                        buttonBackPane.title =
+                                            i18n.backButtonLabel;
+                                        buttonBackPane.classList.add(
+                                            "button",
+                                            "button-flat",
+                                            "icon-button",
+                                            "icon-only"
                                         );
-                                    buttonNextPane.title = i18n.nextButtonLabel;
-                                    buttonNextPane.classList.add(
-                                        "button",
-                                        "button-flat",
-                                        "icon-button",
-                                        "icon-only"
-                                    );
-                                    buttonNextPane.style.backgroundImage =
-                                        "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAOCAYAAAAbvf3sAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4QUQFgE6TomNWQAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAABCElEQVQoz42Sv0rDcBSFj46GdBAJZOsoBPIqQqfg5AsUhCDSPVJwcu/mEzh07NLVIZl+ECSQqFvo5FBMaPq5GKF/UnvgbPe7B869aprmfbVaPQAX+hWgTuV5vgjDkOVymQO3/0LGmIUkbNtmOp0C5Ov12uuEWqB1EAQYYwAegf5O4jYgiV6vx3A4BPgE7jegfUBry7KYzWbUdf0GXDZNc3IQaD0YDJjP5wBPpzpCcRzLcRxJ6ssYU3dtdl2XKIoAPoAbSVKSJNW+4dFoRJZlNXAHnP/FbQO+71MUBcALcLZTaxzHlSQ8z2MymQC8AledF0/TtBqPx5Rl+Q1cA9bBBoAv4Pmox5P0A+Ui9W110fJbAAAAAElFTkSuQmCC)";
-                                    buttonNextPane.addEventListener(
-                                        "click",
-                                        async () => {
-                                            context.extension.emit(
-                                                "changePaneClick",
-                                                "next-pane"
+                                        buttonBackPane.style.backgroundImage =
+                                            "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAOCAYAAAAbvf3sAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4QUQFgILNHreoAAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAAA/ElEQVQoz42RsUrDYBCAT0dDOogEsnUUAn0VIVNx8gUCQhDpXik4uWfzCRw6Zsnq8Gf6IUggUbeQySHY0D+fW4k1sT04uOH77rg7kZEA+vXFdrt9MMa8HwPfNk1ThGFIURT1KNx1nQcU6/Ua27YREbTW9VDHKfCotWY+nyMiu9Ra1/vwPfAZBAGTyeQXvBOMMSfAZdu2b3EcY1nWH3B/wlOSJPi+Pwr2hVMRmTqOI0opOTqAG+BjuVziuu5/E9q+dA7c5XneLhaLQSFN083QWc+Al7Ismc1mw8LIh6+A1yiK8DwPEUEptTm0mwVcV1X1vVqtyLLsoNCvn4GvHw/h9W3z85x3AAAAAElFTkSuQmCC)";
+                                        buttonBackPane.addEventListener(
+                                            "click",
+                                            async () => {
+                                                context.extension.emit(
+                                                    "changePaneClick",
+                                                    "previous-pane"
+                                                );
+                                            }
+                                        );
+                                        const buttonNextPane =
+                                            contentWindow.document.createElement(
+                                                "button"
                                             );
-                                        }
-                                    );
+                                        buttonNextPane.title =
+                                            i18n.nextButtonLabel;
+                                        buttonNextPane.classList.add(
+                                            "button",
+                                            "button-flat",
+                                            "icon-button",
+                                            "icon-only"
+                                        );
+                                        buttonNextPane.style.backgroundImage =
+                                            "url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAOCAYAAAAbvf3sAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4QUQFgE6TomNWQAAAB1pVFh0Q29tbWVudAAAAAAAQ3JlYXRlZCB3aXRoIEdJTVBkLmUHAAABCElEQVQoz42Sv0rDcBSFj46GdBAJZOsoBPIqQqfg5AsUhCDSPVJwcu/mEzh07NLVIZl+ECSQqFvo5FBMaPq5GKF/UnvgbPe7B869aprmfbVaPQAX+hWgTuV5vgjDkOVymQO3/0LGmIUkbNtmOp0C5Ov12uuEWqB1EAQYYwAegf5O4jYgiV6vx3A4BPgE7jegfUBry7KYzWbUdf0GXDZNc3IQaD0YDJjP5wBPpzpCcRzLcRxJ6ssYU3dtdl2XKIoAPoAbSVKSJNW+4dFoRJZlNXAHnP/FbQO+71MUBcALcLZTaxzHlSQ8z2MymQC8AledF0/TtBqPx5Rl+Q1cA9bBBoAv4Pmox5P0A+Ui9W110fJbAAAAAElFTkSuQmCC)";
+                                        buttonNextPane.addEventListener(
+                                            "click",
+                                            async () => {
+                                                context.extension.emit(
+                                                    "changePaneClick",
+                                                    "next-pane"
+                                                );
+                                            }
+                                        );
 
-                                    fpvsContainer.appendChild(buttonBackPane);
-                                    fpvsContainer.appendChild(buttonNextPane);
+                                        fpvsContainer.appendChild(
+                                            buttonBackPane
+                                        );
+                                        fpvsContainer.appendChild(
+                                            buttonNextPane
+                                        );
 
-                                    folderPaneHeaderBar.insertBefore(
-                                        fpvsContainer,
-                                        contentWindow.document.getElementById(
-                                            "folderPaneMoreButton"
-                                        ).nextElementSibling
-                                    );
+                                        folderPaneHeaderBar.insertBefore(
+                                            fpvsContainer,
+                                            contentWindow.document.getElementById(
+                                                "folderPaneMoreButton"
+                                            ).nextElementSibling
+                                        );
+                                    }
                                 };
 
                                 if (document.readyState === "complete") {
@@ -785,11 +794,7 @@
                                         `postponing init of tabId ${windowId}`,
                                         contentWindow
                                     );
-                                    // contentWindow.document.addEventListener(
-                                    //     "DOMContentLoaded",
-                                    //     initializeUI,
-                                    //     { once: true }
-                                    // );
+                                    return false;
                                 }
                             } else {
                                 throw new Error(
@@ -802,6 +807,7 @@
                                 `${experimentError.message}, file: '${experimentError.fileName}', line: ${experimentError.lineNumber}`
                             );
                         }
+                        return true;
                     },
 
                     // Instead of having individual WebExtension Events, we have a single
