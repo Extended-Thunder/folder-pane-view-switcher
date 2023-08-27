@@ -552,32 +552,31 @@ async function dragDropListener(windowId, event, type) {
 }
 
 messenger.commands.onCommand.addListener(async (command, tab) => {
-    const findWindowId = async () => {
-        if (tab) {
-            const { windowId } = tab;
-            return windowId;
-        } else {
-            const { id } = await messenger.windows.getLastFocused();
-            if (typeof id === "number") {
-                return id;
+    const tabs = await messenger.tabs.query({
+        active: true,
+        currentWindow: true
+    });
+
+    if (tabs && tabs.length) {
+        const { type, windowId, id: tabId } = tabs[0];
+
+        log(`Command? `, { windowId });
+
+        if (windowId !== null) {
+            switch (command) {
+                case "fpvs_folder_next":
+                    await FolderPaneSwitcher.goForwardView(
+                        `${windowId}`,
+                        `${tabId}`
+                    );
+                    break;
+                case "fpvs_folder_back":
+                    await FolderPaneSwitcher.goBackView(
+                        `${windowId}`,
+                        `${tabId}`
+                    );
+                    break;
             }
-        }
-
-        return null;
-    };
-
-    const windowId = await findWindowId();
-
-    log(`Command? `, { windowId });
-
-    if (windowId !== null) {
-        switch (command) {
-            case "fpvs_folder_next":
-                await FolderPaneSwitcher.goForwardView(`${windowId}`);
-                break;
-            case "fpvs_folder_back":
-                await FolderPaneSwitcher.goBackView(`${windowId}`);
-                break;
         }
     }
 });
