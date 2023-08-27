@@ -118,7 +118,7 @@ messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
                 const menuViews = await getMenuViewsOrDefault();
                 const arrowViews = await getArrowViewsOrDefault();
 
-                console.log("stored prefs: ", {
+                log("stored prefs: ", {
                     prefs,
                     arrows,
                     delay,
@@ -596,22 +596,21 @@ const setupUI = async () => {
     };
 
     const manipulateAllTabs = async (mailTabs) => {
-        console.log(`iterating over ${mailTabs?.length} tabs`);
         if (mailTabs && mailTabs.length) {
             for (let tab of mailTabs) {
-                console.log(tab);
                 await ensureTabIsManipulated(tab.id, i18n);
             }
         }
     };
 
     messenger.windows.onCreated.addListener(async ({ id }) => {
-        console.log("new window created");
+        log("new window created");
         const mailTabs = await messenger.tabs.query({
             mailTab: true,
             windowId: id
         });
-        console.log("init all tabs in new window", mailTabs);
+
+        log("init all tabs in new window", mailTabs);
         await manipulateAllTabs(mailTabs);
     });
 
