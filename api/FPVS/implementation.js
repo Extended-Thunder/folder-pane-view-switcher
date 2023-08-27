@@ -356,7 +356,11 @@
                                 log("treeIsReady", ready);
                             } else {
                                 const the3pane = get_about_3pane(mail3Pane);
-                                console.warn(`[found] `, the3pane);
+                                console.assert(
+                                    Boolean(the3pane),
+                                    `[found] `,
+                                    the3pane
+                                );
                                 return;
                                 throw new Error(
                                     `Folder Pane View Switcher couldn't start`
@@ -372,20 +376,15 @@
                     },
 
                     getAny3Pane: async function () {
-                        console.log("getAny3Pane");
                         let windows =
                             await context.extension.windowManager.getAll();
-                        // console.log(`++`, windows);
+
                         for (let wnd of windows) {
-                            // console.log("@@", wnd, wnd.tabs);
                             if (wnd.window && wnd.window.document) {
-                                // console.warn("do we have a 3pane?");
                                 let tab = get_about_3pane(wnd.window, true);
                                 if (tab) {
-                                    console.log("getAny3Pane reported:", tab);
                                     return tab;
                                 }
-                                console.log(`--- --- --- uhm`, tab);
                             }
                         }
 
@@ -478,7 +477,7 @@
                             }
                         }
 
-                        console.log("FPVS[getActiveViewModesEx] ", {
+                        log("FPVS[getActiveViewModesEx] ", {
                             isCompactView,
                             modes
                         });
@@ -499,7 +498,7 @@
                             return allViews;
                         } else {
                             const the3Pane = await this.getAny3Pane();
-                            console.log("getAllViewModes", the3Pane);
+                            log("getAllViewModes", the3Pane);
                             const viewModes = Object.keys(
                                 the3Pane.folderPane._modes
                             );
@@ -596,8 +595,6 @@
                                 );
                             log("legname", nameString);
                             return nameString;
-                        } else {
-                            console.log(mail3Pane);
                         }
                     },
 
@@ -660,7 +657,7 @@
                         } else {
                             // const the3pane = get_about_3pane(mail3Pane);
                             const the3pane = await this.getAny3Pane();
-                            console.log(this.toggleActiveViewMode.name, {
+                            log(this.toggleActiveViewMode.name, {
                                 the3pane,
                                 folderPane: the3pane?.folderPane,
                                 view
@@ -703,7 +700,7 @@
                                 const document = contentWindow.document;
                                 const initializeUI = () => {
                                     // document.onreadystatechange
-                                    console.log(
+                                    log(
                                         "new tab starts initializing",
                                         document.readyState
                                     );
@@ -833,7 +830,7 @@
                                 if (document.readyState === "complete") {
                                     initializeUI();
                                 } else {
-                                    console.log(
+                                    log(
                                         `postponing init of tabId ${windowId}`,
                                         contentWindow
                                     );
