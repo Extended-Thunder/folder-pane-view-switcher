@@ -1,7 +1,7 @@
 import { findThunderbirdVersion } from "../utils/index.js";
 import { createLogger } from "../utils/index.js";
 
-const logEnabled = true;
+const logEnabled = false;
 const log = createLogger("options", logEnabled);
 const warn = createLogger({ name: "options", severity: "warn" }, logEnabled);
 const error = createLogger({ name: "options", severity: "error" }, logEnabled);
