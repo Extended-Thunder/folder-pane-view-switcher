@@ -27,7 +27,7 @@ const findThunderbirdVersion = (wnd = window) => {
 const { defDelay, defPrefs, defArrowViews, defMenuViews, defChk } =
     initializeSettings();
 
-const logEnabled = true;
+const logEnabled = false;
 
 const log = createLogger("background", logEnabled);
 

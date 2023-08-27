@@ -79,7 +79,7 @@
     };
 
     let windowListener;
-    const logEnabled = true;
+    const logEnabled = false;
 
     function log(...a) {
         if (logEnabled) {
