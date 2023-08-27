@@ -698,7 +698,7 @@
                     initUI: async function (windowId, i18n, props) {
                         try {
                             const contentWindow = get3PaneTab(windowId);
-                            const { showArrows } = props;
+                            const { showArrows, menuViews } = props;
                             if (contentWindow) {
                                 const document = contentWindow.document;
                                 const initializeUI = () => {
@@ -785,6 +785,49 @@
                                             ).nextElementSibling
                                         );
                                     }
+
+                                    const menuItems = document.querySelectorAll(
+                                        "#folderModesContextMenuPopup menuitem.folder-pane-mode"
+                                    );
+
+                                    const toggleMenuItem = (
+                                        wnd,
+                                        menuItem,
+                                        show
+                                    ) => {
+                                        if (!show) {
+                                            const oldDisplayState = wnd
+                                                .getComputedStyle(menuItem)
+                                                .getPropertyValue("display");
+                                            menuItem.dataset.fpvsPreviousDisplayState =
+                                                oldDisplayState;
+                                            menuItem.style.display = "none";
+                                        } else {
+                                            const oldDisplayState =
+                                                menuItem.dataset
+                                                    .fpvsPreviousDisplayState;
+                                            const currentDisplayState = wnd
+                                                .getComputedStyle(menuItem)
+                                                .getPropertyValue("display");
+                                            if (
+                                                currentDisplayState !== "none"
+                                            ) {
+                                                return;
+                                            }
+
+                                            menuItem.style.display =
+                                                oldDisplayState;
+                                            menuItem.dataset.fpvsPreviousDisplayState =
+                                                undefined;
+                                        }
+                                    };
+                                    menuItems.forEach((menuItem) => {
+                                        toggleMenuItem(
+                                            contentWindow,
+                                            menuItem,
+                                            menuViews.includes(menuItem.value)
+                                        );
+                                    });
                                 };
 
                                 if (document.readyState === "complete") {
