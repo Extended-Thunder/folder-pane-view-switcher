@@ -187,10 +187,12 @@ async function manipulateWindow(wnd, i18n) {
 }
 
 const manipulateTab = async (tabId, i18n) => {
-    /* TODO: implement menu manipulaton for v115 */
-    log(`manipulate tabId: ${tabId}`);
     const { arrows: showArrows } = await getArrowChksOrDefault();
-    return await messenger.FPVS.initUI(`${tabId}`, i18n, { showArrows });
+    const { menuViews } = await getMenuViewsOrDefault();
+    return await messenger.FPVS.initUI(`${tabId}`, i18n, {
+        showArrows,
+        menuViews
+    });
 };
 
 const onChangePaneClickHandler = async (changeDirection) => {

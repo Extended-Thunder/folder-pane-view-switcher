@@ -240,6 +240,13 @@
                             "showArrows": {
                                 "type": "boolean",
                                 "optional": false
+                            },
+                            "menuViews": {
+                                "type": "array",
+                                "optional": false,
+                                "items": {
+                                    "type": "string"
+                                }
                             }
                         }
                     },
