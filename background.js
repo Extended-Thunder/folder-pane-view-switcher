@@ -30,6 +30,7 @@ const { defDelay, defPrefs, defArrowViews, defMenuViews, defChk } =
 const logEnabled = false;
 
 const log = createLogger("background", logEnabled);
+const error = createLogger("background", logEnabled);
 
 messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
     // if (temporary) return; // skip during development
@@ -198,12 +199,14 @@ const manipulateTab = async (tabId, i18n) => {
 const onChangePaneClickHandler = async (changeDirection) => {
     const tabs = await messenger.tabs.query({
         active: true,
-        currentWindow: true
+        // currentWindow: true
+        lastFocusedWindow: true
     });
     log(tabs);
     if (tabs && tabs.length) {
         const { type, windowId, id: tabId } = tabs[0];
 
+        log(`switching pane for tabId ${tabId}`);
         if (windowId !== null && tabId != null) {
             switch (changeDirection) {
                 case "next-pane":
@@ -268,7 +271,7 @@ const setCompactedView = async (viewName, isCompacted) => {
 var FolderPaneSwitcher = {
     windowData: new Map(),
 
-    setSingleMode: async function (windowId, modeName) {
+    setSingleMode: async function (windowId, modeName, tabId = null) {
         let activeModes = await messenger.FPVS.getActiveViewModes(windowId);
         let currModes = activeModes.slice();
 
@@ -289,7 +292,17 @@ var FolderPaneSwitcher = {
                 }
             }
         } else {
-            await messenger.FPVS.toggleActiveViewMode(windowId, modeName);
+
+            if (tabId == null) {
+                error(`No tab given to switch to`);
+            }
+
+            // toggle just the actual tab
+            await messenger.FPVS.toggleActiveViewModeForTab(
+                windowId,
+                `${tabId}`,
+                modeName
+            );
         }
 
         const compact = await isViewCompacted(modeName);
@@ -298,23 +311,35 @@ var FolderPaneSwitcher = {
         log(`toggle compact view ${modeName}: `, compact);
     },
 
-    getCurrentViewSelections: async function (windowId) {
-        let { modes: activeModes, isCompactView } =
-            await messenger.FPVS.getActiveViewModesEx(windowId);
-        let { arrowViews: selectedViews } = await messenger.storage.local.get(
-            "arrowViews"
-        );
+    getCurrentViewSelections: async function (windowId, tabId = null) {
+        const version = findThunderbirdVersion(window);
+        if (version < 115) {
+            let { modes: activeModes, isCompactView } =
+                await messenger.FPVS.getActiveViewModesEx(windowId);
+            let { arrowViews: selectedViews } =
+                await messenger.storage.local.get("arrowViews");
 
-        let currentView = activeModes[activeModes.length - 1];
+            let currentView = activeModes[activeModes.length - 1];
 
-        return { selectedViews, currentView, isCompactView };
+            return { selectedViews, currentView, isCompactView };
+        } else {
+            let { activeModes, isCompactView } =
+                await messenger.FPVS.getActiveViewModesExForTab(`${tabId}`);
+
+            let { arrowViews: selectedViews } =
+                await messenger.storage.local.get("arrowViews");
+
+            let currentView = activeModes[activeModes.length - 1];
+
+            return { selectedViews, currentView, isCompactView };
+        }
     },
 
-    storeCurrentCompactViewState: async function (windowId) {
+    storeCurrentCompactViewState: async function (windowId, tabId = null) {
         let { currentView, selectedViews, isCompactView } =
-            await this.getCurrentViewSelections(windowId);
+            await this.getCurrentViewSelections(windowId, tabId);
 
-        await setCompactedView(currentView, isCompactView);
+        await setCompactedView(currentView, isCompactView, tabId);
 
         return { currentView, selectedViews };
     },
@@ -328,7 +353,7 @@ var FolderPaneSwitcher = {
         }
 
         let { currentView, selectedViews } =
-            await this.storeCurrentCompactViewState(windowId);
+            await this.storeCurrentCompactViewState(windowId, tabId);
         let currInd = selectedViews.findIndex((name) => name == currentView);
 
         currInd = (currInd + 1) % selectedViews.length;
@@ -340,7 +365,7 @@ var FolderPaneSwitcher = {
             await FolderPaneSwitcher.setSingleMode(windowId, nextMode);
         } else {
             // in supernova we have to iterate over all views
-            await FolderPaneSwitcher.setSingleMode(windowId, nextMode);
+            await FolderPaneSwitcher.setSingleMode(windowId, nextMode, tabId);
         }
     },
 
@@ -353,7 +378,7 @@ var FolderPaneSwitcher = {
         }
 
         let { currentView, selectedViews } =
-            await this.storeCurrentCompactViewState(windowId);
+            await this.storeCurrentCompactViewState(windowId, tabId);
 
         let currInd = selectedViews.findIndex((name) => name == currentView);
         currInd = (currInd + selectedViews.length - 1) % selectedViews.length;
@@ -365,7 +390,7 @@ var FolderPaneSwitcher = {
             await FolderPaneSwitcher.setSingleMode(windowId, nextMode);
         } else {
             // in supernova we have to iterate over all views
-            await FolderPaneSwitcher.setSingleMode(windowId, nextMode);
+            await FolderPaneSwitcher.setSingleMode(windowId, nextMode, tabId);
         }
     },
 
@@ -590,6 +615,22 @@ const setupUI = async () => {
     // in supernova we need to inject the UI into every single tab
     const ensureTabIsManipulated = async (tabId, i18n) => {
         let success = await manipulateTab(tabId, i18n);
+        let retries = 0;
+        try {
+            while (!success && retries < 10) {
+                retries++;
+                log(
+                    `tabId ${tabId} not initialized, retrying... (${retries} of 10)`
+                );
+                await new Promise((resolve) => {
+                    setTimeout(resolve, 250);
+                });
+                success = await manipulateTab(tabId, i18n);
+            }
+        } catch (e) {
+            error(e);
+            return false;
+        }
 
         return success;
     };

@@ -68,6 +68,40 @@
                 ]
             },
             {
+                "name": "getActiveViewModesExForTab",
+                "type": "function",
+                "async": true,
+                "parameters": [
+                    {
+                        "name": "tabId",
+                        "type": "string",
+                        "description": "The tabId of the folder pane to get the view mode from"
+                    },
+                    {
+                        "type": "function",
+                        "name": "callback",
+                        "optional": true,
+                        "parameters": [
+                            {
+                                "type": "object",
+                                "properties": {
+                                    "activeModes": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "isCompactView": {
+                                        "type": "boolean"
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                ]
+            },
+
+            {
                 "name": "getAllViewModes",
                 "type": "function",
                 "async": true,
@@ -215,9 +249,9 @@
                 "async": true,
                 "parameters": [
                     {
-                        "name": "windowId",
+                        "name": "tabId",
                         "type": "string",
-                        "description": "window id"
+                        "description": "The tabId of the tab whose UI will be patched"
                     },
                     {
                         "name": "i18n",
