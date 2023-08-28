@@ -485,6 +485,32 @@
                         return { modes, isCompactView };
                     },
 
+                    getActiveViewModesExForTab: async function (tabId) {
+                        try {
+                            const the3pane = get3PaneTab(tabId);
+                            const activeModes = the3pane.folderPane.activeModes;
+
+                            let isCompactView = false;
+                            let mayHasCompactView = activeModes.find(
+                                (mode) => mode == "favorite" || mode == "unread"
+                            );
+
+                            if (mayHasCompactView) {
+                                isCompactView = the3pane.folderPane.isCompact;
+                            }
+                            log("FPVS[getActiveViewModesExForTab] ", {
+                                isCompactView,
+                                activeModes
+                            });
+
+                            return { activeModes, isCompactView };
+                        } catch (experimentError) {
+                            throw new ExtensionError(
+                                `${experimentError.message}, file: ${experimentError.fileName}, line: ${experimentError.lineNumber}`
+                            );
+                        }
+                    },
+
                     getAllViewModes: async function (windowId) {
                         let mail3Pane =
                             context.extension.windowManager.get(
@@ -692,9 +718,9 @@
                             views.split(",");
                     },
 
-                    initUI: async function (windowId, i18n, props) {
+                    initUI: async function (tabId, i18n, props) {
                         try {
-                            const contentWindow = get3PaneTab(windowId);
+                            const contentWindow = get3PaneTab(tabId);
                             const { showArrows, menuViews } = props;
                             if (contentWindow) {
                                 const document = contentWindow.document;
@@ -831,14 +857,14 @@
                                     initializeUI();
                                 } else {
                                     log(
-                                        `postponing init of tabId ${windowId}`,
+                                        `postponing init of tabId ${tabId}`,
                                         contentWindow
                                     );
                                     return false;
                                 }
                             } else {
                                 throw new Error(
-                                    `cannot initialize tabId '${windowId}'`
+                                    `cannot initialize tabId '${tabId}'`
                                 );
                             }
                         } catch (experimentError) {
