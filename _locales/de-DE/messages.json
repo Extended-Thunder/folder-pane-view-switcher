@@ -28,5 +28,29 @@
     },
     "lbl_EnblDsbl": {
         "message": "Ordneransichten wählen"
+    },
+    "folderPaneModeHeader_all": {
+        "message": "Alle Ordner",
+        "description": "The name of the view, as in the folderPaneModeHeader_* keys in https://searchfox.org/comm-central/source/mail/locales/en-US/chrome/messenger/messenger.properties"
+    },
+    "folderPaneModeHeader_unread": {
+        "message": "Ungelesene Ordner",
+        "description": "The name of the view, as in the folderPaneModeHeader_* keys in https://searchfox.org/comm-central/source/mail/locales/en-US/chrome/messenger/messenger.properties"
+    },
+    "folderPaneModeHeader_favorite": {
+        "message": "Favoriten-Ordner",
+        "description": "The name of the view, as in the folderPaneModeHeader_* keys in https://searchfox.org/comm-central/source/mail/locales/en-US/chrome/messenger/messenger.properties"
+    },
+    "folderPaneModeHeader_recent": {
+        "message": "Letzte Ordner",
+        "description": "The name of the view, as in the folderPaneModeHeader_* keys in https://searchfox.org/comm-central/source/mail/locales/en-US/chrome/messenger/messenger.properties"
+    },
+    "folderPaneModeHeader_smart": {
+        "message": "Gruppierte Ordner",
+        "description": "The name of the view, as in the folderPaneModeHeader_* keys in https://searchfox.org/comm-central/source/mail/locales/en-US/chrome/messenger/messenger.properties"
+    },
+    "folderPaneModeHeader_tags": {
+        "message": "Schlagwörter",
+        "description": "The name for the 'Tags' view, as there is no counterpart for folderPaneModeHeader_*, best match would be 'tags' as in https://searchfox.org/comm-central/source/mail/locales/en-US/chrome/messenger/messenger.properties#245"
     }
 }
