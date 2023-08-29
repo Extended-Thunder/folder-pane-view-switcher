@@ -31,29 +31,6 @@
         return Number.parseInt(version) || 0;
     };
 
-    // function getActiveTab(tabmail) {
-    //     let { tabManager } = context.extension;
-    //     let selectedTab = tabmail.selectedTab;
-    //     if (selectedTab) {
-    //         return tabManager.getWrapper(selectedTab);
-    //     }
-    //     return null;
-    // }
-
-    // function getMessageWindow(wnd, tabId = 0) {
-    //     // Get about:message from the tabId.
-    //     let { nativeTab } = wnd.extension.tabManager.get(tabId);
-    //     if (nativeTab instanceof Ci.nsIDOMWindow) {
-    //         return nativeTab.messageBrowser.contentWindow;
-    //     } else if (nativeTab.mode && nativeTab.mode.name == "mail3PaneTab") {
-    //         return nativeTab.chromeBrowser.contentWindow.messageBrowser
-    //             .contentWindow;
-    //     } else if (nativeTab.mode && nativeTab.mode.name == "mailMessageTab") {
-    //         return nativeTab.chromeBrowser.contentWindow;
-    //     }
-    //     return null;
-    // }
-
     const get_about_3pane = (window, searchAllTabs = false) => {
         const tabmail = window.document.getElementById("tabmail");
         if (tabmail?.currentTabInfo.mode.name == "mail3PaneTab") {
@@ -624,6 +601,7 @@
                         }
                     },
 
+                    // only in pre-115
                     showViewInMenus: async function (windowId, view, enabled) {
                         log("showViewInMenus");
                         let mail3Pane =

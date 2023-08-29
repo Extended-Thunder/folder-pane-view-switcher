@@ -23,10 +23,6 @@ const setViewForArrows = (viewname, enabled) => {
             (value) => value != viewname
         );
     }
-
-    //    //if current view is no longer in selectedViews, then set selectedViews[0]
-    //    if (!FolderPaneSwitcher.selectedViews.includes(gFolderTreeView.activeModes[gFolderTreeView.activeModes.length - 1]))
-    //      FolderPaneSwitcher.setSingleMode(FolderPaneSwitcher.selectedViews[0]);
 };
 
 const loadPrefs = async () => {
@@ -44,7 +40,6 @@ const loadPrefs = async () => {
 };
 
 const resetPrefs = async () => {
-    //console.log("resetprefs", FPVSOptions.prefs);
     for (let view of FPVSOptions.gviews) {
         let elt = document.getElementById(view + "_arrow");
         elt.checked = true;
@@ -68,7 +63,6 @@ const validatePrefs = async () => {
     FPVSOptions.arrowViews = [];
     FPVSOptions.menuViews = [];
 
-    //console.log("prefs", FPVSOptions.prefs);
     let mail3paneIds = await getMail3paneIds();
     for (let view of FPVSOptions.gviews) {
         let elt = document.getElementById(view + "_arrow");
@@ -120,13 +114,9 @@ const validatePrefs = async () => {
 
 const onLoad = async () => {
     try {
-        //console.log("options");
         FPVSOptions.prefs = await messenger.storage.local.get("prefs");
-        //console.log("prefs", FPVSOptions.prefs);
         FPVSOptions.arrowChk = await messenger.storage.local.get("arrows");
         FPVSOptions.delay = await messenger.storage.local.get("delay");
-
-        //console.log("arrows", FPVSOptions.arrowChk.arrows, FPVSOptions.delay);
 
         document.title = browser.i18n.getMessage("appName");
 
@@ -164,7 +154,6 @@ const onLoad = async () => {
         FPVSOptions.activeViews = await messenger.FPVS.getActiveViewModes(
             mail3paneId
         );
-        //console.log("actviews", FPVSOptions.activeViews);
 
         const btn_ok = document.getElementById("btn_accept");
         btn_ok.addEventListener("click", async (_event) => {

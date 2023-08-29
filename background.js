@@ -13,6 +13,8 @@ import {
     initializeSettings
 } from "./utils/index.js";
 
+const logEnabled = false;
+
 /**
  * Finds the currently running Thunderbird version
  * @returns
@@ -27,13 +29,10 @@ const findThunderbirdVersion = (wnd = window) => {
 const { defDelay, defPrefs, defArrowViews, defMenuViews, defChk } =
     initializeSettings();
 
-const logEnabled = false;
-
 const log = createLogger("background", logEnabled);
 const error = createLogger("background", logEnabled);
 
 messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
-    // if (temporary) return; // skip during development
     log("reason", reason);
     switch (reason) {
         case "install":
@@ -682,17 +681,6 @@ async function main() {
         messenger.windows.onCreated.addListener(async (wnd) => {
             await manipulateWindow(wnd, i18n);
         });
-
-        // for future use, currently, event on tree is not firing
-        // messenger.messages.onMoved.addListener( async (originalMessages, movedMessages) =>
-        // {
-        //   let lastHoveredFolder = await messenger.FPVS.getLastHoveredFolder();
-        //   let newFolder = movedMessages.messages[0].folder;
-        //   //log("folder, ", lastHoveredFolder);
-        //   //log("eqhul", lastHoveredFolder.toString() == newFolder.toString() , movedMessages);
-        //   FolderPaneSwitcher.onDragDrop({ type: "msgsMoveCopyCompleted" });
-
-        // });
 
         messenger.FPVS.onDragDrop.addListener(dragDropListener);
     } else {
