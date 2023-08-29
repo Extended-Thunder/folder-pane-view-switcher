@@ -2,7 +2,7 @@
     "name": "__MSG_appName__",
     "version": "5.2",
     "description": "__MSG_appDesc__",
-    "author": "Jonathan Kamens, Klaus Buecher",
+    "author": "Jonathan Kamens, Klaus Buecher, Arnd Issler",
     "default_locale": "en-US",
     "homepage_url": "https://addons.thunderbird.net/thunderbird/addon/folder-pane-view-switcher/",
     "applications": {
