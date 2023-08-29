@@ -725,7 +725,7 @@
                                         const fpvsContainer =
                                             document.createElement("div");
                                         fpvsContainer.id = "fpvs-container";
-                                        fpvsContainer.style.minWidth = "50px";
+                                        fpvsContainer.style.minWidth = "60px";
 
                                         const buttonBackPane =
                                             document.createElement("button");
