@@ -151,9 +151,8 @@ const onLoad = async () => {
         // the first window.
         const [mail3paneId] = await getMail3paneIds();
         FPVSOptions.gviews = await messenger.FPVS.getAllViewModes(mail3paneId);
-        FPVSOptions.activeViews = await messenger.FPVS.getActiveViewModes(
-            mail3paneId
-        );
+        FPVSOptions.activeViews =
+            await messenger.FPVS.getActiveViewModes(mail3paneId);
 
         const btn_ok = document.getElementById("btn_accept");
         btn_ok.addEventListener("click", async (_event) => {

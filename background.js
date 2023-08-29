@@ -291,7 +291,6 @@ var FolderPaneSwitcher = {
                 }
             }
         } else {
-
             if (tabId == null) {
                 error(`No tab given to switch to`);
             }
@@ -503,9 +502,8 @@ var FolderPaneSwitcher = {
             FolderPaneSwitcher.windowData.get(windowId).timer = 0;
             if (FolderPaneSwitcher.windowData.get(windowId).cachedView) {
                 //    FolderPaneSwitcher.windowData.get(windowId).cachedView = null;
-                let inDragSession = await messenger.FPVS.inDragSession(
-                    windowId
-                );
+                let inDragSession =
+                    await messenger.FPVS.inDragSession(windowId);
                 //log("watchtimer indragsession", inDragSession);
                 if (!inDragSession) {
                     FolderPaneSwitcher.onDragDrop(windowId, {
