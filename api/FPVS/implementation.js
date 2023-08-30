@@ -412,11 +412,6 @@
                                 );
                             }
                             const activeModes = the3pane.folderPane.activeModes;
-                            console.warn(
-                                `the active modes: `,
-                                activeModes,
-                                the3pane.folderPane
-                            );
                             return activeModes;
                         }
                     },
