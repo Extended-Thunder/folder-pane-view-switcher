@@ -188,7 +188,7 @@ async function manipulateWindow(wnd, i18n) {
 
 const manipulateTab = async (tabId, i18n) => {
     const { arrows: showArrows } = await getArrowChksOrDefault();
-    const { menuViews } = await getMenuViewsOrDefault();
+    const menuViews = await getMenuViewsOrDefault();
     return await messenger.FPVS.initUI(`${tabId}`, i18n, {
         showArrows,
         menuViews
@@ -324,8 +324,7 @@ var FolderPaneSwitcher = {
             let { activeModes, isCompactView } =
                 await messenger.FPVS.getActiveViewModesExForTab(`${tabId}`);
 
-            let { arrowViews: selectedViews } =
-                await messenger.storage.local.get("arrowViews");
+            let selectedViews = await getArrowViewsOrDefault();
 
             let currentView = activeModes[activeModes.length - 1];
 

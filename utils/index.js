@@ -82,23 +82,27 @@ export const getArrowChksOrDefault = async () => {
 };
 
 export const getMenuViewsOrDefault = async () => {
-    const menuViews = await messenger.storage.local.get("menuViews");
-    if (Object.keys(menuViews).length == 0) {
-        const { defMenuViews } = initializeSettings();
-        await messenger.storage.local.set({ menuViews: defMenuViews });
-        return defMenuViews;
+    const { menuViews } = await messenger.storage.local.get("menuViews");
+    if (Array.isArray(menuViews)) {
+        return menuViews;
     }
-    return menuViews;
+
+    const { defMenuViews } = initializeSettings();
+    await messenger.storage.local.set({ menuViews: defMenuViews });
+
+    return defMenuViews;
 };
 
 export const getArrowViewsOrDefault = async () => {
-    const arrowViews = await messenger.storage.local.get("arrowViews");
-    if (Object.keys(arrowViews).length == 0) {
-        const { defArrowViews } = initializeSettings();
-        await messenger.storage.local.set({ arrowViews: defArrowViews });
-        return defArrowViews;
+    const { arrowViews } = await messenger.storage.local.get("arrowViews");
+    if (Array.isArray(arrowViews)) {
+        return arrowViews;
     }
-    return arrowViews;
+
+    const { defArrowViews } = initializeSettings();
+    await messenger.storage.local.set({ arrowViews: defArrowViews });
+
+    return defArrowViews;
 };
 
 export const getDelayOrDefault = async () => {
