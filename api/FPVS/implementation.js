@@ -694,7 +694,7 @@
                     initUI: async function (tabId, i18n, props) {
                         try {
                             const contentWindow = get3PaneTab(tabId);
-                            const { showArrows, menuViews } = props;
+                            const { showArrows, menuViews, isDark } = props;
                             if (contentWindow) {
                                 const document = contentWindow.document;
                                 const initializeUI = () => {
@@ -732,8 +732,20 @@
                                             "icon-button",
                                             "icon-only"
                                         );
-                                        buttonBackPane.style.backgroundImage =
-                                            "url(data:image/svg+xml;base64,PCEtLSBUaGlzIFNvdXJjZSBDb2RlIEZvcm0gaXMgc3ViamVjdCB0byB0aGUgdGVybXMgb2YgdGhlIE1vemlsbGEgUHVibGljDQogICAtIExpY2Vuc2UsIHYuIDIuMC4gSWYgYSBjb3B5IG9mIHRoZSBNUEwgd2FzIG5vdCBkaXN0cmlidXRlZCB3aXRoIHRoaXMNCiAgIC0gZmlsZSwgWW91IGNhbiBvYnRhaW4gb25lIGF0IGh0dHA6Ly9tb3ppbGxhLm9yZy9NUEwvMi4wLy4gLS0+DQo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEyIiBoZWlnaHQ9IjEyIiB2aWV3Qm94PSIwIDAgMTIgMTIiIGZpbGw9ImNvbnRleHQtZmlsbCI+DQogIDxwYXRoIGQ9Ik00Ljc1IDZsMy4yMi0zLjIyQS43NS43NSAwIDAwNi45IDEuNzJMMy4xNiA1LjQ3Yy0uMy4zLS4zLjc3IDAgMS4wNmwzLjc1IDMuNzVhLjc1Ljc1IDAgMDAxLjA2LTEuMDZ6Ii8+DQo8L3N2Zz4NCg==)";
+                                        const backArrowIconSource =
+                                            "PCEtLSBUaGlzIFNvdXJjZSBDb2RlIEZvcm0gaXMgc3ViamVjdCB0byB0aGUgdGVybXMgb2YgdGhlIE1vemlsbGEgUHVibGljDQogICAtIExpY2Vuc2UsIHYuIDIuMC4gSWYgYSBjb3B5IG9mIHRoZSBNUEwgd2FzIG5vdCBkaXN0cmlidXRlZCB3aXRoIHRoaXMNCiAgIC0gZmlsZSwgWW91IGNhbiBvYnRhaW4gb25lIGF0IGh0dHA6Ly9tb3ppbGxhLm9yZy9NUEwvMi4wLy4gLS0+DQo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEyIiBoZWlnaHQ9IjEyIiB2aWV3Qm94PSIwIDAgMTIgMTIiIGZpbGw9ImNvbnRleHQtZmlsbCI+DQogIDxwYXRoIGQ9Ik00Ljc1IDZsMy4yMi0zLjIyQS43NS43NSAwIDAwNi45IDEuNzJMMy4xNiA1LjQ3Yy0uMy4zLS4zLjc3IDAgMS4wNmwzLjc1IDMuNzVhLjc1Ljc1IDAgMDAxLjA2LTEuMDZ6Ii8+DQo8L3N2Zz4NCg==";
+                                        let backArrowIcon = backArrowIconSource;
+                                        if (isDark) {
+                                            let lightIcon = contentWindow
+                                                .atob(backArrowIconSource)
+                                                .replace(
+                                                    "context-fill",
+                                                    "white"
+                                                );
+                                            backArrowIcon =
+                                                contentWindow.btoa(lightIcon);
+                                        }
+                                        buttonBackPane.style.backgroundImage = `url(data:image/svg+xml;base64,${backArrowIcon})`;
                                         buttonBackPane.addEventListener(
                                             "click",
                                             async () => {
@@ -755,8 +767,20 @@
                                             "icon-button",
                                             "icon-only"
                                         );
-                                        buttonNextPane.style.backgroundImage =
-                                            "url(data:image/svg+xml;base64,PCEtLSBUaGlzIFNvdXJjZSBDb2RlIEZvcm0gaXMgc3ViamVjdCB0byB0aGUgdGVybXMgb2YgdGhlIE1vemlsbGEgUHVibGljDQogICAtIExpY2Vuc2UsIHYuIDIuMC4gSWYgYSBjb3B5IG9mIHRoZSBNUEwgd2FzIG5vdCBkaXN0cmlidXRlZCB3aXRoIHRoaXMNCiAgIC0gZmlsZSwgWW91IGNhbiBvYnRhaW4gb25lIGF0IGh0dHA6Ly9tb3ppbGxhLm9yZy9NUEwvMi4wLy4gLS0+DQo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEyIiBoZWlnaHQ9IjEyIiB2aWV3Qm94PSIwIDAgMTIgMTIiIGZpbGw9ImNvbnRleHQtZmlsbCI+DQogIDxwYXRoIGQ9Ik03LjI1IDZMNC4wMyAyLjc4QS43NS43NSAwIDAxNS4xIDEuNzJsMy43NCAzLjc1Yy4zLjMuMy43NyAwIDEuMDZsLTMuNzUgMy43NWEuNzUuNzUgMCAwMS0xLjA2LTEuMDZ6Ii8+DQo8L3N2Zz4=)";
+                                        const nextArrowIconSource =
+                                            "PCEtLSBUaGlzIFNvdXJjZSBDb2RlIEZvcm0gaXMgc3ViamVjdCB0byB0aGUgdGVybXMgb2YgdGhlIE1vemlsbGEgUHVibGljDQogICAtIExpY2Vuc2UsIHYuIDIuMC4gSWYgYSBjb3B5IG9mIHRoZSBNUEwgd2FzIG5vdCBkaXN0cmlidXRlZCB3aXRoIHRoaXMNCiAgIC0gZmlsZSwgWW91IGNhbiBvYnRhaW4gb25lIGF0IGh0dHA6Ly9tb3ppbGxhLm9yZy9NUEwvMi4wLy4gLS0+DQo8c3ZnIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjEyIiBoZWlnaHQ9IjEyIiB2aWV3Qm94PSIwIDAgMTIgMTIiIGZpbGw9ImNvbnRleHQtZmlsbCI+DQogIDxwYXRoIGQ9Ik03LjI1IDZMNC4wMyAyLjc4QS43NS43NSAwIDAxNS4xIDEuNzJsMy43NCAzLjc1Yy4zLjMuMy43NyAwIDEuMDZsLTMuNzUgMy43NWEuNzUuNzUgMCAwMS0xLjA2LTEuMDZ6Ii8+DQo8L3N2Zz4=";
+                                        let nextArrowIcon = nextArrowIconSource;
+                                        if (isDark) {
+                                            let lightIcon = contentWindow
+                                                .atob(nextArrowIconSource)
+                                                .replace(
+                                                    "context-fill",
+                                                    "white"
+                                                );
+                                            nextArrowIcon =
+                                                contentWindow.btoa(lightIcon);
+                                        }
+                                        buttonNextPane.style.backgroundImage = `url(data:image/svg+xml;base64,${nextArrowIcon})`;
                                         buttonNextPane.addEventListener(
                                             "click",
                                             async () => {

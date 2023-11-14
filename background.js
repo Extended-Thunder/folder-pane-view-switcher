@@ -189,10 +189,20 @@ async function manipulateWindow(wnd, i18n) {
 const manipulateTab = async (tabId, i18n) => {
     const { arrows: showArrows } = await getArrowChksOrDefault();
     const menuViews = await getMenuViewsOrDefault();
-    return await messenger.FPVS.initUI(`${tabId}`, i18n, {
+    const matchMedia = window.matchMedia("(prefers-color-scheme: dark)");
+
+    if (!matchMedia || matchMedia.matches === undefined) {
+        error(`media query doesn't match: `, matchMedia);
+    }
+
+    const isDark = matchMedia.matches;
+    const props = {
         showArrows,
-        menuViews
-    });
+        menuViews,
+        isDark
+    };
+
+    return await messenger.FPVS.initUI(`${tabId}`, i18n, props);
 };
 
 const onChangePaneClickHandler = async (changeDirection) => {
@@ -408,7 +418,12 @@ var FolderPaneSwitcher = {
 
     onDragLeaveFolderPane: function (windowId, aEvent) {
         log(`onDragLeaveFolderPane(${windowId}, ${aEvent?.type})`);
-        //log("leaveFolderPane", FolderPaneSwitcher.windowData.get(windowId).cachedView, FolderPaneSwitcher.windowData.get(windowId).timer, FolderPaneSwitcher.windowData.get(windowId).watchTimer);
+        // log(
+        //     "leaveFolderPane",
+        //     FolderPaneSwitcher.windowData.get(windowId).cachedView,
+        //     FolderPaneSwitcher.windowData.get(windowId).timer,
+        //     FolderPaneSwitcher.windowData.get(windowId).watchTimer
+        // );
 
         if (
             FolderPaneSwitcher.windowData.get(windowId).cachedView &&
@@ -501,8 +516,9 @@ var FolderPaneSwitcher = {
             FolderPaneSwitcher.windowData.get(windowId).timer = 0;
             if (FolderPaneSwitcher.windowData.get(windowId).cachedView) {
                 //    FolderPaneSwitcher.windowData.get(windowId).cachedView = null;
-                let inDragSession =
-                    await messenger.FPVS.inDragSession(windowId);
+                let inDragSession = await messenger.FPVS.inDragSession(
+                    windowId
+                );
                 //log("watchtimer indragsession", inDragSession);
                 if (!inDragSession) {
                     FolderPaneSwitcher.onDragDrop(windowId, {
@@ -602,6 +618,10 @@ messenger.commands.onCommand.addListener(async (command, tab) => {
     }
 });
 
+const onLightDarkSwitch = async () => {
+    await setupUI();
+};
+
 const setupUI = async () => {
     const i18n = {
         nextButtonLabel: messenger.i18n.getMessage("button_next_pane"),
@@ -681,6 +701,8 @@ async function main() {
 
         messenger.FPVS.onDragDrop.addListener(dragDropListener);
     } else {
+        let listener = window.matchMedia("(prefers-color-scheme: dark)");
+        listener.addEventListener("change", onLightDarkSwitch);
         await setupUI();
     }
 }
