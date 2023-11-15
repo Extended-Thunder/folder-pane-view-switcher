@@ -39,7 +39,8 @@ export const initializeSettings = () => {
         smart: { arrow: true, menu: true, pos: -1 },
         recent: { arrow: true, menu: true, pos: -1 },
         unread: { arrow: true, menu: true, pos: -1 },
-        favorite: { arrow: true, menu: true, pos: -1 }
+        favorite: { arrow: true, menu: true, pos: -1 },
+        arrows: true
     };
     const defArrowViews = ["all", "smart", "recent", "unread", "favorite"];
     const defMenuViews = ["all", "smart", "recent", "unread", "favorite"];
