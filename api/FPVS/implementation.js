@@ -15,9 +15,9 @@
     var { MailServices } = ChromeUtils.import(
         "resource:///modules/MailServices.jsm"
     );
-    var { Services } =
+    var Services =
         globalThis.Services ||
-        ChromeUtils.import("resource://gre/modules/Services.jsm");
+        ChromeUtils.import("resource://gre/modules/Services.jsm").Services;
     var { ExtensionError } = ExtensionUtils;
 
     /**
@@ -53,6 +53,37 @@
             }
         }
         throw new Error("The current tab is not a mail3PaneTab.");
+    };
+
+    const removeUI = async (tabId, givenContentWindow) => {
+        try {
+            const contentWindow = givenContentWindow || get3PaneTab(tabId);
+            if (contentWindow) {
+                const document = contentWindow.document;
+                const preExistingContainer =
+                    document.getElementById("fpvs-container");
+
+                if (preExistingContainer) {
+                    preExistingContainer.remove();
+                }
+
+                const menuItems = document.querySelectorAll(
+                    "#folderModesContextMenuPopup menuitem.folder-pane-mode"
+                );
+
+                menuItems.forEach((menuItem) => {
+                    if (menuItem.style?.remove) {
+                        menuItem.style.remove("display");
+                    } else if (menuItem.style?.removeProperty) {
+                        menuItem.style.removeProperty("display");
+                    } else {
+                        console.warn("CSS property could not be removed");
+                    }
+                });
+            }
+        } catch (err) {
+            log(`UI was not teared down`, err);
+        }
     };
 
     let windowListener;
@@ -283,6 +314,28 @@
         constructor(extension) {
             super(extension);
             windowListener = new WindowListener(extension);
+        }
+
+        onShutdown(isAppShutdown) {
+            if (isAppShutdown) {
+                console.log("Thunderbird is shutting down: nothing to do");
+                return;
+            }
+
+            for (let window of Services.wm.getEnumerator("mail:3pane")) {
+                let tabmail = window.document.getElementById("tabmail");
+                for (let i = tabmail.tabInfo.length; i > 0; i--) {
+                    let nativeTabInfo = tabmail.tabInfo[i - 1];
+
+                    if (nativeTabInfo?.mode?.name === "mail3PaneTab") {
+                        const contentWindow =
+                            nativeTabInfo.chromeBrowser.contentWindow;
+                        removeUI(nativeTabInfo.tabId, contentWindow);
+                    }
+                }
+            }
+
+            Services.obs.notifyObservers(null, "startupcache-invalidate");
         }
 
         onChangePaneClick({ context, fire }) {
@@ -690,6 +743,8 @@
                         mail3Pane.gFolderTreeView._activeModes =
                             views.split(",");
                     },
+
+                    removeUI,
 
                     initUI: async function (tabId, i18n, props) {
                         try {

@@ -244,6 +244,18 @@
                 ]
             },
             {
+                "name": "removeUI",
+                "type": "function",
+                "async": true,
+                "parameters": [
+                    {
+                        "name": "tabId",
+                        "type": "string",
+                        "description": "The tabId of the tab whose UI will be patched"
+                    }
+                ]
+            },
+            {
                 "name": "initUI",
                 "type": "function",
                 "async": true,
