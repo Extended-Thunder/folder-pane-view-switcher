@@ -155,11 +155,13 @@ const onLoad = async () => {
             await messenger.FPVS.getActiveViewModes(mail3paneId);
 
         const btn_ok = document.getElementById("btn_accept");
+        btn_accept.value = browser.i18n.getMessage("btn_accept");
         btn_ok.addEventListener("click", async (_event) => {
             await validatePrefs();
         });
 
         const btn_cancel = document.getElementById("btn_extra1");
+        btn_extra1.value = browser.i18n.getMessage("btn_extra1")
 
         btn_cancel.addEventListener("click", async function (event) {
             let wnd = await messenger.tabs.getCurrent();
@@ -167,11 +169,18 @@ const onLoad = async () => {
         });
 
         const btn_reset = document.getElementById("btn_reset");
+        btn_reset.value = browser.i18n.getMessage("btn_reset");
         btn_reset.addEventListener("click", async (_event) => {
             resetPrefs();
         });
 
         const table = document.getElementById("tbl_enbldsblViews");
+        const lbl_view = document.getElementById("lbl_view");
+        lbl_view.textContent = browser.i18n.getMessage("lbl_view");
+        const lbl_menu = document.getElementById("lbl_menu");
+        lbl_menu.textContent = browser.i18n.getMessage("lbl_menu");
+        const lbl_arrows = document.getElementById("lbl_arrows");
+        lbl_arrows.textContent = browser.i18n.getMessage("lbl_arrows");
         let row_position = 0;
 
         log(`everything loaded`, FPVSOptions);
