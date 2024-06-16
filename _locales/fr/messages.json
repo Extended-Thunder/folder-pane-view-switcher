@@ -4,16 +4,71 @@
         "description": "The name of the add-on, displayed in various places."
     },
     "appDesc": {
-        "message": "Flèches de changement d'affichage des dossiers et retour automatique à “Tous les dossiers” au cours d'un glissé-déposé",
-        "description": "A short description of the add-on."
+        "message": "Ajoute des flèches de changement de vue dans la barre d’outils du panneau des dossiers et active automatiquement la vue « Tous les dossiers » lors d’un glisser-déposer."
     },
-    "ckbx_showFPA": {
-        "message": "Show Folder Pane Arrows"
+    "fpvs_folder_back": {
+        "message": "Afficher la vue précédente"
     },
-    "nmbr_delayBFVS": {
-        "message": "Delay (Milliseconds) before folder view switch"
+    "fpvs_folder_next": {
+        "message": "Afficher la vue suivante"
+    },
+    "button_next_pane": {
+        "message": "Vue suivante"
+    },
+    "button_back_pane": {
+        "message": "Vue précédente"
+    },
+    "lblckbx_showFPA": {
+        "message": "Afficher les flèches de changement de vue"
+    },
+    "lblnmbr_delayBFVS": {
+        "message": "Délai de changement de vue (en millisecondes) :"
     },
     "lbl_EnblDsbl": {
-        "message": "Enable / Disable Views"
+        "message": "Sélectionner les vues disponibles :"
+    },
+    "folderPaneModeHeader_all": {
+        "message": "Tous les dossiers",
+        "description": "The name of the view, as in the folderPaneModeHeader_* keys in https://searchfox.org/comm-central/source/mail/locales/en-US/chrome/messenger/messenger.properties"
+    },
+    "folderPaneModeHeader_unread": {
+        "message": "Dossiers non lus",
+        "description": "The name of the view, as in the folderPaneModeHeader_* keys in https://searchfox.org/comm-central/source/mail/locales/en-US/chrome/messenger/messenger.properties"
+    },
+    "folderPaneModeHeader_favorite": {
+        "message": "Dossiers préférés",
+        "description": "The name of the view, as in the folderPaneModeHeader_* keys in https://searchfox.org/comm-central/source/mail/locales/en-US/chrome/messenger/messenger.properties"
+    },
+    "folderPaneModeHeader_recent": {
+        "message": "Dossiers récents",
+        "description": "The name of the view, as in the folderPaneModeHeader_* keys in https://searchfox.org/comm-central/source/mail/locales/en-US/chrome/messenger/messenger.properties"
+    },
+    "folderPaneModeHeader_smart": {
+        "message": "Dossiers unifiés",
+        "description": "The name of the view, as in the folderPaneModeHeader_* keys in https://searchfox.org/comm-central/source/mail/locales/en-US/chrome/messenger/messenger.properties"
+    },
+    "folderPaneModeHeader_tags": {
+        "message": "Étiquettes",
+        "description": "The name for the 'Tags' view, as there is no counterpart for folderPaneModeHeader_*, best match would be 'tags' as in https://searchfox.org/comm-central/source/mail/locales/en-US/chrome/messenger/messenger.properties#245"
+    },
+    
+    "lbl_menu": {
+        "message": "Menu"
+    },
+    "lbl_arrows": {
+        "message": "Flèches"
+    },
+    "lbl_view": {
+        "message": "Vue"
+    },
+    "btn_accept": {
+        "message": "Valider"
+    },
+    "btn_extra1": {
+        "message": "Annuler"
+    },
+    "btn_reset": {
+        "message": "Réinitialiser"
     }
 }
+
