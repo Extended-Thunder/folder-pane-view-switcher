@@ -52,7 +52,6 @@
         "message": "Tags",
         "description": "The name for the 'Tags' view, as there is no counterpart for folderPaneModeHeader_*, best match would be 'tags' as in https://searchfox.org/comm-central/source/mail/locales/en-US/chrome/messenger/messenger.properties#245"
     },
-    
     "lbl_menu": {
         "message": "Menu"
     },
