@@ -1,4 +1,4 @@
-import { findThunderbirdVersion } from "../utils/index.js";
+import { findThunderbirdVersion, translate } from "../utils/index.js";
 import { createLogger } from "../utils/index.js";
 
 const logEnabled = false;
@@ -151,8 +151,9 @@ const onLoad = async () => {
         // the first window.
         const [mail3paneId] = await getMail3paneIds();
         FPVSOptions.gviews = await messenger.FPVS.getAllViewModes(mail3paneId);
-        FPVSOptions.activeViews =
-            await messenger.FPVS.getActiveViewModes(mail3paneId);
+        FPVSOptions.activeViews = await messenger.FPVS.getActiveViewModes(
+            mail3paneId
+        );
 
         const btn_ok = document.getElementById("btn_accept");
         btn_ok.addEventListener("click", async (_event) => {
@@ -237,6 +238,8 @@ const onLoad = async () => {
             table.appendChild(row);
             row_position + 1;
         }
+
+        translate(document);
     } catch (err) {
         error(err);
     }
