@@ -66,6 +66,8 @@ const validatePrefs = async () => {
     let mail3paneIds = await getMail3paneIds();
     for (let view of FPVSOptions.gviews) {
         let elt = document.getElementById(view + "_arrow");
+        // unsupported view
+        if (! elt) continue;
         FPVSOptions.prefs.prefs[view].arrow = elt.checked;
         if (elt.checked) {
             FPVSOptions.arrowViews.push(view);
@@ -184,6 +186,7 @@ const onLoad = async () => {
                     version: window.navigator.userAgent,
                     view
                 });
+                continue;
             }
 
             const row = table.insertRow(row_position);
