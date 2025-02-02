@@ -8,8 +8,8 @@
     "applications": {
         "gecko": {
             "id": "FolderPaneSwitcher@kamens.us",
-            "strict_min_version": "91.0",
-            "strict_max_version": "134.*"
+            "strict_min_version": "126.0",
+            "strict_max_version": "135.*"
         }
     },
     "background": {

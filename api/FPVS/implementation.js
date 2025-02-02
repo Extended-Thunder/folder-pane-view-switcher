@@ -3,21 +3,19 @@
 "use strict";
 
 (function (exports) {
-    var { ExtensionCommon } = ChromeUtils.import(
-        "resource://gre/modules/ExtensionCommon.jsm"
+    var { ExtensionCommon } = ChromeUtils.importESModule(
+        "resource://gre/modules/ExtensionCommon.sys.mjs"
     );
-    const { ExtensionUtils } = ChromeUtils.import(
-        "resource://gre/modules/ExtensionUtils.jsm"
+    const { ExtensionUtils } = ChromeUtils.importESModule(
+        "resource://gre/modules/ExtensionUtils.sys.mjs"
     );
-    var { ExtensionSupport } = ChromeUtils.import(
-        "resource:///modules/ExtensionSupport.jsm"
+    var { ExtensionSupport } = ChromeUtils.importESModule(
+        "resource:///modules/ExtensionSupport.sys.mjs"
     );
-    var { MailServices } = ChromeUtils.import(
-        "resource:///modules/MailServices.jsm"
+    var { MailServices } = ChromeUtils.importESModule(
+        "resource:///modules/MailServices.sys.mjs"
     );
-    var Services =
-        globalThis.Services ||
-        ChromeUtils.import("resource://gre/modules/Services.jsm").Services;
+    var Services = globalThis.Services;
     var { ExtensionError } = ExtensionUtils;
 
     /**

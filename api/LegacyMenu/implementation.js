@@ -14,8 +14,8 @@
  * toolbar - menu button is adapted according to hacktoolbarbutton example.
  */
 if (!ExtensionParent)
-    var { ExtensionParent } = ChromeUtils.import(
-        "resource://gre/modules/ExtensionParent.jsm"
+    var { ExtensionParent } = ChromeUtils.importESModule(
+        "resource://gre/modules/ExtensionParent.sys.mjs"
     );
 
 (function (exports) {
