@@ -1,6 +1,6 @@
 {
     "name": "__MSG_appName__",
-    "version": "6.1.1",
+    "version": "6.1.2",
     "description": "__MSG_appDesc__",
     "author": "Jonathan Kamens, Klaus Buecher, Arnd Issler",
     "default_locale": "en-US",
