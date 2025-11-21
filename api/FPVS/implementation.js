@@ -748,6 +748,15 @@
                         try {
                             const contentWindow = get3PaneTab(tabId);
                             const { showArrows, menuViews, isDark } = props;
+
+                            const versionIsHigherOrEqual = (
+                                expectedVersion
+                            ) => {
+                                const version =
+                                    findThunderbirdVersion(contentWindow);
+                                return version >= expectedVersion;
+                            };
+
                             if (contentWindow) {
                                 const document = contentWindow.document;
                                 const initializeUI = () => {
@@ -798,7 +807,12 @@
                                             backArrowIcon =
                                                 contentWindow.btoa(lightIcon);
                                         }
-                                        buttonBackPane.style.backgroundImage = `url(data:image/svg+xml;base64,${backArrowIcon})`;
+
+                                        if (versionIsHigherOrEqual(145)) {
+                                            buttonBackPane.style.backgroundImage = `url('chrome://global/skin/icons/arrow-left-12.svg')`;
+                                        } else {
+                                            buttonBackPane.style.backgroundImage = `url(data:image/svg+xml;base64,${backArrowIcon})`;
+                                        }
                                         buttonBackPane.addEventListener(
                                             "click",
                                             async () => {
@@ -833,7 +847,12 @@
                                             nextArrowIcon =
                                                 contentWindow.btoa(lightIcon);
                                         }
-                                        buttonNextPane.style.backgroundImage = `url(data:image/svg+xml;base64,${nextArrowIcon})`;
+
+                                        if (versionIsHigherOrEqual(145)) {
+                                            buttonNextPane.style.backgroundImage = `url('chrome://global/skin/icons/arrow-right-12.svg')`;
+                                        } else {
+                                            buttonNextPane.style.backgroundImage = `url(data:image/svg+xml;base64,${nextArrowIcon})`;
+                                        }
                                         buttonNextPane.addEventListener(
                                             "click",
                                             async () => {
