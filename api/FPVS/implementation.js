@@ -579,9 +579,10 @@
                         );
                         let prefs = {};
 
-                        let mail3Pane =
-                            Services.wm.getMostRecentWindow("mail:3pane");
-                        let allViews = mail3Pane.gFolderTreeView._modeNames;
+                        const the3Pane = await this.getAny3Pane();
+                        const allViews = Object.keys(
+                            the3Pane.folderPane._modes
+                        );
                         log("allviews", allViews);
 
                         try {
