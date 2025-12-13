@@ -649,6 +649,11 @@
                     },
 
                     // only in pre-115
+                    // I am not sure the above comment is true, since this
+                    // function is called from validatePrefs in options.js,
+                    // as well as from the onInstalled update listener in
+                    // background.js.
+                    // - jik 2025-12-13
                     showViewInMenus: async function (windowId, view, enabled) {
                         log("showViewInMenus");
                         let mail3Pane =
