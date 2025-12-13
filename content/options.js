@@ -92,17 +92,7 @@ const validatePrefs = async () => {
     );
     FPVSOptions.arrowChk.arrows = lblckbx_shFPA.checked;
 
-    const version = findThunderbirdVersion(window);
-    if (version < 115) {
-        mail3paneIds.forEach((mail3paneId) => {
-            messenger.FPVS.toggleElementHidden(
-                mail3paneId,
-                !lblckbx_shFPA.checked
-            );
-        });
-    } else {
-        await messenger.runtime.sendMessage({ topic: "options-refresh" });
-    }
+    await messenger.runtime.sendMessage({ topic: "options-refresh" });
 
     lblckbx_shFPA = document.getElementById("FolderPaneSwitcher-delay-textbox");
     FPVSOptions.delay.delay = lblckbx_shFPA.value;
@@ -220,18 +210,11 @@ const onLoad = async () => {
             const label = document.createElement("label");
 
             const findViewNameText = async (viewName) => {
-                if (findThunderbirdVersion(window) < 115) {
-                    return await messenger.FPVS.getViewDisplayName(
-                        mail3paneId,
-                        viewName
-                    );
-                } else {
-                    return (
-                        messenger.i18n.getMessage(
-                            `folderPaneModeHeader_${viewName}`
-                        ) || viewName
-                    );
-                }
+                return (
+                    messenger.i18n.getMessage(
+                        `folderPaneModeHeader_${viewName}`
+                    ) || viewName
+                );
             };
 
             const text = await findViewNameText(view);

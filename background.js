@@ -155,35 +155,6 @@ async function manipulateWindow(wnd, i18n) {
         timer: 0,
         watchTimer: 0
     });
-
-    const version = findThunderbirdVersion(window);
-    if (version < 115) {
-        await messenger.FPVS.initFolderPaneOptionsPopup(windowId);
-
-        await messenger.LegacyMenu.add(windowId, {
-            id: "FolderPaneSwitcher-forward-arrow-button",
-            type: "toolbarButton",
-            reference: "folderPaneOptionsButton",
-            position: "before",
-            label: "",
-            image: "content/right-arrow.png",
-            tooltip: i18n.nextButtonLabel || "Next View",
-            className: "button-flat",
-            tabIndex: 0
-        });
-
-        await messenger.LegacyMenu.add(windowId, {
-            id: "FolderPaneSwitcher-back-arrow-button",
-            type: "toolbarButton",
-            reference: "FolderPaneSwitcher-forward-arrow-button",
-            position: "before",
-            label: "",
-            image: "content/left-arrow.png",
-            tooltip: i18n.backButtonLabel || "Previous View",
-            className: "button-flat",
-            tabIndex: 0
-        });
-    }
 }
 
 const manipulateTab = async (tabId, i18n) => {
@@ -286,32 +257,16 @@ var FolderPaneSwitcher = {
 
         log({ currModes, modeName, activeModes });
 
-        const version = findThunderbirdVersion(window);
-        if (version < 115) {
-            if (!activeModes.includes(modeName)) {
-                await messenger.FPVS.toggleActiveViewMode(windowId, modeName);
-            }
-
-            for (let viewName of currModes) {
-                if (viewName != modeName) {
-                    await messenger.FPVS.toggleActiveViewMode(
-                        windowId,
-                        viewName
-                    );
-                }
-            }
-        } else {
-            if (tabId == null) {
-                error(`No tab given to switch to`);
-            }
-
-            // toggle just the actual tab
-            await messenger.FPVS.toggleActiveViewModeForTab(
-                windowId,
-                `${tabId}`,
-                modeName
-            );
+        if (tabId == null) {
+            error(`No tab given to switch to`);
         }
+
+        // toggle just the actual tab
+        await messenger.FPVS.toggleActiveViewModeForTab(
+            windowId,
+            `${tabId}`,
+            modeName
+        );
 
         const compact = await isViewCompacted(modeName);
         await messenger.FPVS.toggleCompactMode(windowId, compact);
@@ -320,26 +275,14 @@ var FolderPaneSwitcher = {
     },
 
     getCurrentViewSelections: async function (windowId, tabId = null) {
-        const version = findThunderbirdVersion(window);
-        if (version < 115) {
-            let { modes: activeModes, isCompactView } =
-                await messenger.FPVS.getActiveViewModesEx(windowId);
-            let { arrowViews: selectedViews } =
-                await messenger.storage.local.get("arrowViews");
+        let { activeModes, isCompactView } =
+            await messenger.FPVS.getActiveViewModesExForTab(`${tabId}`);
 
-            let currentView = activeModes[activeModes.length - 1];
+        let selectedViews = await getArrowViewsOrDefault();
 
-            return { selectedViews, currentView, isCompactView };
-        } else {
-            let { activeModes, isCompactView } =
-                await messenger.FPVS.getActiveViewModesExForTab(`${tabId}`);
+        let currentView = activeModes[activeModes.length - 1];
 
-            let selectedViews = await getArrowViewsOrDefault();
-
-            let currentView = activeModes[activeModes.length - 1];
-
-            return { selectedViews, currentView, isCompactView };
-        }
+        return { selectedViews, currentView, isCompactView };
     },
 
     storeCurrentCompactViewState: async function (windowId, tabId = null) {
@@ -352,9 +295,7 @@ var FolderPaneSwitcher = {
     },
 
     goForwardView: async function (windowId, tabId = null) {
-        const version = findThunderbirdVersion(window);
-        if (version >= 115 && (tabId == null || tabId == undefined)) {
-            // in supernova we need a tab focused where the folder tree is visible
+        if (tabId == null || tabId == undefined) {
             log("cannot switch views, we need a visible folder tree");
             return;
         }
@@ -367,19 +308,11 @@ var FolderPaneSwitcher = {
 
         let nextMode = selectedViews[currInd];
 
-        if (version < 115) {
-            // once we have set the folder pane view for one tree, all trees are in sync
-            await FolderPaneSwitcher.setSingleMode(windowId, nextMode);
-        } else {
-            // in supernova we have to iterate over all views
-            await FolderPaneSwitcher.setSingleMode(windowId, nextMode, tabId);
-        }
+        await FolderPaneSwitcher.setSingleMode(windowId, nextMode, tabId);
     },
 
     goBackView: async function (windowId, tabId = null) {
-        const version = findThunderbirdVersion(window);
-        if (version >= 115 && (tabId == null || tabId == undefined)) {
-            // in supernova we need a tab focused where the folder tree is visible
+        if (tabId == null || tabId == undefined) {
             log("cannot switch views, we need a visible folder tree");
             return;
         }
@@ -392,13 +325,7 @@ var FolderPaneSwitcher = {
 
         let nextMode = selectedViews[currInd];
 
-        if (version < 115) {
-            // once we have set the folder pane view for one tree, all trees are in sync
-            await FolderPaneSwitcher.setSingleMode(windowId, nextMode);
-        } else {
-            // in supernova we have to iterate over all views
-            await FolderPaneSwitcher.setSingleMode(windowId, nextMode, tabId);
-        }
+        await FolderPaneSwitcher.setSingleMode(windowId, nextMode, tabId);
     },
 
     onDragEnter: async function (windowId, aEvent) {
@@ -683,28 +610,9 @@ const setupUI = async () => {
 };
 
 async function main() {
-    const version = findThunderbirdVersion(window);
-    if (version < 115) {
-        const i18n = {
-            nextButtonLabel: messenger.i18n.getMessage("button_next_pane"),
-            backButtonLabel: messenger.i18n.getMessage("button_back_pane")
-        };
-        const windows = await messenger.windows.getAll();
-
-        for (let wnd of windows) {
-            await manipulateWindow(wnd, i18n);
-        }
-
-        messenger.windows.onCreated.addListener(async (wnd) => {
-            await manipulateWindow(wnd, i18n);
-        });
-
-        messenger.FPVS.onDragDrop.addListener(dragDropListener);
-    } else {
-        let listener = window.matchMedia("(prefers-color-scheme: dark)");
-        listener.addEventListener("change", onLightDarkSwitch);
-        await setupUI();
-    }
+    let listener = window.matchMedia("(prefers-color-scheme: dark)");
+    listener.addEventListener("change", onLightDarkSwitch);
+    await setupUI();
 }
 
 messenger.runtime.onMessage.addListener(async (msg) => {

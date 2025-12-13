@@ -48,16 +48,13 @@ export const initializeSettings = () => {
     const defDelay = { delay: 300 };
     const defChk = { arrows: true };
 
-    const version = findThunderbirdVersion(window);
-    if (version >= 115) {
-        defPrefs.tags = {
-            arrow: true,
-            menu: true,
-            pos: -1
-        };
-        defArrowViews.push("tags");
-        defMenuViews.push("tags");
-    }
+    defPrefs.tags = {
+        arrow: true,
+        menu: true,
+        pos: -1
+    };
+    defArrowViews.push("tags");
+    defMenuViews.push("tags");
 
     return { defPrefs, defArrowViews, defMenuViews, defDelay, defChk };
 };

@@ -368,39 +368,12 @@
                             context.extension.windowManager.get(
                                 windowId
                             ).window;
-                        let ready = false;
-                        do {
-                            const version = findThunderbirdVersion(mail3Pane);
-                            log(
-                                `version found: ${version}, source: ${mail3Pane.navigator.userAgent}`
-                            );
-
-                            if (version < 115) {
-                                try {
-                                    ready = mail3Pane.gFolderTreeView.isInited;
-                                } catch (e) {
-                                    log("treeIsReady Err", e.message);
-                                }
-                                log("treeIsReady", ready);
-                            } else {
-                                const the3pane = get_about_3pane(mail3Pane);
-                                console.assert(
-                                    Boolean(the3pane),
-                                    `[found] `,
-                                    the3pane
-                                );
-                                return;
-                                throw new Error(
-                                    `Folder Pane View Switcher couldn't start`
-                                );
-                            }
-                            if (!ready) {
-                                await new Promise((resolve) =>
-                                    mail3Pane.setTimeout(resolve, 100)
-                                );
-                            }
-                        } while (!ready);
-                        mail3Pane.gFolderTreeView.initFolderPaneOptionsPopup();
+                        const the3pane = get_about_3pane(mail3Pane);
+                        console.assert(
+                            Boolean(the3pane),
+                            `[found] `,
+                            the3pane
+                        );
                     },
 
                     getAny3Pane: async function () {
@@ -430,41 +403,20 @@
                     },
 
                     toggleCompactMode: async function (windowId, toggle) {
-                        let mail3Pane =
-                            context.extension.windowManager.get(
-                                windowId
-                            ).window;
-                        const version = findThunderbirdVersion(mail3Pane);
-                        if (version < 115) {
-                            mail3Pane.gFolderTreeView.toggleCompactMode(toggle);
-                        } else {
-                            const the3pane = await this.getAny3Pane();
-                            the3pane.folderPane.isCompact = toggle;
-                        }
+                        const the3pane = await this.getAny3Pane();
+                        the3pane.folderPane.isCompact = toggle;
                     },
 
                     getActiveViewModes: async function (windowId) {
-                        const mail3Pane =
-                            context.extension.windowManager.get(
-                                windowId
-                            ).window;
-                        const version = findThunderbirdVersion(mail3Pane);
-                        if (version < 115) {
-                            const modes = mail3Pane.gFolderTreeView.activeModes;
-                            log("modes", modes);
-                            return modes;
-                        } else {
-                            const the3pane = await this.getAny3Pane();
-                            if (!the3pane.folderPane) {
-                                console.error(
-                                    "Do we have a 3pane and folderPane?",
-                                    mail3Pane,
-                                    the3pane
-                                );
-                            }
-                            const activeModes = the3pane.folderPane.activeModes;
-                            return activeModes;
+                        const the3pane = await this.getAny3Pane();
+                        if (!the3pane.folderPane) {
+                            console.error(
+                                "Do we have a 3pane and folderPane?",
+                                the3pane
+                            );
                         }
+                        const activeModes = the3pane.folderPane.activeModes;
+                        return activeModes;
                     },
 
                     getActiveViewModesEx: async function (windowId) {
@@ -475,29 +427,8 @@
                         );
 
                         if (mayHasCompactView) {
-                            let mail3Pane =
-                                context.extension.windowManager.get(
-                                    windowId
-                                ).window;
-
-                            let tree;
-                            const version = findThunderbirdVersion(mail3Pane);
-                            if (version < 115) {
-                                tree =
-                                    mail3Pane.document.getElementById(
-                                        "folderTree"
-                                    );
-                                // Interrupt if the popup has never been initialized.
-                                if (tree) {
-                                    isCompactView =
-                                        mail3Pane.document
-                                            .getElementById("folderTree")
-                                            .getAttribute("compact") === "true";
-                                }
-                            } else {
-                                const the3pane = await this.getAny3Pane();
-                                isCompactView = the3pane.folderPane.isCompact;
-                            }
+                            const the3pane = await this.getAny3Pane();
+                            isCompactView = the3pane.folderPane.isCompact;
                         }
 
                         log("FPVS[getActiveViewModesEx] ", {
@@ -535,24 +466,12 @@
                     },
 
                     getAllViewModes: async function (windowId) {
-                        let mail3Pane =
-                            context.extension.windowManager.get(
-                                windowId
-                            ).window;
-
-                        const version = findThunderbirdVersion(mail3Pane);
-                        if (version < 115) {
-                            let allViews = mail3Pane.gFolderTreeView._modeNames;
-                            log("allModes", allViews);
-                            return allViews;
-                        } else {
-                            const the3Pane = await this.getAny3Pane();
-                            log("getAllViewModes", the3Pane);
-                            const viewModes = Object.keys(
-                                the3Pane.folderPane._modes
-                            );
-                            return viewModes;
-                        }
+                        const the3Pane = await this.getAny3Pane();
+                        log("getAllViewModes", the3Pane);
+                        const viewModes = Object.keys(
+                            the3Pane.folderPane._modes
+                        );
+                        return viewModes;
                     },
 
                     inDragSession: async function (windowId) {
@@ -631,23 +550,6 @@
                         return prefs;
                     },
 
-                    getViewDisplayName: async function (windowId, commonName) {
-                        let mail3Pane =
-                            context.extension.windowManager.get(
-                                windowId
-                            ).window;
-                        const version = findThunderbirdVersion(mail3Pane);
-                        if (version < 115) {
-                            let key = "folderPaneModeHeader_" + commonName;
-                            let nameString =
-                                mail3Pane.gFolderTreeView.messengerBundle.getString(
-                                    key
-                                );
-                            log("legname", nameString);
-                            return nameString;
-                        }
-                    },
-
                     // only in pre-115
                     // I am not sure the above comment is true, since this
                     // function is called from validatePrefs in options.js,
@@ -703,23 +605,13 @@
                     },
 
                     toggleActiveViewMode: async function (windowId, view) {
-                        let mail3Pane =
-                            context.extension.windowManager.get(
-                                windowId
-                            ).window;
-                        const version = findThunderbirdVersion(mail3Pane);
-                        if (version < 115) {
-                            mail3Pane.gFolderTreeView.activeModes = view;
-                        } else {
-                            // const the3pane = get_about_3pane(mail3Pane);
-                            const the3pane = await this.getAny3Pane();
-                            log(this.toggleActiveViewMode.name, {
-                                the3pane,
-                                folderPane: the3pane?.folderPane,
-                                view
-                            });
-                            the3pane.folderPane.activeModes = [view];
-                        }
+                        const the3pane = await this.getAny3Pane();
+                        log(this.toggleActiveViewMode.name, {
+                            the3pane,
+                            folderPane: the3pane?.folderPane,
+                            view
+                        });
+                        the3pane.folderPane.activeModes = [view];
                     },
 
                     toggleActiveViewModeForTab: async function (

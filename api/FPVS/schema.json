@@ -132,23 +132,6 @@
                 ]
             },
             {
-                "name": "getViewDisplayName",
-                "type": "function",
-                "async": true,
-                "parameters": [
-                    {
-                        "name": "windowId",
-                        "type": "string",
-                        "description": "window id"
-                    },
-                    {
-                        "name": "commonName",
-                        "type": "string",
-                        "description": "viewName"
-                    }
-                ]
-            },
-            {
                 "name": "showViewInMenus",
                 "type": "function",
                 "async": true,
