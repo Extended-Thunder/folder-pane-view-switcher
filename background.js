@@ -37,7 +37,6 @@ messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
     switch (reason) {
         case "install":
             {
-                await messenger.storage.local.set({ updated: true });
                 await messenger.storage.local.set({ prefs: defPrefs });
                 await messenger.storage.local.set(defChk);
                 await messenger.storage.local.set(defDelay);
@@ -48,67 +47,9 @@ messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
                 await messenger.tabs.create({ url: "popup/installed.html" });
             }
             break;
-        case "update": {
-            //await messenger.storage.local.set({ "updated": false });
-            //await messenger.storage.local.remove( "updated");
-            await messenger.tabs.create({ url: "popup/update.html" });
-
-            //update from old prefs?
-            let { updated } = await messenger.storage.local.get({
-                updated: false
-            });
-
-            if (!updated) {
-                await messenger.storage.local.set({ updated: true });
-
-                const storedLegacyPrefs = await messenger.FPVS.getLegacyPrefs();
-                log("legacyPreferences from localStorage", storedLegacyPrefs);
-
-                if ("delay" in storedLegacyPrefs) {
-                    //log("del from exp", p.delay);
-                    await messenger.storage.local.set(storedLegacyPrefs.delay);
-                } else {
-                    await messenger.storage.local.set(defDelay);
-                }
-
-                if ("arrows" in storedLegacyPrefs) {
-                    await messenger.storage.local.set(storedLegacyPrefs.arrows);
-                } else {
-                    await messenger.storage.local.set(defChk);
-                }
-
-                let migratedArrowViews = [];
-                let migratedMenuViews = [];
-                let migratedPrefs = { compacted: [] };
-
-                for (let view in storedLegacyPrefs.prefs) {
-                    //log("view", view, p.prefs[view], p.prefs[view]["arrow"]);
-
-                    migratedPrefs[view] = storedLegacyPrefs.prefs[view];
-
-                    if (storedLegacyPrefs.prefs[view]["arrow"])
-                        migratedArrowViews.push(view);
-                    if (storedLegacyPrefs.prefs[view].menu)
-                        migratedMenuViews.push(view);
-                }
-
-                for (let view in migratedPrefs) {
-                    messenger.FPVS.showViewInMenus(
-                        view,
-                        migratedPrefs[view]["menu"]
-                    );
-                }
-                //log("update: defpref", defPrefs, arrowViews, menuViews);
-                await messenger.storage.local.set({ prefs: migratedPrefs });
-                await messenger.storage.local.set({
-                    arrowViews: migratedArrowViews
-                });
-                await messenger.storage.local.set({
-                    menuViews: migratedMenuViews
-                });
-                await messenger.storage.local.set({ updated: true });
-            } else {
-                log("updated without loading the legacy preferences");
+        case "update":
+            {
+                await messenger.tabs.create({ url: "popup/update.html" });
 
                 /* ensure that preferences are set */
                 const prefs = await getPrefsOrDefault();
@@ -126,9 +67,7 @@ messenger.runtime.onInstalled.addListener(async ({ reason, temporary }) => {
                     arrowViews
                 });
             }
-
             break;
-        }
     }
 });
 

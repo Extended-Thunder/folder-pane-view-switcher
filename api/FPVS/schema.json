@@ -114,12 +114,6 @@
                 ]
             },
             {
-                "name": "getLegacyPrefs",
-                "type": "function",
-                "async": true,
-                "parameters": []
-            },
-            {
                 "name": "inDragSession",
                 "type": "function",
                 "async": true,

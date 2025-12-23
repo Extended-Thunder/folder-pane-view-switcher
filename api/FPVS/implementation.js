@@ -489,72 +489,9 @@
                         return isInDragSession;
                     },
 
-                    getLegacyPrefs: async function () {
-                        log("getLegacyPrefs");
-
-                        let fpvsPrefRoot = "extensions.FolderPaneSwitcher.";
-                        let viewsBranch = Services.prefs.getBranch(
-                            fpvsPrefRoot + "views."
-                        );
-                        let prefs = {};
-
-                        const the3Pane = await this.getAny3Pane();
-                        const allViews = Object.keys(
-                            the3Pane.folderPane._modes
-                        );
-                        log("allviews", allViews);
-
-                        try {
-                            prefs.delay = {
-                                delay: Services.prefs.getIntPref(
-                                    fpvsPrefRoot + "delay"
-                                )
-                            };
-                            conFPVSsole.log("del", prefs.delay);
-                        } catch (e) {}
-                        try {
-                            prefs.arrows = {
-                                arrows: Services.prefs.getBoolPref(
-                                    fpvsPrefRoot + "arrows"
-                                )
-                            };
-                        } catch (e) {}
-
-                        prefs.prefs = {};
-
-                        let children = viewsBranch.getChildList(""); //, obj);
-                        log("children", children);
-                        let regex = /^(\d+)\./;
-                        for (let child of children) {
-                            let match = regex.exec(child);
-                            let num = match[1];
-                            let name = viewsBranch.getStringPref(num + ".name");
-                            let arrow = viewsBranch.getBoolPref(
-                                num + ".arrows_enabled"
-                            );
-                            let menu = viewsBranch.getBoolPref(
-                                num + ".menu_enabled"
-                            );
-
-                            //       if (["all", "smart", "recent", "favorite", "unread"].includes (name) )  prefs.prefs[name] = {"arrow": arrow, "menu": menu, "pos": -1};
-                            if (allViews.includes(name))
-                                prefs.prefs[name] = {
-                                    arrow: arrow,
-                                    menu: menu,
-                                    pos: -1
-                                };
-                        }
-
-                        log("prefs", prefs);
-
-                        return prefs;
-                    },
-
                     // only in pre-115
                     // I am not sure the above comment is true, since this
-                    // function is called from validatePrefs in options.js,
-                    // as well as from the onInstalled update listener in
-                    // background.js.
+                    // function is called from validatePrefs in options.js.
                     // - jik 2025-12-13
                     showViewInMenus: async function (windowId, view, enabled) {
                         log("showViewInMenus");
